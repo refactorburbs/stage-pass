@@ -1,0 +1,326 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  LEAD // can vote, comment, upload (phase 1) - higher vote weight
+  ARTIST // can upload and comment
+  VOTER // can vote and comment (phase 1 OR phase 2 final say if also game owner)
+}
+
+enum AssetStatus {
+  PENDING // Initial state
+  PHASE1_APPROVED // Approved in internal review
+  PHASE1_REJECTED // Rejected in internal review
+  PHASE2_APPROVED // Final approval from owners
+  PHASE2_REJECTED // Final rejection from owners
+  ARCHIVED // Moved to archive after final decision
+}
+
+enum VoteType {
+  APPROVE
+  REJECT
+}
+
+enum VotePhase {
+  PHASE1 // Internal review (teams + leads + voters)
+  PHASE2 // Owner review (only owners vote)
+}
+
+// Teams (companies working on games)
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // Company name (e.g., "Netflix", "EA Sports", "Outsourcer A")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations where team_id is a FK in other tables
+  users             User[]
+  gameTeams         GameTeam[]
+  inviteCodes       InviteCode[]
+  finalReviewAssets AssetFinalReviewTeam[] // Assets this team needs to review in Phase 2
+
+  @@map("teams")
+}
+
+model Game {
+  id              Int      @id @default(autoincrement())
+  name            String
+  assetCategories String[] // ["Heads", "Cleats", "Clothing", "Tattoos", "Full Asset"]
+
+  // Auto-calculated eligible voter counts (updated via triggers or app logic)
+  eligiblePhase1Voters Int @default(0) // Count of LEADs + VOTERs working on this game
+  eligiblePhase2Voters Int @default(0) // Count of OWNERs for this game
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations where game_id is a FK in other tables
+  gameTeams        GameTeam[]
+  gameOwners       GameOwner[] // Junction table for game-specific ownership
+  assets           Asset[]
+  userInteractions UserAssetInteraction[]
+
+  @@map("games")
+}
+
+// Junction table for many-to-many relationship between games and teams
+model GameTeam {
+  id        Int       @id @default(autoincrement())
+  game_id   Int
+  team_id   Int
+  startedAt DateTime  @default(now()) @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+
+  // Relations
+  game Game @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
+
+  @@unique([game_id, team_id])
+  @@map("game_teams")
+}
+
+// Invite codes that pre-populate user signup with team, role, and game access
+model InviteCode {
+  id           Int      @id @default(autoincrement())
+  code         String   @unique
+  team_id      Int
+  role         UserRole // Role the user will get when they sign up
+  description  String? // e.g., "Refactor Artist", "Netflix Owner Voter"
+  ownedGameIds Int[]    @map("owned_game_ids")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  team  Team   @relation(fields: [team_id], references: [id], onDelete: Cascade)
+  users User[] // Track who used this invite code
+
+  @@map("invite_codes")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  email          String    @unique
+  passwordHash   String
+  avatar         Int       @default(0) // 0-4 for predefined colored avatars with initials
+  customAvatar   String? // URL for uploaded avatar
+  role           UserRole // Base role, but can be overridden by game-specific ownership
+  isActive       Boolean   @default(true)
+  lastLogin      DateTime? @map("last_login")
+  team_id        Int
+  invite_code_id Int? // Track which invite code was used
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  team              Team                   @relation(fields: [team_id], references: [id], onDelete: Cascade)
+  inviteCode        InviteCode?            @relation(fields: [invite_code_id], references: [id])
+  gameOwners        GameOwner[] // Games where this user is an owner
+  uploadedAssets    Asset[]                @relation("AssetUploader")
+  assetRevisions    AssetRevision[]        @relation("RevisionUploader")
+  assetVotes        AssetVote[]
+  assetComments     AssetComment[]
+  revisionComments  RevisionComment[]
+  assetInteractions UserAssetInteraction[]
+
+  @@map("users")
+}
+
+// Game-specific ownership (users can be owners of some games but not others)
+model GameOwner {
+  id      Int @id @default(autoincrement())
+  game_Id Int
+  user_Id Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  game Game @relation(fields: [game_Id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+
+  @@unique([game_Id, user_Id])
+  @@map("game_owners")
+}
+
+model Asset {
+  id          Int    @id @default(autoincrement())
+  name        String
+  imageUrl    String
+  category    String // Must be one of the categories from the associated game
+  game_id     Int
+  uploader_id Int
+
+  // Phase 1 voting (internal review)
+  phase1Approvals   Int       @default(0) @map("phase1_approvals")
+  phase1Rejections  Int       @default(0) @map("phase1_rejections")
+  phase1TotalVotes  Int       @default(0) @map("phase1_total_votes")
+  phase1CompletedAt DateTime? @map("phase1_completed_at")
+
+  // Phase 2 voting (owner review) - only populated if phase 1 approved
+  phase2Approvals   Int       @default(0) @map("phase2_approvals")
+  phase2Rejections  Int       @default(0) @map("phase2_rejections")
+  phase2TotalVotes  Int       @default(0) @map("phase2_total_votes")
+  phase2CompletedAt DateTime? @map("phase2_completed_at")
+
+  status AssetStatus @default(PENDING)
+
+  // Tracking and notifications
+  notificationSent Boolean   @default(false)
+  archivedAt       DateTime? @map("archived_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  game             Game                   @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  uploader         User                   @relation("AssetUploader", fields: [uploader_id], references: [id], onDelete: Cascade)
+  revisions        AssetRevision[]
+  votes            AssetVote[]
+  comments         AssetComment[]
+  userInteractions UserAssetInteraction[]
+
+  // Multi-team final review support
+  finalReviewTeams AssetFinalReviewTeam[] // Which teams should review this in Phase 2
+
+  @@map("assets")
+}
+
+// Junction table for assets and teams that need to review them in Phase 2
+model AssetFinalReviewTeam {
+  id       Int @id @default(autoincrement())
+  asset_id Int
+  team_id  Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  asset Asset @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  team  Team  @relation(fields: [team_id], references: [id], onDelete: Cascade)
+
+  @@unique([asset_id, team_id]) // Prevent duplicate assignments
+  @@map("asset_final_review_teams")
+}
+
+model AssetRevision {
+  id          Int     @id @default(autoincrement())
+  asset_id    Int
+  imageUrl    String
+  uploader_id Int
+  description String? // Optional description of changes made
+
+  // Each revision gets its own voting cycle
+  phase1Approvals   Int       @default(0) @map("phase1_approvals")
+  phase1Rejections  Int       @default(0) @map("phase1_rejections")
+  phase1TotalVotes  Int       @default(0) @map("phase1_total_votes")
+  phase1CompletedAt DateTime? @map("phase1_completed_at")
+
+  phase2Approvals   Int       @default(0) @map("phase2_approvals")
+  phase2Rejections  Int       @default(0) @map("phase2_rejections")
+  phase2TotalVotes  Int       @default(0) @map("phase2_total_votes")
+  phase2CompletedAt DateTime? @map("phase2_completed_at")
+
+  status           AssetStatus @default(PENDING)
+  notificationSent Boolean     @default(false)
+  archivedAt       DateTime?   @map("archived_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  asset            Asset                  @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  uploader         User                   @relation("RevisionUploader", fields: [uploader_id], references: [id], onDelete: Cascade)
+  votes            AssetVote[]            @relation("RevisionVotes")
+  comments         RevisionComment[]
+  userInteractions UserAssetInteraction[]
+
+  @@map("asset_revisions")
+}
+
+// Votes can be on either original assets or revisions, and in different phases
+model AssetVote {
+  id        Int       @id @default(autoincrement())
+  user_id   Int
+  vote      VoteType
+  phase     VotePhase // Which phase this vote belongs to
+  weight    Int       @default(1) // LEADs get weight=2, others get weight=1
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Either asset or revision (not both)
+  asset_id          Int?
+  asset_revision_id Int?
+
+  // Relations
+  user     User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  asset    Asset?         @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  revision AssetRevision? @relation("RevisionVotes", fields: [asset_revision_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, asset_id, phase]) // One vote per user per asset per phase
+  @@unique([user_id, asset_revision_id, phase]) // One vote per user per revision per phase
+  @@map("asset_votes")
+}
+
+// Track which assets/revisions user has interacted with (to remove from their feed)
+model UserAssetInteraction {
+  id                Int       @id @default(autoincrement())
+  user_id           Int
+  asset_id          Int?
+  asset_revision_id Int?
+  hasVoted          Boolean   @default(false)
+  hasCommented      Boolean   @default(false)
+  dismissedAt       DateTime? @map("dismissed_at") // Manual dismissal
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user     User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  asset    Asset?         @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  revision AssetRevision? @relation(fields: [asset_revision_id], references: [id], onDelete: Cascade)
+  Game     Game?          @relation(fields: [gameId], references: [id])
+  gameId   Int?
+
+  @@unique([user_id, asset_id])
+  @@unique([user_id, asset_revision_id])
+  @@map("user_asset_interactions")
+}
+
+// Comments on original assets
+model AssetComment {
+  id        Int      @id @default(autoincrement())
+  asset_id  Int
+  user_id   Int
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  asset Asset @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("asset_comments")
+}
+
+// Comments on asset revisions
+model RevisionComment {
+  id                Int      @id @default(autoincrement())
+  asset_revision_id Int
+  user_id           Int
+  content           String
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  revision AssetRevision @relation(fields: [asset_revision_id], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("revision_comments")
+}
