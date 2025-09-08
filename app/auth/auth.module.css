@@ -1,0 +1,71 @@
+.auth_page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+}
+
+.auth_card {
+  padding: 2rem;
+  background-color: white;
+  border-radius: 0.5rem 0.5rem;
+  filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.25));
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.auth_card_header {
+  text-align: center;
+}
+
+.auth_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth_form input {
+  font-size: 20px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.3rem;
+}
+
+.avatar_selection_group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.avatar_options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.avatar_label {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatar_input {
+  display: none;
+}
+
+.avatar_circle {
+  width: 3rem;
+  height: 3rem;;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid transparent;
+  font-weight: bold;
+  transition: border-color 0.2s ease;
+}
+
+/* Highlight selected circle */
+.avatar_input:checked + .avatar_circle {
+  border-color: #333;
+}

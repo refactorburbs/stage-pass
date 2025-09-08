@@ -1,0 +1,28 @@
+.toggle_wrapper {
+  display: flex;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem 0.5rem;
+  overflow: hidden;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.toggle_option {
+  padding: 0.5rem 1.5rem;
+  text-decoration: none;
+  color: #555;
+  background: #f7f7f7;
+  transition: background 0.2s, color 0.2s;
+}
+
+.toggle_option:hover:not(.active) {
+  background: #c0c0c0;
+  color: white;
+}
+
+.active {
+  background: #333;
+  color: #fff;
+}
