@@ -69,3 +69,7 @@
 .avatar_input:checked + .avatar_circle {
   border-color: #333;
 }
+
+.error_msg {
+  color: indianred;
+}

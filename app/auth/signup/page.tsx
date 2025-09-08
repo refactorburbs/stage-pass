@@ -23,22 +23,22 @@ export default function SignUpForm () {
   return (
     <form action={action} className={styles.auth_form}>
       <input name="firstName" type="text" placeholder="First Name" onChange={handleInitialChange}/>
-      {state?.errors?.firstName && <span>{state.errors.firstName}</span>}
+      {state?.errors?.firstName && <span className={styles.error_msg}>{state.errors.firstName}</span>}
 
       <input name="lastName" type="text" placeholder="Last Name" onChange={handleInitialChange}/>
-      {state?.errors?.lastName && <span>{state.errors.lastName}</span>}
+      {state?.errors?.lastName && <span className={styles.error_msg}>{state.errors.lastName}</span>}
 
       <input name="email" type="email" placeholder="Email"/>
-      {state?.errors?.email && <span>{state.errors.email}</span>}
+      {state?.errors?.email && <span className={styles.error_msg}>{state.errors.email}</span>}
 
       <input name="password" type="password" placeholder="Password"/>
-      {state?.errors?.password && <span>{state.errors.password}</span>}
+      {state?.errors?.password && <span className={styles.error_msg}>{state.errors.password}</span>}
 
       <input name="confirmPassword" type="password" placeholder="Confirm Password"/>
-      {state?.errors?.confirmPassword && <span>{state.errors.confirmPassword}</span>}
+      {state?.errors?.confirmPassword && <span className={styles.error_msg}>{state.errors.confirmPassword}</span>}
 
       <input name="inviteCode" type="text" placeholder="Invite Code"/>
-      {state?.errors?.inviteCode && <span>{state.errors.inviteCode}</span>}
+      {state?.errors?.inviteCode && <span className={styles.error_msg}>{state.errors.inviteCode}</span>}
 
       {/* Avatar selection */}
       <div className={styles.avatar_selection_group}>
@@ -63,8 +63,14 @@ export default function SignUpForm () {
             </label>
           ))}
         </div>
-        {state?.errors?.avatar && <span>{state.errors.avatar}</span>}
+        {state?.errors?.avatar && <span className={styles.error_msg}>{state.errors.avatar}</span>}
       </div>
+
+      {state?.message && (
+        <span className={styles.error_msg}>
+          {state.message}
+        </span>
+      )}
 
       <button disabled={pending} type="submit">
         {pending ? "Submitting..." : "Sign up"}

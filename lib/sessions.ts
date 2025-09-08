@@ -80,6 +80,16 @@ export async function updateSession() {
   return null;
 }
 
+export async function verifySession() {
+  const cookie = (await cookies()).get("session")?.value;
+  const session = await decrypt(cookie);
+  if (!session?.userId) {
+    return { userId: null };
+  }
+
+  return { userId: session.userId };
+}
+
 export async function deleteSession() {
   const cookieStore = await cookies();
   cookieStore.delete("session");

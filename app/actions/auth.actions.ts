@@ -57,67 +57,67 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
 
   console.log('form submission data:', validatedFields.data);
 
-  // try {
-  //   // 2. Check if the invite code exists in our database
-  //   const inviteCodeRecord = await prisma.inviteCode.findUnique({
-  //     where: {
-  //       code: inviteCode
-  //     },
-  //     select: {
-  //       id: true,
-  //       team_id: true,
-  //       role: true,
-  //       ownedGameIds: true
-  //     }
-  //   });
-  //   // Invite codes are used to pre-populate user roles and team/game associations
-  //   if (!inviteCodeRecord) {
-  //     return {
-  //       errors: {
-  //         inviteCode: ["Invalid Invite Code"]
-  //       }
-  //     }
-  //   }
+  try {
+    // 2. Check if the invite code exists in our database
+    const inviteCodeRecord = await prisma.inviteCode.findUnique({
+      where: {
+        code: inviteCode
+      },
+      select: {
+        id: true,
+        team_id: true,
+        role: true,
+        ownedGameIds: true
+      }
+    });
+    // Invite codes are used to pre-populate user roles and team/game associations
+    if (!inviteCodeRecord) {
+      return {
+        errors: {
+          inviteCode: ["Invalid Invite Code"]
+        }
+      }
+    }
 
-  //   // 3. Check if user already exists
-  //   const existingUser = await prisma.user.findUnique({
-  //     where: { email }
-  //   })
+    // 3. Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    })
 
-  //   if (existingUser) {
-  //     return {
-  //       errors: {
-  //         email: ["An account with this email already exists"]
-  //       }
-  //     }
-  //   }
-  //   // 4. Hash password and create new user
-  //   const hashedPassword = await bcrypt.hash(password, 12);
-  //   const user = await prisma.user.create({
-  //     data: {
-  //       firstName,
-  //       lastName,
-  //       email,
-  //       passwordHash: hashedPassword,
-  //       avatar,
-  //       customAvatar: customAvatarUrl || "",
-  //       role: inviteCodeRecord.role,
-  //       isActive: true,
-  //       lastLogin: new Date(),
-  //       team_id: inviteCodeRecord.team_id,
-  //       invite_code_id: inviteCodeRecord.id,
-  //     }
-  //   });
+    if (existingUser) {
+      return {
+        errors: {
+          email: ["An account with this email already exists"]
+        }
+      }
+    }
+    // 4. Hash password and create new user
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        passwordHash: hashedPassword,
+        avatar,
+        customAvatar: customAvatarUrl || "",
+        role: inviteCodeRecord.role,
+        isActive: true,
+        lastLogin: new Date(),
+        team_id: inviteCodeRecord.team_id,
+        invite_code_id: inviteCodeRecord.id,
+      }
+    });
 
-  //   // 5. Create a session for this newly created user
-  //   await createSession(user.id);
+    // 5. Create a session for this newly created user
+    await createSession(user.id);
 
-  // } catch (error) {
-  //   console.error("Signup error:", error)
-  //   return {
-  //     message: "Something went wrong. Please try again."
-  //   }
-  // }
+  } catch (error) {
+    console.error("Signup error:", error)
+    return {
+      message: "Something went wrong. Please try again."
+    }
+  }
 
   // Redirect to the main dashboard page.
   redirect("/");
@@ -164,8 +164,20 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
       }
     }
 
+    // Make sure this user is still active with us in the system (could be archived user)
+    if (!user.isActive) {
+      return {
+        message: "This account has been deactivated. Please contact your administrator."
+      }
+    }
+
     // If login successful, create a session for the user and redirect
     await createSession(user.id);
+    // Update the user's last login timestamp
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() }
+    });
 
   } catch (error) {
     console.error("Login error:", error)
@@ -179,5 +191,5 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
 
 export async function logout() {
   await deleteSession();
-  redirect("/login");
+  redirect("/auth/login");
 }
