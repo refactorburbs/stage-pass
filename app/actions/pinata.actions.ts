@@ -3,7 +3,6 @@
 import { pinata } from "@/pinata/config";
 
 export async function uploadFileToPinata(file: File): Promise<string> {
-  console.log('in pinata upload function', file)
   try {
     const { cid } = await pinata.upload.public.file(file);
     const url = await pinata.gateways.public.convert(cid);

@@ -1,0 +1,158 @@
+.profile_page {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.profile_avatar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.page_title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section_title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.info_card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.info_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.info_row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 600;
+  color: #666;
+  min-width: 120px;
+}
+
+.value {
+  color: #333;
+  flex: 1;
+  text-align: right;
+}
+
+.game_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.game_card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game_card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.game_card_content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game_name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.game_card_arrow {
+  font-size: 1.5rem;
+  color: #007bff;
+  transition: transform 0.2s ease;
+}
+
+.game_card:hover .game_card_arrow {
+  transform: translateX(4px);
+}
+
+.owned_game_list {
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.owned_game_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.owned_game_item:last-child {
+  border-bottom: none;
+}
+
+.owned_game_name {
+  font-weight: 500;
+  color: #333;
+}
+
+.owned_game_link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #007bff;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.owned_game_link:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.empty_state {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: left;
+  color: #666;
+  font-style: italic;
+}

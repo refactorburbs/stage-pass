@@ -1,6 +1,6 @@
 "use server";
 
-import { UploadFormState } from "@/lib/types/forms.types";
+import { UploadAssetFormState } from "@/lib/types/forms.types";
 import { z } from "zod";
 import { uploadFileToPinata } from "./pinata.actions";
 import { redirect } from "next/navigation";
@@ -8,7 +8,10 @@ import { verifySession } from "@/lib/sessions";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
-  screenshot: z.instanceof(File),
+  screenshot: z.instanceof(File)
+    .refine((file) => file.size <= 25 * 1024 * 1024, { // 25MB limit
+      message: "File size must be less than 25MB. Please compress your image or choose a smaller file."
+    }),
   title: z.string().min(5, "Title should be more descriptive."),
   category: z.string(),
   gameId: z.string().transform((id) => { // Form fields are strings, so transform to num.
@@ -28,7 +31,7 @@ const uploadAssetSchema = z.object({
 });
 // -----------------------------------------------------------------------------------
 
-export async function uploadAssetImage(state: UploadFormState, formData: FormData): Promise<UploadFormState> {
+export async function uploadAssetImage(_state: UploadAssetFormState, formData: FormData): Promise<UploadAssetFormState> {
   // 1. Validate upload form fields with zod
   const validatedFields = uploadAssetSchema.safeParse({
     screenshot: formData.get("screenshot"),

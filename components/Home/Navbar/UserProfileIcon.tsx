@@ -40,7 +40,7 @@ export default function UserProfileIcon({ user }: UserProfileProps) {
       {isOpen && (
         <div className={styles.dropdown}>
           <Link
-            href={`/profile/${user.id}`}
+            href="/profile"
             className={styles.menu_item}
             onClick={() => setIsOpen(false)}
           >

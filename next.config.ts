@@ -9,12 +9,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: pinataGateway,
         pathname: "/**"
-      },
-      {
-        protocol: "https",
-        hostname: "picsum.photos",
-        pathname: "/**"
-      },
+      }
     ]
   }
 };

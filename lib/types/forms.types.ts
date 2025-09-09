@@ -12,11 +12,18 @@ export type AuthFormState = {
   message?: string
 } | undefined;
 
-export type UploadFormState = {
+export type UploadAssetFormState = {
   errors?: {
     screenshot?: string[]
     title?: string[]
     category?: string[]
+  }
+  message?: string
+} | undefined;
+
+export type UpdateUserProfileFormState = {
+  errors?: {
+    customAvatar?: string[]
   }
   message?: string
 } | undefined;

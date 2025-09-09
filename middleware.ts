@@ -6,7 +6,8 @@ import { decrypt, updateSession } from "./lib/sessions";
 
 // If the user is not authenticated, they will be redirected to the login page.
 const protectedRoutes = [
-  "/"
+  "/",
+  "/profile"
 ];
 const authPages = [
   "/auth/login",
@@ -57,6 +58,7 @@ export default async function middleware(req: NextRequest) {
 }
 
 // Routes Middleware should run on
+// For dynamic routes, :path* is the Nextjs wildcard syntax
 export const config = {
-  matcher: ["/", "/auth/login", "/auth/signup", "/game/:path*"],
+  matcher: ["/", "/auth/login", "/auth/signup", "/game/:path*", "/profile"],
 }

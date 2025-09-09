@@ -41,5 +41,4 @@ export default async function GamePageLayout({
 }
 
 // create an edit profile page? Maybe just to display this person's info and edit picture
-// enable pinata file conversion and test with profile picture
 // get file upload working for creating a new asset in db.

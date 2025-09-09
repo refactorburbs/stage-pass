@@ -64,6 +64,14 @@ export default function SignUpForm () {
           ))}
         </div>
         {state?.errors?.avatar && <span className="error-msg">{state.errors.avatar}</span>}
+        <label htmlFor="customAvatar">
+          Or upload a profile image:
+        </label>
+        <input
+          type="file"
+          name="customAvatar"
+          accept=".png,.jpg,.jpeg"
+        />
       </div>
 
       {state?.message && (
