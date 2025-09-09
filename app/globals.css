@@ -34,3 +34,14 @@ a {
 .content-wrapper {
   padding: 0 5%;
 }
+
+.upload-button {
+  position: absolute;
+  z-index: 5;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: rgb(180, 180, 180);
+  color: black;
+  font-size: 24px;
+  padding: 0.5rem 1rem;
+}

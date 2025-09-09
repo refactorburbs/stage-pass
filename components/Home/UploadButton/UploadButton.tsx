@@ -1,10 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useParams } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import Link from "next/link";
-
-import styles from "./UploadButton.module.css";
 
 export default function UploadButton() {
   const { gameId, assetId } = useParams();
@@ -13,29 +10,21 @@ export default function UploadButton() {
   const isOnRevisionPage = currentRoute === `/game/${gameId}/asset/${assetId}/upload`;
   const isOnAssetPage = currentRoute.includes(`/game/${gameId}/asset/`) && assetId;
 
-  const handleUploadAsset = () => {
-    console.log('upload to pinata!')
-  }
-
   const handleUploadRevision = () => {
     console.log('add a revision to pinata and db!')
   }
 
   if (isOnUploadPage) {
-    return (
-      <button
-        className={styles.upload_button}
-        onClick={handleUploadAsset}
-      >
-        Upload Asset
-      </button>
-    );
+    // In Nextjs, you can't just reference form buttons outside the form with the native browser/react form="form's Id"
+    // Nor can you add a hidden button in the form and simulate a "click" event in here :/ Thus we will remove the layout
+    // button and render another one inside the form with equivalent styling (using a global css variable instead of module)
+    return ( <></> );
   }
 
   if (isOnRevisionPage) {
     return (
       <button
-        className={styles.upload_button}
+        className="upload-button"
         onClick={handleUploadRevision}
       >
         Add Revision
@@ -47,7 +36,7 @@ export default function UploadButton() {
     return (
       <Link
         href={`/game/${gameId}/asset/${assetId}/upload`}
-        className={styles.upload_button}
+        className="upload-button"
       >
         Add Revision
       </Link>
@@ -57,7 +46,7 @@ export default function UploadButton() {
   return (
     <Link
       href={`/game/${gameId}/upload`}
-      className={styles.upload_button}
+      className="upload-button"
     >
       Upload Asset
     </Link>

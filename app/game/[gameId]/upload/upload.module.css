@@ -1,0 +1,55 @@
+.upload_page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload_card {
+  padding: 2rem;
+  background-color: white;
+  border-radius: 0.5rem 0.5rem;
+  filter: drop-shadow(-2px 4px 4px rgba(0, 0, 0, 0.25));
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 50%;
+}
+
+.upload_form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+}
+
+.upload_form input,
+.upload_form option,
+.upload_form select {
+  font-size: 20px;
+  padding: 0.5rem 1rem;
+}
+
+.choose_image_field {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.error_msg {
+  color: indianred;
+}
+
+.upload_button_container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.upload_button_container button {
+  background-color: rgb(180, 180, 180);
+  color: black;
+  font-size: 24px;
+  padding: 0.5rem 1rem;
+}

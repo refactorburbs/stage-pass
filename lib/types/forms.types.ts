@@ -11,3 +11,12 @@ export type AuthFormState = {
   }
   message?: string
 } | undefined;
+
+export type UploadFormState = {
+  errors?: {
+    screenshot?: string[]
+    title?: string[]
+    category?: string[]
+  }
+  message?: string
+} | undefined;

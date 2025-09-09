@@ -2,9 +2,9 @@
 
 import { signup } from "@/app/actions/auth.actions";
 import { useActionState, useState } from "react";
+import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
 
 import styles from "../auth.module.css";
-import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(signup, undefined);
