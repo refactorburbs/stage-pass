@@ -175,16 +175,16 @@ model User {
 // Game-specific ownership (users can be owners of some games but not others)
 model GameOwner {
   id     Int @id @default(autoincrement())
-  game_Id Int
-  user_Id Int
+  game_id Int
+  user_id Int
 
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
-  game Game @relation(fields: [game_Id], references: [id], onDelete: Cascade)
-  user User @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([game_Id, user_Id])
+  @@unique([game_id, user_id])
   @@map("game_owners")
 }
 

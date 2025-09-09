@@ -55,8 +55,6 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
 
   const { firstName, lastName, email, password, avatar, customAvatarUrl, inviteCode } = validatedFields.data;
 
-  console.log('form submission data:', validatedFields.data);
-
   try {
     // 2. Check if the invite code exists in our database
     const inviteCodeRecord = await prisma.inviteCode.findUnique({
@@ -109,7 +107,19 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
       }
     });
 
-    // 5. Create a session for this newly created user
+    // 5. If the user has final say over any games, create that relationship
+    if (inviteCodeRecord.ownedGameIds) {
+      for (const gameId of inviteCodeRecord.ownedGameIds) {
+        await prisma.gameOwner.create({
+          data: {
+            game_id: gameId,
+            user_id: user.id
+          }
+        })
+      }
+    }
+
+    // 6. Create a session for this newly created user
     await createSession(user.id);
 
   } catch (error) {
@@ -119,7 +129,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
     }
   }
 
-  // Redirect to the main dashboard page.
+  // 7. Redirect to the main dashboard page.
   redirect("/");
 }
 

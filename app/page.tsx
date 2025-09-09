@@ -1,32 +1,32 @@
 import { getUser } from "@/lib/DAL_DAO/user.data";
+import { getTeam } from "@/lib/DAL_DAO/team.data";
+import GameProjectOption from "@/components/GameProjectSelection/GameProjectOption";
+import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
+import { notFound } from "next/navigation";
 
 import styles from "./page.module.css";
 
-export default async function Home() {
+export default async function GameProjectSelectionPage() {
   const user = await getUser();
 
   if (!user) {
-    return (
-      <div className={styles.page}>
-        No user data found. You might not be logged in.
-      </div>
-    );
+    return <NotAuthorized />
+  }
+
+  const teamData = await getTeam(user.team_id);
+
+  if (!teamData) {
+    notFound();
   }
 
   return (
     <div className={styles.page}>
-      <h1>Protected Home Dashboard</h1>
-      <div>
-        <strong>Initials:</strong> {user.initials}
-      </div>
-      <div>
-        <strong>Avatar:</strong> {user.customAvatar || user.avatar}
-      </div>
-      <div>
-        <strong>Role:</strong> {user.role}
-      </div>
-      <div>
-        <strong>Team:</strong> {user.teamName}
+      <h1>StagePass</h1>
+      <span>Select Game Project:</span>
+      <div className="content-wrapper">
+        {teamData.games.map((game) => (
+          <GameProjectOption game={game} key={game.id}/>
+        ))}
       </div>
     </div>
   );

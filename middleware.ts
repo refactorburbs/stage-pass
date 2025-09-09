@@ -6,7 +6,8 @@ import { decrypt, updateSession } from "./lib/sessions";
 
 // If the user is not authenticated, they will be redirected to the login page.
 const protectedRoutes = [
-  "/"
+  "/",
+  "/game/*"
 ];
 const authPages = [
   "/auth/login",

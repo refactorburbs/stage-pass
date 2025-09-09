@@ -175,8 +175,8 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.GameOwnerScalarFieldEnum = {
   id: 'id',
-  game_Id: 'game_Id',
-  user_Id: 'user_Id',
+  game_id: 'game_id',
+  user_id: 'user_id',
   createdAt: 'createdAt'
 };
 

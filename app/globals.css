@@ -26,3 +26,11 @@ body {
 button {
   cursor: pointer;
 }
+
+a {
+  text-decoration: none;
+}
+
+.content-wrapper {
+  padding: 0 5%;
+}

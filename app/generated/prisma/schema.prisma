@@ -1,3 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// New feature: to speed up queries and scale with serverless/edge functions:
+// We are using Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+/**
+ * FOR REFERENCE - A PostgreSQL database was created from the Refactor Games
+ * Prisma.io console - see our website's admin page for credentials.
+ * --- Next steps ---
+ * Go to https://pris.ly/ppg-init for detailed instructions.
+ * 1. Define your database schema
+ * Open the schema.prisma file and define your first models. Check the docs if you need inspiration: https://pris.ly/ppg-init.
+ * 2. Apply migrations
+ * Run the following command to create and apply a migration:
+ * npx prisma migrate dev --name init
+ * 3. Manage your data
+ * View and edit your data locally by running this command:
+ * npx prisma studio
+ * 4. Send queries from your app
+ * To access your database from a JavaScript/TypeScript app, you need to use Prisma ORM. Go here for step-by-step instructions: https://pris.ly/ppg-init
+ */
+
+// More instructions on setting up schema and seeding the db: https://www.prisma.io/docs/guides/nextjs
+// Seed command: npx prisma db seed
+
+// To view your database tables, run:
+// npx prisma studio
+
+// To update database tables, you need to create a migration and name it:
+// npx prisma migrate dev --name nameOfMigration
+
+// In production, it is recommended to use the command:
+// prisma generate --no-engine
+// This is already configured into the build script for this website, so all you have to do is run
+// npm run build
+
 generator client {
   provider = "prisma-client-js"
   output   = "../app/generated/prisma"
@@ -138,16 +175,16 @@ model User {
 // Game-specific ownership (users can be owners of some games but not others)
 model GameOwner {
   id      Int @id @default(autoincrement())
-  game_Id Int
-  user_Id Int
+  game_id Int
+  user_id Int
 
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
-  game Game @relation(fields: [game_Id], references: [id], onDelete: Cascade)
-  user User @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([game_Id, user_Id])
+  @@unique([game_id, user_id])
   @@map("game_owners")
 }
 

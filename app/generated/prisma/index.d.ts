@@ -8479,34 +8479,34 @@ export namespace Prisma {
 
   export type GameOwnerAvgAggregateOutputType = {
     id: number | null
-    game_Id: number | null
-    user_Id: number | null
+    game_id: number | null
+    user_id: number | null
   }
 
   export type GameOwnerSumAggregateOutputType = {
     id: number | null
-    game_Id: number | null
-    user_Id: number | null
+    game_id: number | null
+    user_id: number | null
   }
 
   export type GameOwnerMinAggregateOutputType = {
     id: number | null
-    game_Id: number | null
-    user_Id: number | null
+    game_id: number | null
+    user_id: number | null
     createdAt: Date | null
   }
 
   export type GameOwnerMaxAggregateOutputType = {
     id: number | null
-    game_Id: number | null
-    user_Id: number | null
+    game_id: number | null
+    user_id: number | null
     createdAt: Date | null
   }
 
   export type GameOwnerCountAggregateOutputType = {
     id: number
-    game_Id: number
-    user_Id: number
+    game_id: number
+    user_id: number
     createdAt: number
     _all: number
   }
@@ -8514,34 +8514,34 @@ export namespace Prisma {
 
   export type GameOwnerAvgAggregateInputType = {
     id?: true
-    game_Id?: true
-    user_Id?: true
+    game_id?: true
+    user_id?: true
   }
 
   export type GameOwnerSumAggregateInputType = {
     id?: true
-    game_Id?: true
-    user_Id?: true
+    game_id?: true
+    user_id?: true
   }
 
   export type GameOwnerMinAggregateInputType = {
     id?: true
-    game_Id?: true
-    user_Id?: true
+    game_id?: true
+    user_id?: true
     createdAt?: true
   }
 
   export type GameOwnerMaxAggregateInputType = {
     id?: true
-    game_Id?: true
-    user_Id?: true
+    game_id?: true
+    user_id?: true
     createdAt?: true
   }
 
   export type GameOwnerCountAggregateInputType = {
     id?: true
-    game_Id?: true
-    user_Id?: true
+    game_id?: true
+    user_id?: true
     createdAt?: true
     _all?: true
   }
@@ -8634,8 +8634,8 @@ export namespace Prisma {
 
   export type GameOwnerGroupByOutputType = {
     id: number
-    game_Id: number
-    user_Id: number
+    game_id: number
+    user_id: number
     createdAt: Date
     _count: GameOwnerCountAggregateOutputType | null
     _avg: GameOwnerAvgAggregateOutputType | null
@@ -8660,8 +8660,8 @@ export namespace Prisma {
 
   export type GameOwnerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    game_Id?: boolean
-    user_Id?: boolean
+    game_id?: boolean
+    user_id?: boolean
     createdAt?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8669,8 +8669,8 @@ export namespace Prisma {
 
   export type GameOwnerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    game_Id?: boolean
-    user_Id?: boolean
+    game_id?: boolean
+    user_id?: boolean
     createdAt?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8678,8 +8678,8 @@ export namespace Prisma {
 
   export type GameOwnerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    game_Id?: boolean
-    user_Id?: boolean
+    game_id?: boolean
+    user_id?: boolean
     createdAt?: boolean
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8687,12 +8687,12 @@ export namespace Prisma {
 
   export type GameOwnerSelectScalar = {
     id?: boolean
-    game_Id?: boolean
-    user_Id?: boolean
+    game_id?: boolean
+    user_id?: boolean
     createdAt?: boolean
   }
 
-  export type GameOwnerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "game_Id" | "user_Id" | "createdAt", ExtArgs["result"]["gameOwner"]>
+  export type GameOwnerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "game_id" | "user_id" | "createdAt", ExtArgs["result"]["gameOwner"]>
   export type GameOwnerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     game?: boolean | GameDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8714,8 +8714,8 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      game_Id: number
-      user_Id: number
+      game_id: number
+      user_id: number
       createdAt: Date
     }, ExtArgs["result"]["gameOwner"]>
     composites: {}
@@ -9143,8 +9143,8 @@ export namespace Prisma {
    */
   interface GameOwnerFieldRefs {
     readonly id: FieldRef<"GameOwner", 'Int'>
-    readonly game_Id: FieldRef<"GameOwner", 'Int'>
-    readonly user_Id: FieldRef<"GameOwner", 'Int'>
+    readonly game_id: FieldRef<"GameOwner", 'Int'>
+    readonly user_id: FieldRef<"GameOwner", 'Int'>
     readonly createdAt: FieldRef<"GameOwner", 'DateTime'>
   }
     
@@ -18292,8 +18292,8 @@ export namespace Prisma {
 
   export const GameOwnerScalarFieldEnum: {
     id: 'id',
-    game_Id: 'game_Id',
-    user_Id: 'user_Id',
+    game_id: 'game_id',
+    user_id: 'user_id',
     createdAt: 'createdAt'
   };
 
@@ -18969,8 +18969,8 @@ export namespace Prisma {
     OR?: GameOwnerWhereInput[]
     NOT?: GameOwnerWhereInput | GameOwnerWhereInput[]
     id?: IntFilter<"GameOwner"> | number
-    game_Id?: IntFilter<"GameOwner"> | number
-    user_Id?: IntFilter<"GameOwner"> | number
+    game_id?: IntFilter<"GameOwner"> | number
+    user_id?: IntFilter<"GameOwner"> | number
     createdAt?: DateTimeFilter<"GameOwner"> | Date | string
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -18978,8 +18978,8 @@ export namespace Prisma {
 
   export type GameOwnerOrderByWithRelationInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
     createdAt?: SortOrder
     game?: GameOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
@@ -18987,21 +18987,21 @@ export namespace Prisma {
 
   export type GameOwnerWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    game_Id_user_Id?: GameOwnerGame_IdUser_IdCompoundUniqueInput
+    game_id_user_id?: GameOwnerGame_idUser_idCompoundUniqueInput
     AND?: GameOwnerWhereInput | GameOwnerWhereInput[]
     OR?: GameOwnerWhereInput[]
     NOT?: GameOwnerWhereInput | GameOwnerWhereInput[]
-    game_Id?: IntFilter<"GameOwner"> | number
-    user_Id?: IntFilter<"GameOwner"> | number
+    game_id?: IntFilter<"GameOwner"> | number
+    user_id?: IntFilter<"GameOwner"> | number
     createdAt?: DateTimeFilter<"GameOwner"> | Date | string
     game?: XOR<GameScalarRelationFilter, GameWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "game_Id_user_Id">
+  }, "id" | "game_id_user_id">
 
   export type GameOwnerOrderByWithAggregationInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
     createdAt?: SortOrder
     _count?: GameOwnerCountOrderByAggregateInput
     _avg?: GameOwnerAvgOrderByAggregateInput
@@ -19015,8 +19015,8 @@ export namespace Prisma {
     OR?: GameOwnerScalarWhereWithAggregatesInput[]
     NOT?: GameOwnerScalarWhereWithAggregatesInput | GameOwnerScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"GameOwner"> | number
-    game_Id?: IntWithAggregatesFilter<"GameOwner"> | number
-    user_Id?: IntWithAggregatesFilter<"GameOwner"> | number
+    game_id?: IntWithAggregatesFilter<"GameOwner"> | number
+    user_id?: IntWithAggregatesFilter<"GameOwner"> | number
     createdAt?: DateTimeWithAggregatesFilter<"GameOwner"> | Date | string
   }
 
@@ -20086,8 +20086,8 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedCreateInput = {
     id?: number
-    game_Id: number
-    user_Id: number
+    game_id: number
+    user_id: number
     createdAt?: Date | string
   }
 
@@ -20099,15 +20099,15 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    game_Id?: IntFieldUpdateOperationsInput | number
-    user_Id?: IntFieldUpdateOperationsInput | number
+    game_id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GameOwnerCreateManyInput = {
     id?: number
-    game_Id: number
-    user_Id: number
+    game_id: number
+    user_id: number
     createdAt?: Date | string
   }
 
@@ -20117,8 +20117,8 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    game_Id?: IntFieldUpdateOperationsInput | number
-    user_Id?: IntFieldUpdateOperationsInput | number
+    game_id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21336,42 +21336,42 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
-  export type GameOwnerGame_IdUser_IdCompoundUniqueInput = {
-    game_Id: number
-    user_Id: number
+  export type GameOwnerGame_idUser_idCompoundUniqueInput = {
+    game_id: number
+    user_id: number
   }
 
   export type GameOwnerCountOrderByAggregateInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
     createdAt?: SortOrder
   }
 
   export type GameOwnerAvgOrderByAggregateInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
   }
 
   export type GameOwnerMaxOrderByAggregateInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
     createdAt?: SortOrder
   }
 
   export type GameOwnerMinOrderByAggregateInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
     createdAt?: SortOrder
   }
 
   export type GameOwnerSumOrderByAggregateInput = {
     id?: SortOrder
-    game_Id?: SortOrder
-    user_Id?: SortOrder
+    game_id?: SortOrder
+    user_id?: SortOrder
   }
 
   export type EnumAssetStatusFilter<$PrismaModel = never> = {
@@ -23846,7 +23846,7 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedCreateWithoutGameInput = {
     id?: number
-    user_Id: number
+    user_id: number
     createdAt?: Date | string
   }
 
@@ -23991,8 +23991,8 @@ export namespace Prisma {
     OR?: GameOwnerScalarWhereInput[]
     NOT?: GameOwnerScalarWhereInput | GameOwnerScalarWhereInput[]
     id?: IntFilter<"GameOwner"> | number
-    game_Id?: IntFilter<"GameOwner"> | number
-    user_Id?: IntFilter<"GameOwner"> | number
+    game_id?: IntFilter<"GameOwner"> | number
+    user_id?: IntFilter<"GameOwner"> | number
     createdAt?: DateTimeFilter<"GameOwner"> | Date | string
   }
 
@@ -24371,7 +24371,7 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedCreateWithoutUserInput = {
     id?: number
-    game_Id: number
+    game_id: number
     createdAt?: Date | string
   }
 
@@ -27313,7 +27313,7 @@ export namespace Prisma {
 
   export type GameOwnerCreateManyGameInput = {
     id?: number
-    user_Id: number
+    user_id: number
     createdAt?: Date | string
   }
 
@@ -27377,13 +27377,13 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedUpdateWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
-    user_Id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GameOwnerUncheckedUpdateManyWithoutGameInput = {
     id?: IntFieldUpdateOperationsInput | number
-    user_Id?: IntFieldUpdateOperationsInput | number
+    user_id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -27573,7 +27573,7 @@ export namespace Prisma {
 
   export type GameOwnerCreateManyUserInput = {
     id?: number
-    game_Id: number
+    game_id: number
     createdAt?: Date | string
   }
 
@@ -27664,13 +27664,13 @@ export namespace Prisma {
 
   export type GameOwnerUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    game_Id?: IntFieldUpdateOperationsInput | number
+    game_id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GameOwnerUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    game_Id?: IntFieldUpdateOperationsInput | number
+    game_id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

@@ -1,6 +1,8 @@
-import prisma from "../prisma";
+import prisma from "@/lib/prisma";
 import { verifySession } from "../sessions";
+import { UserRole } from "../constants/placeholder.constants";
 import { cache } from "react";
+import { GetGameDataResponse, GetUserDataResponse } from "../types/dto.types";
 
 // Fetch user information in a data access layer (protected by auth)
 // Wrapping in React's cache so that we can call getUser in multiple components,
@@ -16,6 +18,7 @@ export const getUser = cache(async () => {
   const user = await prisma.user.findUnique({
     where: { id: Number(session.userId) },
     select: {
+      id: true,
       firstName: true,
       lastName: true,
       avatar: true,
@@ -36,7 +39,8 @@ export const getUser = cache(async () => {
     select: { name: true }
   });
 
-  const userDTO = {
+  const userDTO: GetUserDataResponse = {
+    id: user.id,
     initials: `${user.firstName.charAt(0).toUpperCase()}${user.lastName.charAt(0).toUpperCase()}`,
     avatar: user.avatar,
     customAvatar: user.customAvatar,
@@ -46,4 +50,20 @@ export const getUser = cache(async () => {
   }
 
   return userDTO;
+});
+
+export const getUserPermissions = cache(async (user: GetUserDataResponse, game: GetGameDataResponse) => {
+  const isIPOwner = await prisma.gameOwner.findFirst({
+    where: {
+      game_id: game.id,
+      user_id: user.id
+    }
+  });
+
+  return {
+    canVote: user.role !== UserRole.ARTIST,
+    canComment: true, // everyone can comment
+    canUpload: user.role !== UserRole.VOTER,
+    hasFinalSay: !!isIPOwner
+  }
 });
