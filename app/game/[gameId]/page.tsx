@@ -1,6 +1,5 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
-import { getGame } from "@/lib/DAL_DAO/game.data";
-import { getUser, getUserPermissions } from "@/lib/DAL_DAO/user.data";
+import { getGame, getUser, getUserPermissions } from "@/lib/data/index";
 import { notFound } from "next/navigation";
 
 interface GamePageProps {

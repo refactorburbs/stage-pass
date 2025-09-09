@@ -1,5 +1,4 @@
-import { getUser } from "@/lib/DAL_DAO/user.data";
-import { getTeam } from "@/lib/DAL_DAO/team.data";
+import { getUser, getTeam } from "@/lib/data/index";
 import GameProjectOption from "@/components/GameProjectSelection/GameProjectOption";
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import { notFound } from "next/navigation";

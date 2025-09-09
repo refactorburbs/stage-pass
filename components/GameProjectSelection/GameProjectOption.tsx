@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getGame } from "@/lib/DAL_DAO/game.data";
+import { getGame } from "@/lib/data/index";
 
 import styles from "./GameProjectOption.module.css";
 

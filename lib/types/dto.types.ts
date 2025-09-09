@@ -2,6 +2,7 @@ import { UserRoleType } from "./auth.types";
 
 export interface GetUserDataResponse {
   id: number;
+  fullName: string;
   initials: string;
   avatar: number;
   customAvatar: string | null;
@@ -21,4 +22,16 @@ export interface GetUserPermissionsResponse {
   canComment: boolean;
   canUpload: boolean;
   hasFinalSay: boolean;
+}
+
+export interface GetTeamDataResponse {
+  id: number;
+  name: string;
+  games: Array<{ id: number, name: string}>;
+}
+
+export interface GetGameDataResponse {
+  id: number;
+  name: string;
+  teams: Array<string>;
 }

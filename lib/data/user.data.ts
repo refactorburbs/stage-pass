@@ -2,12 +2,12 @@ import prisma from "@/lib/prisma";
 import { verifySession } from "../sessions";
 import { UserRole } from "../constants/placeholder.constants";
 import { cache } from "react";
-import { GetGameDataResponse, GetUserDataResponse } from "../types/dto.types";
+import { GetGameDataResponse, GetUserDataResponse, GetUserPermissionsResponse } from "../types/dto.types";
 
 // Fetch user information in a data access layer (protected by auth)
 // Wrapping in React's cache so that we can call getUser in multiple components,
 // but only one request will be made to the database for the same user during a single render cycle.
-export const getUser = cache(async () => {
+export const getUser = cache(async (): Promise<GetUserDataResponse | null> => {
   // Verify user's session
   const session = await verifySession();
   if (!session.userId) {
@@ -39,8 +39,11 @@ export const getUser = cache(async () => {
     select: { name: true }
   });
 
-  const userDTO: GetUserDataResponse = {
+  const nameProper = user.firstName[0].toUpperCase() + user.firstName.slice(1) + " " + user.lastName[0].toUpperCase() + user.lastName.slice(1);
+
+  const userDTO = {
     id: user.id,
+    fullName: nameProper,
     initials: `${user.firstName.charAt(0).toUpperCase()}${user.lastName.charAt(0).toUpperCase()}`,
     avatar: user.avatar,
     customAvatar: user.customAvatar,
@@ -52,7 +55,10 @@ export const getUser = cache(async () => {
   return userDTO;
 });
 
-export const getUserPermissions = cache(async (user: GetUserDataResponse, game: GetGameDataResponse) => {
+export const getUserPermissions = cache(async (
+  user: GetUserDataResponse,
+  game: GetGameDataResponse
+): Promise<GetUserPermissionsResponse> => {
   const isIPOwner = await prisma.gameOwner.findFirst({
     where: {
       game_id: game.id,

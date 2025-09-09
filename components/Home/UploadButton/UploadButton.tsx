@@ -15,10 +15,17 @@ export default function UploadButton() {
   }
 
   if (isOnUploadPage) {
-    // In Nextjs, you can't just reference form buttons outside the form with the native browser/react form="form's Id"
-    // Nor can you add a hidden button in the form and simulate a "click" event in here :/ Thus we will remove the layout
-    // button and render another one inside the form with equivalent styling (using a global css variable instead of module)
-    return ( <></> );
+    // Using native browser linking by form id so that
+    // layout button can be outside the upload form component.
+    return (
+      <button
+        className="upload-button"
+        type="submit"
+        form="uploadAssetForm"
+      >
+        Upload Asset
+      </button>
+    );
   }
 
   if (isOnRevisionPage) {

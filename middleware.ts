@@ -6,8 +6,7 @@ import { decrypt, updateSession } from "./lib/sessions";
 
 // If the user is not authenticated, they will be redirected to the login page.
 const protectedRoutes = [
-  "/",
-  "/game/*"
+  "/"
 ];
 const authPages = [
   "/auth/login",
@@ -16,7 +15,7 @@ const authPages = [
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const isProtectedRoute = protectedRoutes.includes(path) || path.startsWith("/game/");
   const isAuthPage = authPages.includes(path);
   const cookieStore = await cookies();
   const cookie = cookieStore.get("session")?.value;
@@ -59,5 +58,5 @@ export default async function middleware(req: NextRequest) {
 
 // Routes Middleware should run on
 export const config = {
-  matcher: ["/", "/auth/login", "/auth/signup"],
+  matcher: ["/", "/auth/login", "/auth/signup", "/game/:path*"],
 }

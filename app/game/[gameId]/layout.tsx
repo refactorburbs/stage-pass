@@ -1,8 +1,7 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import Navbar from "@/components/Home/Navbar/Navbar";
 import UploadButton from "@/components/Home/UploadButton/UploadButton";
-import { getGame } from "@/lib/DAL_DAO/game.data";
-import { getUser, getUserPermissions } from "@/lib/DAL_DAO/user.data";
+import { getGame, getUser, getUserPermissions } from "@/lib/data/index";
 import { notFound } from "next/navigation";
 
 import styles from "./layout.module.css";

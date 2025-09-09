@@ -16,9 +16,9 @@ export default function UploadPage() {
 
         <p>{`Asset uploads go through 3 stages of review:
         The first round is internal, and is for approving individual parts such as heads or tattoos.
-        The second round is also internal, and is for approving complete, full assets such as an entire football player character.
-        The third round is external, and happens once a full asset is approved internally.
-        When approved externally, the asset is ready to be put in the game!
+        The second round is also internal, but is for approving complete, full assets such as an entire football player character.
+        The third round is external, and happens once a full asset is approved internally. IP owners will go through their own
+        voting approval phase. Finally, when the asset is approved externally, it is ready to be put in the game!
         `}</p>
 
         <form id="uploadAssetForm" action={action} className={styles.upload_form}>
@@ -32,11 +32,11 @@ export default function UploadPage() {
               accept=".png,.jpg,.jpeg,.gif,.svg"
               required
             />
-            {state?.errors?.screenshot && <span className={styles.error_msg}>{state.errors.screenshot}</span>}
+            {state?.errors?.screenshot && <span className="error-msg">{state.errors.screenshot}</span>}
           </div>
 
           <input name="title" type="text" placeholder="Asset Title"/>
-          {state?.errors?.title && <span className={styles.error_msg}>{state.errors.title}</span>}
+          {state?.errors?.title && <span className="error-msg">{state.errors.title}</span>}
 
           <label htmlFor="categoryDropdown">Choose a Category:</label>
           <select id="categoryDropdown" name="category">
@@ -48,18 +48,14 @@ export default function UploadPage() {
           <input type="hidden" name="gameId" value={gameId} />
 
           {state?.message && (
-            <span className={styles.error_msg}>
+            <span className="error-msg">
               {state.message}
             </span>
           )}
 
-          <div className={styles.upload_button_container}>
-            <button type="submit" disabled={pending}>
-              {pending ? "Uploading..." : "Upload Asset"}
-            </button>
-          </div>
         </form>
       </div>
+      <span>{pending ? "Uploading Asset..." : ""}</span>
     </div>
   );
 }

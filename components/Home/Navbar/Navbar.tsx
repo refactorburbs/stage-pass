@@ -1,5 +1,5 @@
 import { GetUserDataResponse } from '@/lib/types/dto.types';
-import UserProfile from './UserProfile';
+import UserProfileIcon from './UserProfileIcon';
 
 import styles from './Navbar.module.css';
 
@@ -14,9 +14,11 @@ export default function Navbar({ gameName, teamString, user }: NavbarProps) {
     <div className={styles.navbar_container}>
       <div className={styles.game_team_info}>
         <h2>{`${gameName} - `}</h2>
-        <span className={styles.team_info}>{teamString}</span>
+        <span className={styles.team_info}>
+          {teamString}
+        </span>
       </div>
-      <UserProfile user={user}/>
+      <UserProfileIcon user={user}/>
     </div>
   );
 }

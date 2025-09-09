@@ -1,7 +1,8 @@
 import { cache } from "react";
 import prisma from "@/lib/prisma";
+import { GetTeamDataResponse } from "../types/dto.types";
 
-export const getTeam = cache(async (team_id: number) => {
+export const getTeam = cache(async (team_id: number): Promise<GetTeamDataResponse | null> => {
   const team = await prisma.team.findUnique({
     where: { id: team_id },
     select: {

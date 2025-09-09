@@ -3,6 +3,8 @@
   so that only one instance of the client is created in your application.
   This helps resolve issues with hot reloading that can occur when using
   Prisma ORM with Next.js in development mode.
+
+  https://www.prisma.io/docs/guides/nextjs
 */
 
 import { PrismaClient } from "../app/generated/prisma";

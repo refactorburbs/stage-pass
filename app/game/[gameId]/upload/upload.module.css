@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2rem;
 }
 
 .upload_card {
@@ -38,18 +39,4 @@
 
 .error_msg {
   color: indianred;
-}
-
-.upload_button_container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.upload_button_container button {
-  background-color: rgb(180, 180, 180);
-  color: black;
-  font-size: 24px;
-  padding: 0.5rem 1rem;
 }
