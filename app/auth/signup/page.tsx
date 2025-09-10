@@ -3,13 +3,20 @@
 import { signup } from "@/app/actions/auth.actions";
 import { useActionState, useState } from "react";
 import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
+import DynamicImageAvatarBubble from "@/components/AvatarBubble/DynamicImageAvatarBubble";
 
 import styles from "../auth.module.css";
+import { uploadFileToPinata } from "@/app/actions/pinata.actions";
+
+// then use this logic that's in here currently for the asset uploads (larger file)
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(signup, undefined);
   const [firstInitial, setFirstInitial] = useState("");
   const [lastInitial, setLastInitial] = useState("");
+  const [customAvatarUrl, setCustomAvatarUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [clientError, setClientError] = useState("");
 
   const handleInitialChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.name === "firstName") {
@@ -19,9 +26,38 @@ export default function SignUpForm () {
       setLastInitial(event.target.value.charAt(0).toUpperCase());
     }
   }
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setClientError("");
+    // Check file size (0.5MB = 512KB)
+    if (file.size > 0.5 * 1024 * 1024) {
+      setClientError("File size must be less than 0.5MB (500KB). Please choose a smaller image.");
+      event.target.value = "";
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const url = await uploadFileToPinata(file);
+      setCustomAvatarUrl(url);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFormSubmit = async (formData: FormData) => {
+    if (customAvatarUrl) {
+      formData.set("customAvatarUrl", customAvatarUrl);
+    }
+    // Call the original form action
+    action(formData);
+  };
 
   return (
-    <form action={action} className={styles.auth_form}>
+    <form action={handleFormSubmit} className={styles.auth_form}>
       <input name="firstName" type="text" placeholder="First Name" onChange={handleInitialChange}/>
       {state?.errors?.firstName && <span className="error-msg">{state.errors.firstName}</span>}
 
@@ -64,14 +100,21 @@ export default function SignUpForm () {
           ))}
         </div>
         {state?.errors?.avatar && <span className="error-msg">{state.errors.avatar}</span>}
-        <label htmlFor="customAvatar">
+
+        <label>
           Or upload a profile image:
         </label>
+        <DynamicImageAvatarBubble src={customAvatarUrl}/>
         <input
           type="file"
           name="customAvatar"
           accept=".png,.jpg,.jpeg"
+          onChange={handleFileUpload}
+          disabled={uploading}
         />
+        {clientError && (
+          <span className="error-msg">{clientError}</span>
+        )}
       </div>
 
       {state?.message && (

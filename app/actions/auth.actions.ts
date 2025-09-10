@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { AuthFormState } from "@/lib/types/forms.types";
 import { createSession, deleteSession } from "@/lib/sessions";
-import { uploadFileToPinata } from "./pinata.actions";
 
 // Validation schemas ----------------------------------------------------------------
 const loginSchema = z.object({
@@ -22,7 +21,7 @@ const signupSchema = z.object({
   confirmPassword: z.string(),
   inviteCode: z.string().min(1, "Invite Code is required. Contact your administrator."),
   avatar: z.number().default(0),
-  customAvatar: z.instanceof(File).optional(),
+  customAvatarUrl: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmpassword"],
@@ -39,7 +38,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
     confirmPassword: formData.get("confirmPassword"),
     inviteCode: formData.get("inviteCode"),
     avatar: Number(formData.get("avatar")),
-    customAvatar: formData.get("customAvatar") || null,
+    customAvatarUrl: formData.get("customAvatarUrl") || "",
   })
 
   if (!validatedFields.success) {
@@ -54,7 +53,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
     return { errors: fieldErrors };
   }
 
-  const { firstName, lastName, email, password, avatar, customAvatar, inviteCode } = validatedFields.data;
+  const { firstName, lastName, email, password, avatar, customAvatarUrl, inviteCode } = validatedFields.data;
   try {
     // 2. Check if the invite code exists in our database
     const inviteCodeRecord = await prisma.inviteCode.findUnique({
@@ -89,10 +88,8 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
         }
       }
     }
-    // 4. If a file was uploaded, convert the image to a url
-    const customAvatarUrl = customAvatar ? await uploadFileToPinata(customAvatar) : "";
 
-    // 5. Hash password and create new user
+    // 4. Hash password and create new user
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
       data: {
@@ -110,7 +107,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
       }
     });
 
-    // 6. If the user has final say over any games, create that relationship
+    // 5. If the user has final say over any games, create that relationship
     if (inviteCodeRecord.ownedGameIds) {
       for (const gameId of inviteCodeRecord.ownedGameIds) {
         await prisma.gameOwner.create({
@@ -122,7 +119,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
       }
     }
 
-    // 7. Create a session for this newly created user
+    // 6. Create a session for this newly created user
     await createSession(user.id);
 
   } catch (error) {
@@ -132,7 +129,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
     }
   }
 
-  // 8. Redirect to the main dashboard page.
+  // 7. Redirect to the main dashboard page.
   redirect("/");
 }
 

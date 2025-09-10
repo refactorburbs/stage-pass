@@ -27,17 +27,23 @@ export interface GetDetailedUserDataResponse {
   teamGames: Array<{ id: number, name: string }>; // Games this team is working on, that this user is a part of
 }
 
+export interface GetUserPermissionsResponse {
+  canVote: boolean;
+  canComment: boolean;
+  canUpload: boolean;
+  hasFinalSay: boolean;
+}
+
 export interface GetGameDataResponse {
   id: number;
   name: string;
   teams: Array<string>;
 }
 
-export interface GetUserPermissionsResponse {
-  canVote: boolean;
-  canComment: boolean;
-  canUpload: boolean;
-  hasFinalSay: boolean;
+export interface GetGameAssetCategoriesResponse {
+  game_id: number;
+  gameName: string;
+  assetCategories: Array<string>;
 }
 
 export interface GetTeamDataResponse {

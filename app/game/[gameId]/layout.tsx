@@ -39,6 +39,3 @@ export default async function GamePageLayout({
     </div>
   );
 }
-
-// create an edit profile page? Maybe just to display this person's info and edit picture
-// get file upload working for creating a new asset in db.
