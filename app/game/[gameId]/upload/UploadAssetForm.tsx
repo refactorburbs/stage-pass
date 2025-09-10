@@ -26,15 +26,16 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
       setAssetUrl(url);
     } catch (error) {
       console.error("Upload failed:", error);
+      event.target.value = "";
     } finally {
       setUploading(false);
     }
   };
 
   const handleFormSubmit = async (formData: FormData) => {
+    formData.delete("screenshot-raw");
     if (assetUrl) {
-      formData.set("screenshot", assetUrl);
-      formData.delete("screenshot-raw");
+      formData.set("imageUrl", assetUrl);
     }
     // Call the original form action
     action(formData);
@@ -53,7 +54,7 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
           disabled={uploading}
           onChange={handleFileUpload}
         />
-        {state?.errors?.screenshot && <span className="error-msg">{state.errors.screenshot}</span>}
+        {state?.errors?.imageUrl && <span className="error-msg">{state.errors.imageUrl}</span>}
       </div>
 
       <input name="title" type="text" placeholder="Asset Title"/>

@@ -4,10 +4,11 @@ import { UploadAssetFormState } from "@/lib/types/forms.types";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { verifySession } from "@/lib/sessions";
+import prisma from "@/lib/prisma";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
-  screenshot: z.string(),
+  imageUrl: z.string(),
   title: z.string().min(5, "Title should be more descriptive."),
   category: z.string(),
   gameId: z.string().transform((id) => { // Form fields are strings, so transform to num.
@@ -21,7 +22,7 @@ const uploadAssetSchema = z.object({
 export async function uploadAssetImage(_state: UploadAssetFormState, formData: FormData): Promise<UploadAssetFormState> {
   // 1. Validate upload form fields with zod
   const validatedFields = uploadAssetSchema.safeParse({
-    screenshot: formData.get("screenshot"),
+    imageUrl: formData.get("imageUrl"),
     title: formData.get("title"),
     category: formData.get("category"),
     gameId: formData.get("gameId")
@@ -39,18 +40,27 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
     return { errors: fieldErrors };
   }
 
-  const { screenshot, title, category, gameId } = validatedFields.data;
+  const { imageUrl, title, category, gameId } = validatedFields.data;
   // 2. Get user id (uploader_id) from the session store
   const session = await verifySession();
   if (!session.userId) {
     console.log("No userId found in session");
     return { message: "Something went wrong. Invalid user session id." }
   }
-  const uploaderId = session.userId;
+  const uploaderId = Number(session.userId);
 
   try {
     // 3. Create a new asset in Prisma
-    console.log("uploaded to pinata: ", screenshot, title, category, gameId, uploaderId);
+    await prisma.asset.create({
+      data: {
+        title,
+        category,
+        imageUrl,
+        game_id: gameId,
+        uploader_id: uploaderId
+      }
+    });
+    console.log("New asset created!");
   } catch (error) {
     console.error("Image upload error:", error)
     return {
@@ -58,5 +68,5 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
     }
   }
   // Redirect to the user's feed (should see their post in pending)
-  // redirect(`/game/${gameId}`);
+  redirect(`/game/${gameId}`);
 }

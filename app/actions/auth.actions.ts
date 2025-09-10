@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { AuthFormState } from "@/lib/types/forms.types";
 import { createSession, deleteSession } from "@/lib/sessions";
+import { createFullName, createInitials } from "@/lib/utils";
 
 // Validation schemas ----------------------------------------------------------------
 const loginSchema = z.object({
@@ -95,6 +96,8 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
       data: {
         firstName,
         lastName,
+        fullName: createFullName(firstName, lastName),
+        initials: createInitials(firstName, lastName),
         email,
         passwordHash: hashedPassword,
         avatar,
@@ -115,7 +118,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
             game_id: gameId,
             user_id: user.id
           }
-        })
+        });
       }
     }
 

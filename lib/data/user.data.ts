@@ -8,28 +8,37 @@ import {
   GetUserDataResponse,
   GetUserPermissionsResponse
 } from "../types/dto.types";
+import { VotePhaseType } from "../types/voting.types";
+import { VotePhase } from "@/app/generated/prisma";
 
 // Fetch user information in a data access layer (protected by auth)
 // Wrapping in React's cache so that we can call getUser in multiple components,
 // but only one request will be made to the database for the same user during a single render cycle.
 export const getUser = cache(async (): Promise<GetUserDataResponse | null> => {
-  // Verify user's session
   const session = await verifySession();
   if (!session.userId) {
     console.log("No userId found in session, returning null user data.");
     return null;
   }
-  // Fetch user data
+
   const user = await prisma.user.findUnique({
-    where: { id: Number(session.userId) },
+    where: {
+      id: Number(session.userId),
+      isActive: true
+    },
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      fullName: true,
+      initials: true,
       avatar: true,
       customAvatar: true,
       role: true,
-      team_id: true
+      team_id: true,
+      team: {
+        select: {
+          name: true
+        }
+      }
     }
   });
 
@@ -38,26 +47,17 @@ export const getUser = cache(async (): Promise<GetUserDataResponse | null> => {
     return null;
   }
 
-  // Extract the team name from team id for more user-friendly info display in the UI
-  const team = await prisma.team.findUnique({
-    where: { id: user.team_id },
-    select: { name: true }
-  });
-
-  const nameProper = user.firstName[0].toUpperCase() + user.firstName.slice(1) + " " + user.lastName[0].toUpperCase() + user.lastName.slice(1);
-
-  const userDTO = {
+  return ({
     id: user.id,
-    fullName: nameProper,
-    initials: `${user.firstName.charAt(0).toUpperCase()}${user.lastName.charAt(0).toUpperCase()}`,
+    fullName: user.fullName,
+    initials: user.initials,
     avatar: user.avatar,
     customAvatar: user.customAvatar,
     role: user.role,
     team_id: user.team_id,
-    teamName: team?.name || 'No Team'
-  }
+    teamName: user.team.name
+  });
 
-  return userDTO;
 });
 
 export async function getDetailedUserData(): Promise<GetDetailedUserDataResponse | null> {
@@ -74,6 +74,8 @@ export async function getDetailedUserData(): Promise<GetDetailedUserDataResponse
       id: true,
       firstName: true,
       lastName: true,
+      fullName: true,
+      initials: true,
       email: true,
       role: true,
       avatar: true,
@@ -112,15 +114,13 @@ export async function getDetailedUserData(): Promise<GetDetailedUserDataResponse
     return null;
   }
 
-  const nameProper = user.firstName[0].toUpperCase() + user.firstName.slice(1) + " " + user.lastName[0].toUpperCase() + user.lastName.slice(1);
-
   // 3. Combine the query results into our desired DTO
   const detailedUserDTO = {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
-    fullName: nameProper,
-    initials: `${user.firstName.charAt(0).toUpperCase()}${user.lastName.charAt(0).toUpperCase()}`,
+    fullName: user.fullName,
+    initials: user.initials,
     email: user.email,
     role: user.role,
     avatar: user.avatar,
@@ -156,5 +156,64 @@ export const getUserPermissions = cache(async (
     canComment: true, // everyone can comment
     canUpload: user.role !== UserRole.VOTER,
     hasFinalSay: !!isIPOwner
+  }
+});
+
+export const getEligibleVoters = cache(async (
+  gameId: number,
+  phase: VotePhaseType
+): Promise<Array<GetUserDataResponse>> => {
+  if (phase === VotePhase.PHASE1) {
+    // Phase 1 is internal teams (LEADS and VOTERS working on the game)
+    const phase1Users = await prisma.user.findMany({
+      where: {
+        isActive: true,
+        role: { in: [UserRole.LEAD, UserRole.VOTER] },
+        team: {
+          gameTeams: {
+            some: {
+              game_id: gameId,
+              endedAt: null // Make sure the team is still working on the game
+            }
+          }
+        }
+      },
+      include: {
+        team: true
+      }
+    });
+    return phase1Users.map((user) => ({
+      id: user.id,
+      fullName: user.fullName,
+      initials: user.initials,
+      avatar: user.avatar,
+      customAvatar: user.customAvatar,
+      role: user.role,
+      team_id: user.team.id,
+      teamName: user.team.name
+    }));
+  } else {
+    // Phase 2 is for external IP Owners
+    const phase2Users = await prisma.user.findMany({
+      where: {
+        isActive: true,
+        gameOwners: {
+          some: { game_id: gameId } // "some" - get any user that owns this game; doesn't matter if they own other games
+        }
+      },
+      include: {
+        team: true
+      }
+    });
+    return phase2Users.map((user) => ({
+      id: user.id,
+      fullName: user.fullName,
+      initials: user.initials,
+      avatar: user.avatar,
+      customAvatar: user.customAvatar,
+      role: user.role,
+      team_id: user.team.id,
+      teamName: user.team.name
+    }));
   }
 });
