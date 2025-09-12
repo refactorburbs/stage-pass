@@ -1,0 +1,11 @@
+.voter_bubble_container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.voter_bubble {
+  margin-left: -0.5rem;
+  cursor: pointer;
+}

@@ -5,10 +5,14 @@ import {
   VoteType
 } from "@/app/generated/prisma";
 import { calculateRawAssetVotes } from "../utils";
-import { GetAssetFeedForGameResponse } from "../types/dto.types";
-import { AssetItemForGameFeed, AssetVoter } from "../types/assets.types";
+import { GetAssetFeedForArtistResponse, GetAssetFeedForGameResponse, GetAssetFeedForVoterResponse } from "../types/dto.types";
+import { AssetItemForGameFeed, AssetItemForVoterFeed, AssetVoter, IntermediateVoterAssetItem } from "../types/assets.types";
+import { getAllEligibleVoters } from "./user.data";
 
-export async function getAssetFeedForArtist(userId: number, gameId: number) {
+export async function getAssetFeedForArtist(
+  userId: number,
+  gameId: number
+): Promise<GetAssetFeedForArtistResponse> {
   // Artists can only upload and comment. Thus their personal feed will be 3 columns:
   // 1. All assets they've personally uploaded that have definitively been rejected by others (both phase 1 and phase 2)
   // 2. All assets they've personally uploaded that still have a PENDING asset status
@@ -53,12 +57,17 @@ export async function getAssetFeedForArtist(userId: number, gameId: number) {
   return { rejected, pending, approved };
 }
 
-export async function getAssetFeedForVoter(userId: number, gameId: number, hasFinalSay: boolean) {
+export async function getAssetFeedForVoter(
+  userId: number,
+  gameId: number,
+  hasFinalSay: boolean
+): Promise<GetAssetFeedForVoterResponse> {
   // Voters personal feed will be two columns with a special pending column in the middle:
   // 1. All PENDING assets they have personally rejected. If hasFinalSay is true in their userRolePermissions, then this is only for phase 2. Else phase 1
   // 2. In the middle is all PENDING assets they have yet to review - All assets that are PENDING and that they have not already voted on. if hasFinalSay, only phase2 else phase1
   // 3. All PENDING assets they have personally accepted. If hasFinalSay is true, this is only for phase2. else phase1.
   const targetPhase = hasFinalSay ? VotePhase.PHASE2 : VotePhase.PHASE1;
+
   const pendingAssets = await prisma.asset.findMany({
     where: {
       game_id: gameId,
@@ -103,41 +112,51 @@ export async function getAssetFeedForVoter(userId: number, gameId: number, hasFi
     }
   });
 
+  // Get rid of the "votes" field and refine teamName field
+  const transformAsset = (asset: IntermediateVoterAssetItem): AssetItemForVoterFeed => ({
+    id: asset.id,
+    title: asset.title,
+    category: asset.category,
+    imageUrl: asset.imageUrl,
+    createdAt: asset.createdAt,
+    currentPhase: asset.currentPhase,
+    uploader: {
+      firstName: asset.uploader.firstName,
+      fullName: asset.uploader.fullName,
+      initials: asset.uploader.initials,
+      avatar: asset.uploader.avatar,
+      customAvatar: asset.uploader.customAvatar,
+      teamName: asset.uploader.team.name
+    }
+  });
+
   // Group by user's personal voting status
-  const approved = pendingAssets.filter(asset =>
-    // The vote selection query will return an array of one item or no item
-    // since users can only vote once - so the vote will either be approve or reject
-    // or no vote record for this asset will appear.
-    asset.votes.length > 0 && asset.votes[0].voteType === VoteType.APPROVE
-  );
+  // The vote selection query will return an array of one item or no item
+  // since users can only vote once - so the vote will either be approve or reject
+  // or no vote record for this asset will appear.
+  const approved = pendingAssets
+    .filter(asset => asset.votes.length > 0 && asset.votes[0].voteType === VoteType.APPROVE)
+    .map(transformAsset);
 
-  const rejected = pendingAssets.filter(asset =>
-    asset.votes.length > 0 && asset.votes[0].voteType === VoteType.REJECT
-  );
+  const rejected = pendingAssets
+    .filter(asset => asset.votes.length > 0 && asset.votes[0].voteType === VoteType.REJECT)
+    .map(transformAsset);
 
-  const pending = pendingAssets.filter(asset =>
-    asset.votes.length === 0
-  );
+  const pending = pendingAssets
+    .filter(asset =>asset.votes.length === 0)
+    .map(transformAsset)
 
   return {
-    approved: approved.map(asset => ({
-      ...asset,
-      userVoteDate: asset.votes[0]?.createdAt,
-      votes: undefined // Remove votes array from response
-    })),
-    rejected: rejected.map(asset => ({
-      ...asset,
-      userVoteDate: asset.votes[0]?.createdAt,
-      votes: undefined
-    })),
-    pending: pending.map(asset => ({
-      ...asset,
-      votes: undefined
-    }))
+    approved,
+    rejected,
+    pending
   };
 }
 
-export async function getAssetFeedForGame(gameId: number, hasFinalSay: boolean): Promise<GetAssetFeedForGameResponse> {
+export async function getAssetFeedForGame(
+  gameId: number,
+  hasFinalSay: boolean
+): Promise<GetAssetFeedForGameResponse> {
   // Game view has 3 columns, just like the artist, but instead of concrete
   // accepted or rejected, we display current, raw vote values (not necessarily based on total eligible voters voting %)
   // Get all assets that aren't archived or revised for this game (approved/rejected assets will be colored specially)
@@ -169,9 +188,11 @@ export async function getAssetFeedForGame(gameId: number, hasFinalSay: boolean):
       category: true,
       imageUrl: true,
       createdAt: true,
+      currentPhase: true,
       status: true,
       uploader: {
         select: {
+          id: true,
           firstName: true,
           team: {
             select: { name: true }
@@ -200,6 +221,9 @@ export async function getAssetFeedForGame(gameId: number, hasFinalSay: boolean):
           }
         }
       }
+    },
+    orderBy: {
+      createdAt: "desc"
     }
   });
 
@@ -209,17 +233,26 @@ export async function getAssetFeedForGame(gameId: number, hasFinalSay: boolean):
     pending: [] as AssetItemForGameFeed[]
   }
 
+  const eligibleVoters = await getAllEligibleVoters(gameId, targetPhase);
+
   allAssets.forEach((asset) => {
     const { rejectCount, approveCount } = calculateRawAssetVotes(asset.votes);
+    // This Set contains user IDs who voted on THIS specific asset
+    // If no one voted on this asset, the Set will be empty
+    const votedUserIds = new Set(asset.votes.map(vote => vote.user.id));
+
     const assetDTO: AssetItemForGameFeed = {
       id: asset.id,
       title: asset.title,
       category: asset.category,
       imageUrl: asset.imageUrl,
       createdAt: asset.createdAt,
+      currentPhase: asset.currentPhase,
       status: asset.status,
-      uploaderFirstName: asset.uploader.firstName,
-      uploaderTeam: asset.uploader.team.name,
+      uploader: {
+        firstName: asset.uploader.firstName,
+        teamName: asset.uploader.team.name
+      },
       voters: [] as Array<AssetVoter>
     }
     const isReject = rejectCount > approveCount;
@@ -228,7 +261,7 @@ export async function getAssetFeedForGame(gameId: number, hasFinalSay: boolean):
       .filter((vote) => {
         if (isReject) return vote.voteType === VoteType.REJECT;
         if (isApprove) return vote.voteType === VoteType.APPROVE;
-        return vote; // Tie votes (Pending, not Trending)
+        // Note this will only be for votes that have been cast, not pending
       })
       .map((vote) => ({
         id: vote.user.id,
@@ -243,6 +276,18 @@ export async function getAssetFeedForGame(gameId: number, hasFinalSay: boolean):
     } else if (isApprove) {
       sortedAssets.approved.push(assetDTO);
     } else {
+      // For pending assets (tied votes or no votes), show voters who haven't voted yet
+      const pendingVoters = eligibleVoters
+        .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id)
+        .map((voter) => ({
+          id: voter.id,
+          fullName: voter.fullName,
+          initials: voter.initials,
+          avatar: voter.avatar,
+          customAvatar: voter.customAvatar,
+          teamName: voter.teamName
+        }));
+      assetDTO.voters = pendingVoters;
       sortedAssets.pending.push(assetDTO);
     }
   });

@@ -1,9 +1,11 @@
+import { AssetFeedItem } from "@/lib/types/assets.types";
 import ColumnListViewItem from "../ColumnListViewItem/ColumnListViewItem";
+
 import styles from "./ColumnListView.module.css";
 
 interface ColumnListViewProps {
   title: string;
-  items: any;
+  items: Array<AssetFeedItem>;
 }
 export default function ColumnListView({ title, items }: ColumnListViewProps) {
   return (
@@ -17,12 +19,7 @@ export default function ColumnListView({ title, items }: ColumnListViewProps) {
             <ColumnListViewItem key={item.id} item={item} />
           ))
         ) : (
-          <div style={{
-            textAlign: 'center',
-            color: '#94a3b8',
-            marginTop: '20px',
-            fontStyle: 'italic'
-          }}>
+          <div className={styles.no_items}>
             No items in this category
           </div>
         )}

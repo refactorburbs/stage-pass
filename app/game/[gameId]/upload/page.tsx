@@ -1,8 +1,10 @@
-import { getGameAssetCategories } from "@/lib/data";
+import { getGameAssetCategories, getUser } from "@/lib/data";
 import UploadAssetForm from "./UploadAssetForm";
 import { notFound } from "next/navigation";
 
 import styles from "./upload.module.css";
+import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
+import { UserRole } from "@/app/generated/prisma";
 
 interface UploadPageProps {
   params: { gameId: string };
@@ -12,6 +14,11 @@ interface UploadPageProps {
 export default async function UploadPage({ params }: UploadPageProps) {
   const { gameId } = await params;
   const gameData = await getGameAssetCategories(Number(gameId));
+  const user = await getUser();
+
+  if (!user || user.role === UserRole.VOTER) {
+    return <NotAuthorized />
+  }
 
   if (!gameData) {
     notFound();

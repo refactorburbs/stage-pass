@@ -1,5 +1,5 @@
 import { UserRole } from "@/app/generated/prisma";
-import { AssetItemForGameFeed } from "./assets.types";
+import { AssetItemForArtistFeed, AssetItemForGameFeed, AssetItemForVoterFeed } from "./assets.types";
 
 export interface GetUserDataResponse {
   id: number;
@@ -57,6 +57,18 @@ export interface GetGameDataResponse {
   id: number;
   name: string;
   teams: Array<string>;
+}
+
+export interface GetAssetFeedForArtistResponse {
+  rejected: Array<AssetItemForArtistFeed>;
+  approved: Array<AssetItemForArtistFeed>;
+  pending: Array<AssetItemForArtistFeed>;
+}
+
+export interface GetAssetFeedForVoterResponse {
+  rejected: Array<AssetItemForVoterFeed>;
+  approved: Array<AssetItemForVoterFeed>;
+  pending: Array<AssetItemForVoterFeed>;
 }
 
 export interface GetAssetFeedForGameResponse {

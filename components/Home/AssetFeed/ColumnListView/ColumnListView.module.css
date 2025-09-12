@@ -13,3 +13,10 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+
+.no_items {
+  text-align: center;
+  color: black;
+  margin-top: 1.5rem;
+  font-style: italic;
+}

@@ -8,10 +8,10 @@ type AvatarBubbleSize = "small" | "medium" | "large"
 
 interface AvatarBubbleProps {
   size: AvatarBubbleSize;
-  user: GetUserDataResponse;
+  user: Partial<GetUserDataResponse>;
 }
 
-const generateCSS = (size: AvatarBubbleSize, user: GetUserDataResponse) => {
+const generateCSS = (size: AvatarBubbleSize, user: Partial<GetUserDataResponse>) => {
   const isColorOnly = !user.customAvatar;
   const sizeStyles = (() => {
     switch (size) {
@@ -25,7 +25,7 @@ const generateCSS = (size: AvatarBubbleSize, user: GetUserDataResponse) => {
   })();
 
   if (isColorOnly) {
-    const bubbleColor = AVATAR_BUBBLE_COLORS[user.avatar];
+    const bubbleColor = AVATAR_BUBBLE_COLORS[user.avatar!];
     return {
       ...sizeStyles,
       display: "flex",

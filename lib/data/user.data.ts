@@ -157,14 +157,16 @@ export const getUserPermissions = cache(async (
   }
 });
 
-export const getEligibleVoters = cache(async (
+export const getAllEligibleVoters = cache(async (
   gameId: number,
-  phase: VotePhase
+  phase: VotePhase,
+  excludeUserIds: Array<number> = []
 ): Promise<Array<GetUserDataResponse>> => {
   if (phase === VotePhase.PHASE1) {
     // Phase 1 is internal teams (LEADS and VOTERS working on the game)
     const phase1Users = await prisma.user.findMany({
       where: {
+        id: { notIn: excludeUserIds },
         isActive: true,
         role: { in: [UserRole.LEAD, UserRole.VOTER] },
         team: {

@@ -1,5 +1,4 @@
 .list_item_container {
-  background-color: white;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   padding: 0.75rem;
@@ -36,10 +35,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-weight: bold;
   font-size: 1rem;
 }
 
 .phase_info {
   font-size: 12px;
+  font-weight: bold;
+}
+
+.submission_info {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.item_footer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
 }

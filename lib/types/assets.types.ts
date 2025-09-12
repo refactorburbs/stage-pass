@@ -1,4 +1,4 @@
-import { AssetStatus, VoteType } from "@/app/generated/prisma";
+import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
 
 export interface AssetVote {
   id: number;
@@ -20,14 +20,71 @@ export interface AssetVoter {
   teamName: string;
 }
 
+export interface AssetItemForArtistFeed {
+  id: number;
+  title: string;
+  category: string;
+  imageUrl: string;
+  status: AssetStatus;
+  currentPhase: VotePhase;
+  createdAt: Date;
+  phase1CompletedAt: Date | null;
+  phase2CompletedAt: Date | null;
+}
+
+export type IntermediateVoterAssetItem = {
+  id: number;
+  title: string;
+  category: string;
+  imageUrl: string;
+  createdAt: Date;
+  currentPhase: VotePhase;
+  uploader: {
+    firstName: string;
+    fullName: string;
+    initials: string;
+    avatar: number;
+    customAvatar: string | null;
+    team: {
+      name: string;
+    };
+  };
+  votes: {
+    voteType: VoteType;
+    createdAt: Date;
+  }[];
+};
+
+export interface AssetItemForVoterFeed {
+  id: number;
+  title: string;
+  category: string;
+  imageUrl: string;
+  createdAt: Date;
+  currentPhase: VotePhase;
+  uploader: {
+    firstName: string;
+    fullName: string;
+    initials: string;
+    avatar: number;
+    customAvatar: string | null;
+    teamName: string;
+  }
+}
+
 export interface AssetItemForGameFeed {
   id: number;
   title: string;
   category: string;
   imageUrl: string;
   createdAt: Date;
+  currentPhase: VotePhase;
   status: AssetStatus;
-  uploaderFirstName: string;
-  uploaderTeam: string;
+  uploader: {
+    firstName: string;
+    teamName: string;
+  }
   voters: Array<AssetVoter>
 }
+
+export type AssetFeedItem = AssetItemForArtistFeed | AssetItemForVoterFeed | AssetItemForGameFeed;
