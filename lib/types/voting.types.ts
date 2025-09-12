@@ -1,1 +1,0 @@
-export type VotePhaseType = "PHASE1" | "PHASE2";

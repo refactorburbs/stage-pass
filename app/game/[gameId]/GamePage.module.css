@@ -1,0 +1,17 @@
+.game_page_container {
+  display: flex;
+  gap: 1rem;
+  height: 80vh;
+  flex-direction: column;
+}
+
+.feed_toggle_container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed_note {
+  align-self: center;
+}

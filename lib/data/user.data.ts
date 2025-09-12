@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { verifySession } from "../sessions";
-import { UserRole } from "../constants/placeholder.constants";
+import { UserRole, VotePhase } from "@/app/generated/prisma";
 import { cache } from "react";
 import {
   GetDetailedUserDataResponse,
@@ -8,8 +8,6 @@ import {
   GetUserDataResponse,
   GetUserPermissionsResponse
 } from "../types/dto.types";
-import { VotePhaseType } from "../types/voting.types";
-import { VotePhase } from "@/app/generated/prisma";
 
 // Fetch user information in a data access layer (protected by auth)
 // Wrapping in React's cache so that we can call getUser in multiple components,
@@ -161,7 +159,7 @@ export const getUserPermissions = cache(async (
 
 export const getEligibleVoters = cache(async (
   gameId: number,
-  phase: VotePhaseType
+  phase: VotePhase
 ): Promise<Array<GetUserDataResponse>> => {
   if (phase === VotePhase.PHASE1) {
     // Phase 1 is internal teams (LEADS and VOTERS working on the game)

@@ -1,4 +1,5 @@
-import { UserRoleType } from "./auth.types";
+import { UserRole } from "@/app/generated/prisma";
+import { AssetItemForGameFeed } from "./assets.types";
 
 export interface GetUserDataResponse {
   id: number;
@@ -6,7 +7,7 @@ export interface GetUserDataResponse {
   initials: string;
   avatar: number;
   customAvatar: string | null;
-  role: UserRoleType;
+  role: UserRole;
   team_id: number;
   teamName: string;
 }
@@ -17,7 +18,7 @@ export interface GetDetailedUserDataResponse {
   lastName: string;
   fullName: string;
   initials: string;
-  role: UserRoleType
+  role: UserRole
   email: string;
   avatar: number;
   customAvatar: string;
@@ -56,4 +57,10 @@ export interface GetGameDataResponse {
   id: number;
   name: string;
   teams: Array<string>;
+}
+
+export interface GetAssetFeedForGameResponse {
+  rejected: Array<AssetItemForGameFeed>;
+  approved: Array<AssetItemForGameFeed>;
+  pending: Array<AssetItemForGameFeed>
 }

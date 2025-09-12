@@ -1,0 +1,6 @@
+.feed_container {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  padding: 1rem;
+}

@@ -199,18 +199,6 @@ model Asset {
   status               AssetStatus @default(PENDING)
   currentPhase         VotePhase   @default(PHASE1)
 
-  // Phase 1 voting (internal review)
-  phase1Approvals            Int       @default(0) @map("phase1_approvals")
-  phase1Rejections           Int       @default(0) @map("phase1_rejections")
-  phase1TotalVotes           Int       @default(0) @map("phase1_total_votes")
-  phase1ApprovalPercentage   Float     @default(0) @map("phase1_approval_percentage") // current, dynamic percentage based on total votes (no pending)
-
-  // Phase 2 voting (owner review) - only populated if phase 1 approved
-  phase2Approvals            Int       @default(0) @map("phase2_approvals")
-  phase2Rejections           Int       @default(0) @map("phase2_rejections")
-  phase2TotalVotes           Int       @default(0) @map("phase2_total_votes")
-  phase2ApprovalPercentage   Float     @default(0) @map("phase2_approval_percentage")
-
   // Foreign Keys
   game_id     Int
   uploader_id Int

@@ -1,0 +1,15 @@
+.column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: rgb(221, 221, 221);
+}
+
+.column_content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

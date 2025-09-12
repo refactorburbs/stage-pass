@@ -10,8 +10,8 @@ interface UploadPageProps {
 
 
 export default async function UploadPage({ params }: UploadPageProps) {
-  const gameId = Number(params.gameId);
-  const gameData = await getGameAssetCategories(gameId);
+  const { gameId } = await params;
+  const gameData = await getGameAssetCategories(Number(gameId));
 
   if (!gameData) {
     notFound();

@@ -1,18 +1,9 @@
-export enum UserRole {
-  LEAD = "LEAD",
-  VOTER = "VOTER",
-  ARTIST = "ARTIST",
-}
+import { UserRole } from "@/app/generated/prisma";
 
 export const USER_VOTE_WEIGHT = {
   [UserRole.ARTIST]: 0.0,
   [UserRole.VOTER]: 1.0,
-  [UserRole.LEAD]: 1.2
-}
-
-export enum VotePhase {
-  PHASE1 = "PHASE1",
-  PHASE2 = "PHASE2"
+  [UserRole.LEAD]: 1.2 // 20% higher for team leads
 }
 
 export const AVATAR_BUBBLE_COLORS = [
