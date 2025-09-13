@@ -1,5 +1,4 @@
-import { UserRole } from "@/lib/constants/placeholder.constants";
-import { PrismaClient, Prisma } from "../app/generated/prisma";
+import { PrismaClient, Prisma, UserRole } from "../app/generated/prisma";
 
 const prisma = new PrismaClient();
 

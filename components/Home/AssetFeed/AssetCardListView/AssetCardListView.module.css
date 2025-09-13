@@ -5,14 +5,7 @@
   width: 100%;
   gap: 1rem;
   padding: 1rem;
-  background-color: rgb(221, 221, 221);
-  overflow-y: scroll;
-}
-
-.column_content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  min-width: 550px;
 }
 
 .no_items {

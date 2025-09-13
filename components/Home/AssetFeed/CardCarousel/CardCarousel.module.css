@@ -1,0 +1,12 @@
+.carousel_and_pagination_container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.main_carousel {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}

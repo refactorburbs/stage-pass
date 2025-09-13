@@ -1,0 +1,51 @@
+.asset_card_container {
+  position: relative;
+  padding: 0.75rem;
+  background-color: rgb(199, 199, 199);
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.image_preview_container {
+  aspect-ratio: 1;
+  width: 325px;
+  height: 375px;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.uploader_info {
+  padding: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  position: absolute;
+  gap: 0.25rem;
+  top: 0.75rem; /*matching the padding of the card */
+  left: 0.75rem;
+}
+
+.asset_header {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.vote_buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: gray;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0 0 1rem 1rem;
+}

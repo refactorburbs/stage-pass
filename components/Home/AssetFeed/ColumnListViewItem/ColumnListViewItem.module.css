@@ -43,6 +43,13 @@
   font-weight: bold;
 }
 
+.vote_status {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .submission_info {
   font-size: 0.75rem;
   color: #64748b;

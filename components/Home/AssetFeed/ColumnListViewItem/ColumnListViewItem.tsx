@@ -38,6 +38,25 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
 
   const itemColor = hasStatus ? getItemColor(item.status) : "white";
   const submissionInfoText = `Submitted by ${hasOtherUploader ? item.uploader.firstName : "you"}`;
+  console.log('item is ', item)
+
+  const renderFooter = () => {
+    if (hasVoters) {
+      return <VoterBubbles voters={item.voters} />;
+    } else if (hasOtherUploader) {
+      return (
+        <div className={styles.vote_status}>
+          <div className={styles.submission_info}>
+            Voted by you • <ReactTimeAgo date={item.createdAt} locale="en-US" />
+          </div>
+          <button type="button">
+            Move to Pending
+          </button>
+        </div>
+      );
+    }
+    return <></>
+  }
 
   return (
     <div className={styles.list_item_container} style={{ backgroundColor: itemColor }}>
@@ -65,19 +84,7 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
         </div>
 
         <div className={styles.item_footer}>
-          {hasVoters ?
-            (<VoterBubbles voters={item.voters} />)
-            : (
-              <div className={styles.vote_status}>
-                <div className={styles.submission_info}>
-                  Voted by you • <ReactTimeAgo date={item.createdAt} locale="en-US" />
-                </div>
-                <button type="button">
-                  Move to Pending
-                </button>
-              </div>
-            )
-          }
+          {renderFooter()}
         </div>
       </div>
     </div>

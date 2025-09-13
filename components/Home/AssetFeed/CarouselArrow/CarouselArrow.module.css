@@ -1,0 +1,37 @@
+.button {
+  border: none;
+  background: none;
+}
+
+.carousel_arrow {
+  cursor: pointer;
+  background-color: rgb(177, 177, 177);
+  padding: 1.5rem 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.carousel_arrow:hover {
+  background-color: rgb(163, 163, 163);
+}
+
+.left_arrow {
+  box-shadow: inset -10px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.right_arrow {
+  box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.carousel_arrow img {
+  width: 30px;
+  height: auto;
+}
+
+.arrow_inactive {
+  padding: 1.5rem 0.25rem;
+}
+
+.arrow_inactive_box {
+  width: 50px;
+  height: 50px;
+}
