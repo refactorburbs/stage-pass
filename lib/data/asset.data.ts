@@ -67,11 +67,12 @@ export async function getAssetFeedForVoter(
   // 2. In the middle is all PENDING assets they have yet to review - All assets that are PENDING and that they have not already voted on. if hasFinalSay, only phase2 else phase1
   // 3. All PENDING assets they have personally accepted. If hasFinalSay is true, this is only for phase2. else phase1.
   const targetPhase = hasFinalSay ? VotePhase.PHASE2 : VotePhase.PHASE1;
+  const targetStatus = hasFinalSay ? AssetStatus.PHASE1_APPROVED : AssetStatus.PENDING;
 
   const pendingAssets = await prisma.asset.findMany({
     where: {
       game_id: gameId,
-      status: AssetStatus.PENDING,
+      status: targetStatus,
       currentPhase: targetPhase,
       uploader_id: {
         not: userId // Exclude the LEAD's own asset posts
@@ -143,7 +144,7 @@ export async function getAssetFeedForVoter(
     .map(transformAsset);
 
   const pending = pendingAssets
-    .filter(asset =>asset.votes.length === 0)
+    .filter(asset => asset.votes.length === 0)
     .map(transformAsset)
 
   return {

@@ -6,6 +6,8 @@ export const USER_VOTE_WEIGHT = {
   [UserRole.LEAD]: 1.2 // 20% higher for team leads
 }
 
+export const VOTE_DECISION_THRESHOLD = 60; // 60% of votes required to either approve or reject
+
 export const AVATAR_BUBBLE_COLORS = [
   "#e74c3c",
   "#3498db",

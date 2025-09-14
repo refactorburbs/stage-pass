@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { AssetFeedItem } from "@/lib/types/assets.types";
+import { AssetFeedItem, AssetItemForVoterFeed } from "@/lib/types/assets.types";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import PendingAssetCard from "../PendingAssetCard/PendingAssetCard";
 
@@ -41,7 +41,7 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
         />
         {type === "asset" ?
           (
-            <PendingAssetCard asset={items[currentIndex]}/>
+            <PendingAssetCard asset={items[currentIndex] as AssetItemForVoterFeed}/>
           ) : (
             <div>Comment Card</div>
           )

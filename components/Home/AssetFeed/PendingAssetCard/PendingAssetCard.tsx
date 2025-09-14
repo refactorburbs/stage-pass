@@ -1,17 +1,18 @@
-"use client";
-
 import { AssetItemForVoterFeed } from "@/lib/types/assets.types";
-import Image from "next/image";
-
-import styles from "./PendingAssetCard.module.css";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import ReactTimeAgo from "react-time-ago";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import VoteButtons from "./VoteButtons";
+
+import styles from "./PendingAssetCard.module.css";
 
 interface PendingAssetCardProps {
   asset: AssetItemForVoterFeed
 }
 
 export default function PendingAssetCard ({ asset }: PendingAssetCardProps) {
+  const { gameId } = useParams();
   return (
     <div className={styles.asset_card_container}>
       <div className={styles.image_preview_container}>
@@ -32,10 +33,7 @@ export default function PendingAssetCard ({ asset }: PendingAssetCardProps) {
           </span>
         </div>
       </div>
-      <div className={styles.vote_buttons}>
-        <span>No</span>
-        <span>Yes</span>
-      </div>
+      <VoteButtons asset={asset} gameId={Number(gameId)}/>
     </div>
   );
 }

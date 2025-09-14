@@ -5,6 +5,11 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { verifySession } from "@/lib/sessions";
 import prisma from "@/lib/prisma";
+import { UserRole, VotePhase, VoteType } from "../generated/prisma";
+import { USER_VOTE_WEIGHT, VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
+import { getAllEligibleVoters, getUser } from "@/lib/data";
+import { calculateRawAssetVotes } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
@@ -60,7 +65,6 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
         uploader_id: uploaderId
       }
     });
-    console.log("New asset created!");
   } catch (error) {
     console.error("Image upload error:", error)
     return {
@@ -69,4 +73,54 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
   }
   // Redirect to the user's feed (should see their post in pending)
   redirect(`/game/${gameId}`);
+}
+
+export async function castAssetVote(
+  assetId: number,
+  gameId: number,
+  voteType: VoteType,
+  phase: VotePhase
+): Promise<void> {
+  const voter = await getUser();
+  if (!voter || voter.role === UserRole.ARTIST) return;
+
+  const voterWeight = USER_VOTE_WEIGHT[voter.role]
+  const assetVotes = await prisma.assetVote.findMany({
+    where: {
+      id: assetId,
+      phase,
+    }
+  });
+
+  const { rejectCount, approveCount } = calculateRawAssetVotes(assetVotes);
+  const eligibleVoters = await getAllEligibleVoters(gameId, phase);
+  const isLastVoteOnAsset = assetVotes.length === eligibleVoters.length - 1;
+
+  if (isLastVoteOnAsset) {
+    const finalApproveCount = voteType === VoteType.APPROVE ? approveCount + voterWeight : approveCount;
+    const finalRejectCount = voteType === VoteType.REJECT ? rejectCount + voterWeight : rejectCount;
+    const finalVoteTotal = finalApproveCount + finalRejectCount;
+    const approvalPercentage = (finalApproveCount / finalVoteTotal) * 100;
+
+    if (approvalPercentage >= VOTE_DECISION_THRESHOLD) {
+      // Let's set a cron or something to officially change an assets status after 2 hours (giving people time to change their mind)
+      console.log("Last vote on this asset! Locking approval in 2 hours");
+    } else {
+      console.log("Last vote on this asset! Locking rejection in 2 hours");
+    }
+    // If the asset category was "Full Asset" and the asset status was phase1_approved then update the asset to phase2 and phase1completedat
+    console.log("updating current asset status and phase - this should happen in the cron job");
+  }
+  // Add a new vote record (not in an else b/c it should happen regardless if this is the final vote)
+  await prisma.assetVote.create({
+    data: {
+      voteType,
+      phase,
+      weight: voterWeight,
+      asset_id: assetId,
+      user_id: voter.id
+    }
+  });
+
+  revalidatePath(`/game/${gameId}`);
 }
