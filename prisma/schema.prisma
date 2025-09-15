@@ -235,7 +235,7 @@ model AssetVote {
 
   // Relations
   user     User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  asset    Asset?     @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  asset    Asset      @relation(fields: [asset_id], references: [id], onDelete: Cascade)
 
   @@unique([asset_id, user_id, phase]) // Prevent duplicate votes per phase
   @@index([asset_id, phase]) // For counting votes per asset/phase

@@ -103,6 +103,7 @@ export async function getAssetFeedForVoter(
           phase: targetPhase
         },
         select: {
+          id: true,
           voteType: true,
           createdAt: true
         }
@@ -128,7 +129,8 @@ export async function getAssetFeedForVoter(
       avatar: asset.uploader.avatar,
       customAvatar: asset.uploader.customAvatar,
       teamName: asset.uploader.team.name
-    }
+    },
+    vote_id: asset.votes[0]?.id || null // Used to reference assetVote if user wants to switch vote back to pending
   });
 
   // Group by user's personal voting status

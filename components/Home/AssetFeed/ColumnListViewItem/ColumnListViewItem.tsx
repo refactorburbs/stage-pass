@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { AssetFeedItem } from "@/lib/types/assets.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
 import ReactTimeAgo from "react-time-ago";
 import VoterBubbles from "../VoterBubbles/VoterBubbles";
+import { redactAssetVote } from "@/app/actions/asset.actions";
+import { useParams } from "next/navigation";
 
 import styles from "./ColumnListViewItem.module.css";
 
@@ -28,6 +30,8 @@ const getItemColor = (status: AssetStatus) => {
 }
 
 export default function ColumnListViewItem({ item }: ColumnListViewProps) {
+  const { gameId } = useParams();
+  const [isPending, startTransition] = useTransition();
   // If the imageUrl exists but is a broken link (can happen with improper database deletions), then have fallback.
   const fallbackSrc = "/no-image-available.webp";
   const [imageSrc, setImageSrc] = useState(item.imageUrl || fallbackSrc);
@@ -38,10 +42,18 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
 
   const itemColor = hasStatus ? getItemColor(item.status) : "white";
   const submissionInfoText = `Submitted by ${hasOtherUploader ? item.uploader.firstName : "you"}`;
-  console.log('item is ', item)
+
+  const handleRedactVote = (voteId: number) => {
+    startTransition(async () => {
+      await redactAssetVote(voteId, Number(gameId));
+    });
+  };
 
   const renderFooter = () => {
     if (hasVoters) {
+      if (item.voters.length === 0) {
+        return <span>Tallying final votes...</span>
+      }
       return <VoterBubbles voters={item.voters} />;
     } else if (hasOtherUploader) {
       return (
@@ -49,7 +61,11 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
           <div className={styles.submission_info}>
             Voted by you • <ReactTimeAgo date={item.createdAt} locale="en-US" />
           </div>
-          <button type="button">
+          <button
+            type="button"
+            onClick={() => handleRedactVote(item.vote_id as number)}
+            disabled={isPending}
+          >
             Move to Pending
           </button>
         </div>

@@ -1,14 +1,14 @@
 import { AssetFeedItem } from "@/lib/types/assets.types";
 import CardCarousel from "../CardCarousel/CardCarousel";
 
-import styles from "./AssetCardListView.module.css";
+import styles from "./AssetCardCarouselView.module.css";
 
 interface AssetCardListViewProps {
   title: string;
   items: Array<AssetFeedItem>
 }
 
-export default function AssetCardListView({ title, items }: AssetCardListViewProps) {
+export default function AssetCardCarouselView({ title, items }: AssetCardListViewProps) {
   return (
     <div className={styles.column}>
       <div className={styles.column_header}>

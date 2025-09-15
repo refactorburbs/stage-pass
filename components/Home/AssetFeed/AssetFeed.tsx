@@ -2,7 +2,7 @@ import { UserRole } from "@/app/generated/prisma";
 import { getAssetFeedForArtist, getAssetFeedForGame, getAssetFeedForVoter } from "@/lib/data";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
 import ColumnListView from "./ColumnListView/ColumnListView";
-import AssetCardListView from "./AssetCardListView/AssetCardListView";
+import AssetCardCarouselView from "./AssetCardCarouselView/AssetCardCarouselView";
 import { FeedType } from "@/lib/types/feed.types";
 import { notFound } from "next/navigation";
 
@@ -66,8 +66,8 @@ export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }:
         items={assetFeed.rejected}
       />
       <div className={styles.pending_column}>
-        <AssetCardListView title="Pending Assets" items={assetFeed.pending}/>
-        {/* <CommentCardListView /> */}
+        <AssetCardCarouselView title="Pending Assets" items={assetFeed.pending}/>
+        {/* <CommentCardCarouselView /> */}
       </div>
       <ColumnListView
         title="Approved Assets"

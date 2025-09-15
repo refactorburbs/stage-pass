@@ -84,16 +84,29 @@ export async function castAssetVote(
   const voter = await getUser();
   if (!voter || voter.role === UserRole.ARTIST) return;
 
-  const voterWeight = USER_VOTE_WEIGHT[voter.role]
+  const voterWeight = USER_VOTE_WEIGHT[voter.role];
+  // Separate query because if this is the first vote, assetVote will be empty
+  // We need to find the id of the uploader to make sure and exclude them from
+  // the eligible voter count (LEADs can upload but can't vote on their own asset)
+  const assetBeingVotedOn = await prisma.asset.findUnique({
+    where: {
+      id: assetId
+    },
+    select: {
+      uploader_id: true
+    }
+  });
+
   const assetVotes = await prisma.assetVote.findMany({
     where: {
-      id: assetId,
+      asset_id: assetId,
       phase,
     }
   });
 
   const { rejectCount, approveCount } = calculateRawAssetVotes(assetVotes);
-  const eligibleVoters = await getAllEligibleVoters(gameId, phase);
+  const excludedVoterIds = assetBeingVotedOn ? [assetBeingVotedOn.uploader_id] : [];
+  const eligibleVoters = await getAllEligibleVoters(gameId, phase, excludedVoterIds);
   const isLastVoteOnAsset = assetVotes.length === eligibleVoters.length - 1;
 
   if (isLastVoteOnAsset) {
@@ -101,11 +114,13 @@ export async function castAssetVote(
     const finalRejectCount = voteType === VoteType.REJECT ? rejectCount + voterWeight : rejectCount;
     const finalVoteTotal = finalApproveCount + finalRejectCount;
     const approvalPercentage = (finalApproveCount / finalVoteTotal) * 100;
+    const rejectPercentage = (finalRejectCount / finalVoteTotal) * 100;
 
-    if (approvalPercentage >= VOTE_DECISION_THRESHOLD) {
+    // For cases of a tie, we need to accept the higher vote weight % (since there are no more voters)
+    if (approvalPercentage >= VOTE_DECISION_THRESHOLD || approvalPercentage > rejectPercentage) {
       // Let's set a cron or something to officially change an assets status after 2 hours (giving people time to change their mind)
       console.log("Last vote on this asset! Locking approval in 2 hours");
-    } else {
+    } else if (rejectPercentage >= VOTE_DECISION_THRESHOLD || rejectPercentage > approvalPercentage) {
       console.log("Last vote on this asset! Locking rejection in 2 hours");
     }
     // If the asset category was "Full Asset" and the asset status was phase1_approved then update the asset to phase2 and phase1completedat
@@ -122,5 +137,17 @@ export async function castAssetVote(
     }
   });
 
+  revalidatePath(`/game/${gameId}`);
+}
+
+export async function redactAssetVote(voteId: number, gameId: number): Promise<void> {
+  // If a user changes their mind on a vote, this will move the asset back in their personal pending feed.
+  // If we have a 2 hour finalization cron running on this asset, we need to cancel it because the vote was redacted.
+  // OR just in the cron, when it's time to execute, check again that all votes are accoutned for?
+  await prisma.assetVote.delete({
+    where: {
+      id: voteId
+    }
+  });
   revalidatePath(`/game/${gameId}`);
 }

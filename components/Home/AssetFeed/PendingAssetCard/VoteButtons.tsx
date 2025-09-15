@@ -10,12 +10,15 @@ import styles from "./PendingAssetCard.module.css";
 interface VoteButtonProps {
   asset: AssetItemForVoterFeed;
   gameId: number;
+  onVote: (assetId: number) => void;
 }
-export default function VoteButtons({ asset, gameId }: VoteButtonProps) {
+
+export default function VoteButtons({ asset, gameId, onVote }: VoteButtonProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleVote = (voteType: VoteType) => {
     startTransition(async () => {
+      onVote(asset.id); // Immediately "removes" from carousel with useOptimistic state
       await castAssetVote(asset.id, gameId, voteType, asset.currentPhase);
     });
   };

@@ -50,6 +50,7 @@ export type IntermediateVoterAssetItem = {
     };
   };
   votes: {
+    id: number;
     voteType: VoteType;
     createdAt: Date;
   }[];
@@ -70,6 +71,7 @@ export interface AssetItemForVoterFeed {
     customAvatar: string | null;
     teamName: string;
   }
+  vote_id: number | null;
 }
 
 export interface AssetItemForGameFeed {

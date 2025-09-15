@@ -8,10 +8,11 @@ import VoteButtons from "./VoteButtons";
 import styles from "./PendingAssetCard.module.css";
 
 interface PendingAssetCardProps {
-  asset: AssetItemForVoterFeed
+  asset: AssetItemForVoterFeed;
+  onVote: (assetId: number) => void;
 }
 
-export default function PendingAssetCard ({ asset }: PendingAssetCardProps) {
+export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardProps) {
   const { gameId } = useParams();
   return (
     <div className={styles.asset_card_container}>
@@ -33,7 +34,11 @@ export default function PendingAssetCard ({ asset }: PendingAssetCardProps) {
           </span>
         </div>
       </div>
-      <VoteButtons asset={asset} gameId={Number(gameId)}/>
+      <VoteButtons
+        asset={asset}
+        gameId={Number(gameId)}
+        onVote={onVote}
+      />
     </div>
   );
 }
