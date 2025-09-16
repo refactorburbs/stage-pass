@@ -3,6 +3,7 @@ import { AssetItemForArtistFeed, AssetItemForGameFeed, AssetItemForVoterFeed } f
 
 export interface GetUserDataResponse {
   id: number;
+  firstName: string;
   fullName: string;
   initials: string;
   avatar: number;

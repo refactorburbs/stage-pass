@@ -1,11 +1,11 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import { getDetailedUserData } from "@/lib/data";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
-import { GetUserDataResponse } from "@/lib/types/dto.types";
+import UpdateProfileForm from "./UpdateProfileForm";
+import { UserAvatarData } from "@/lib/types/users.types";
 import Link from "next/link";
 
 import styles from "./ProfilePage.module.css";
-import UpdateProfileForm from "./UpdateProfileForm";
 
 export default async function UserProfilePage() {
   const user = await getDetailedUserData();
@@ -14,14 +14,13 @@ export default async function UserProfilePage() {
     return <NotAuthorized />
   }
 
-  const filteredUser: GetUserDataResponse = {
+  const filteredUser: UserAvatarData = {
     id: user.id,
+    firstName: user.firstName,
     fullName: user.fullName,
     initials: user.initials,
     avatar: user.avatar,
     customAvatar: user.customAvatar,
-    role: user.role,
-    team_id: user.team_id,
     teamName: user.teamName
   }
 

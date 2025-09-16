@@ -26,6 +26,7 @@ export const getUser = cache(async (): Promise<GetUserDataResponse | null> => {
     },
     select: {
       id: true,
+      firstName: true,
       fullName: true,
       initials: true,
       avatar: true,
@@ -47,12 +48,13 @@ export const getUser = cache(async (): Promise<GetUserDataResponse | null> => {
 
   return ({
     id: user.id,
+    firstName: user.firstName,
     fullName: user.fullName,
     initials: user.initials,
     avatar: user.avatar,
     customAvatar: user.customAvatar,
-    role: user.role,
     team_id: user.team_id,
+    role: user.role,
     teamName: user.team.name
   });
 
@@ -184,6 +186,7 @@ export const getAllEligibleVoters = cache(async (
     });
     return phase1Users.map((user) => ({
       id: user.id,
+      firstName: user.firstName,
       fullName: user.fullName,
       initials: user.initials,
       avatar: user.avatar,
@@ -207,6 +210,7 @@ export const getAllEligibleVoters = cache(async (
     });
     return phase2Users.map((user) => ({
       id: user.id,
+      firstName: user.firstName,
       fullName: user.fullName,
       initials: user.initials,
       avatar: user.avatar,

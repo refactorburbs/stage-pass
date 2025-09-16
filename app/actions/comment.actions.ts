@@ -1,9 +1,11 @@
+"use server";
+
 import prisma from "@/lib/prisma";
 import {
   SubscriptionType,
 } from "@/app/generated/prisma";
 import z from "zod";
-import { CreateCommentFormState } from "@/lib/types/forms.types";
+import { revalidatePath } from "next/cache";
 
 // Validation schemas ----------------------------------------------------------------
 const createCommentSchema = z.object({
@@ -15,6 +17,11 @@ const createCommentSchema = z.object({
   userId: z.string().transform((id) => {
     const num = parseInt(id);
     if (isNaN(num)) throw new Error("Invalid user ID");
+    return num;
+  }),
+  gameId: z.string().transform((id) => {
+    const num = parseInt(id);
+    if (isNaN(num)) throw new Error("Invalid game ID");
     return num;
   }),
   content: z.string()
@@ -36,10 +43,11 @@ export async function subscribeUserToAsset(userId: number, assetId: number, type
   });
 }
 
-export async function createCommentAndNotify(_state: CreateCommentFormState, formData: FormData): Promise<void> {
+export async function createCommentAndNotify(formData: FormData): Promise<void> {
   const validatedFields = createCommentSchema.safeParse({
     assetId: formData.get("assetId"),
     userId: formData.get("userId"),
+    gameId: formData.get("gameId"),
     content: formData.get("content")
   })
 
@@ -47,7 +55,7 @@ export async function createCommentAndNotify(_state: CreateCommentFormState, for
     return;
   }
 
-  const { assetId, userId, content } = validatedFields.data;
+  const { assetId, userId, gameId, content } = validatedFields.data;
 
   const comment = await prisma.assetComment.create({
     data: {
@@ -79,4 +87,6 @@ export async function createCommentAndNotify(_state: CreateCommentFormState, for
   await prisma.pendingCommentNotification.createMany({
     data: notifications
   });
+
+  revalidatePath(`/game/${gameId}/asset/${assetId}`);
 }

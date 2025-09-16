@@ -1,5 +1,6 @@
 import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
+import { UserAvatarData } from "@/lib/types/users.types";
 import Image from "next/image";
 
 import styles from "./AvatarBubble.module.css";
@@ -8,7 +9,7 @@ type AvatarBubbleSize = "small" | "medium" | "large"
 
 interface AvatarBubbleProps {
   size: AvatarBubbleSize;
-  user: Partial<GetUserDataResponse>;
+  user: UserAvatarData;
 }
 
 const generateCSS = (size: AvatarBubbleSize, user: Partial<GetUserDataResponse>) => {

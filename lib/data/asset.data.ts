@@ -6,8 +6,10 @@ import {
 } from "@/app/generated/prisma";
 import { calculateRawAssetVotes } from "../utils";
 import { GetAssetFeedForArtistResponse, GetAssetFeedForGameResponse, GetAssetFeedForVoterResponse } from "../types/dto.types";
-import { AssetItemForGameFeed, AssetItemForVoterFeed, AssetVoter, GetAssetDetailsResponse, IntermediateVoterAssetDetailsItem, IntermediateVoterAssetItem } from "../types/assets.types";
+import { AssetItemForGameFeed, AssetItemForVoterFeed, GetAssetDetailsResponse, IntermediateVoterAssetDetailsItem, IntermediateVoterAssetItem } from "../types/assets.types";
 import { getAllEligibleVoters } from "./user.data";
+import { USER_AVATAR_SELECT_QUERY } from "../constants/placeholder.constants";
+import { UserAvatarData } from "../types/users.types";
 
 export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsResponse> {
   const asset = await prisma.asset.findUnique({
@@ -24,18 +26,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       game_id: true,
       uploader_id: true,
       uploader: {
-        select: {
-          firstName: true,
-          fullName: true,
-          initials: true,
-          avatar: true,
-          customAvatar: true,
-          team: {
-            select: {
-              name: true
-            }
-          }
-        }
+        select: USER_AVATAR_SELECT_QUERY
       },
       votes: {
         select: {
@@ -44,16 +35,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
           phase: true,
           weight: true,
           user: {
-            select: {
-              id: true,
-              fullName: true,
-              initials: true,
-              avatar: true,
-              customAvatar: true,
-              team: {
-                select: { name: true }
-              }
-            }
+            select: USER_AVATAR_SELECT_QUERY
           }
         }
       }
@@ -75,6 +57,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
 
   const transformVote = (vote: IntermediateVoterAssetDetailsItem) => ({
     id: vote.user.id,
+    firstName: vote.user.firstName,
     fullName: vote.user.fullName,
     initials: vote.user.initials,
     avatar: vote.user.avatar,
@@ -98,6 +81,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
     createdAt: asset.createdAt,
     currentPhase: asset.currentPhase,
     uploader: {
+      id: asset.uploader.id,
       firstName: asset.uploader.firstName,
       fullName: asset.uploader.fullName,
       initials: asset.uploader.initials,
@@ -194,16 +178,7 @@ export async function getAssetFeedForVoter(
       currentPhase: true,
       createdAt: true,
       uploader: {
-        select: {
-          firstName: true,
-          fullName: true,
-          initials: true,
-          avatar: true,
-          customAvatar: true,
-          team: {
-            select: { name: true }
-          }
-        }
+        select: USER_AVATAR_SELECT_QUERY
       },
       votes: {
         where: {
@@ -231,6 +206,7 @@ export async function getAssetFeedForVoter(
     createdAt: asset.createdAt,
     currentPhase: asset.currentPhase,
     uploader: {
+      id: asset.uploader.id,
       firstName: asset.uploader.firstName,
       fullName: asset.uploader.fullName,
       initials: asset.uploader.initials,
@@ -303,13 +279,7 @@ export async function getAssetFeedForGame(
       currentPhase: true,
       status: true,
       uploader: {
-        select: {
-          id: true,
-          firstName: true,
-          team: {
-            select: { name: true }
-          }
-        }
+        select: USER_AVATAR_SELECT_QUERY
       },
       votes: {
         where: {
@@ -320,16 +290,7 @@ export async function getAssetFeedForGame(
           voteType: true,
           weight: true,
           user: {
-            select: {
-              id: true,
-              fullName: true,
-              initials: true,
-              avatar: true,
-              customAvatar: true,
-              team: {
-                select: { name: true }
-              }
-            }
+            select: USER_AVATAR_SELECT_QUERY
           }
         }
       }
@@ -362,10 +323,15 @@ export async function getAssetFeedForGame(
       currentPhase: asset.currentPhase,
       status: asset.status,
       uploader: {
+        id: asset.uploader.id,
         firstName: asset.uploader.firstName,
+        fullName: asset.uploader.fullName,
+        initials: asset.uploader.initials,
+        avatar: asset.uploader.avatar,
+        customAvatar: asset.uploader.customAvatar,
         teamName: asset.uploader.team.name
       },
-      voters: [] as Array<AssetVoter>
+      voters: [] as Array<UserAvatarData>
     }
     const isReject = rejectCount > approveCount;
     const isApprove = approveCount > rejectCount;
@@ -377,6 +343,7 @@ export async function getAssetFeedForGame(
       })
       .map((vote) => ({
         id: vote.user.id,
+        firstName: vote.user.firstName,
         fullName: vote.user.fullName,
         initials: vote.user.initials,
         avatar: vote.user.avatar,
@@ -393,6 +360,7 @@ export async function getAssetFeedForGame(
         .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id)
         .map((voter) => ({
           id: voter.id,
+          firstName: voter.firstName,
           fullName: voter.fullName,
           initials: voter.initials,
           avatar: voter.avatar,

@@ -2,8 +2,10 @@ import Image from "next/image";
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
-import { getAssetDetails } from "@/lib/data";
+import { getAssetDetails, getUser } from "@/lib/data";
 import VoterBubbles from "@/components/Home/AssetFeed/VoterBubbles/VoterBubbles";
+import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
+import CommentForm from "@/components/Forms/CommentForm/CommentForm";
 
 import styles from "./AssetPage.module.css";
 
@@ -17,6 +19,11 @@ interface AssetPageProps {
 export default async function AssetPage ({ params, searchParams }: AssetPageProps) {
   const { gameId, assetId } = await params;
   const { isPending } = await searchParams;
+  const user = await getUser();
+
+  if (!user) {
+    return <NotAuthorized />
+  }
 
   const assetDetails = await getAssetDetails(Number(assetId));
   const uploaderInfoString = `${assetDetails.uploader.fullName} - ${assetDetails.uploader.teamName}`
@@ -61,6 +68,26 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
           {`Pending Votes: ${assetDetails.votes.pendingCount} `}
         </div>
       </div>
+
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <span>TESTSSALSDFJAK</span>
+      <CommentForm
+        gameId={Number(gameId)}
+        assetId={Number(assetId)}
+        userId={user.id}
+      />
     </div>
   );
 }

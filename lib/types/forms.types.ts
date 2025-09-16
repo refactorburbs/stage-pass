@@ -27,10 +27,3 @@ export type UpdateUserProfileFormState = {
   }
   message?: string
 } | undefined;
-
-export type CreateCommentFormState = {
-  errors?: {
-    content?: string[]
-  }
-  message?: string
-} | undefined;

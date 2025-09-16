@@ -1,5 +1,6 @@
 import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
+import { UserAvatarData } from "./users.types";
 
 export interface AssetVote {
   id: number;
@@ -10,15 +11,6 @@ export interface AssetVote {
 export interface AssetVoteCalculation {
   approveCount: number;
   rejectCount: number;
-}
-
-export interface AssetVoter {
-  id: number;
-  fullName: string;
-  initials: string;
-  avatar: number;
-  customAvatar: string | null;
-  teamName: string;
 }
 
 export interface AssetItemForArtistFeed {
@@ -41,6 +33,7 @@ export type IntermediateVoterAssetItem = {
   createdAt: Date;
   currentPhase: VotePhase;
   uploader: {
+    id: number;
     firstName: string;
     fullName: string;
     initials: string;
@@ -64,14 +57,7 @@ export interface AssetItemForVoterFeed {
   imageUrl: string;
   createdAt: Date;
   currentPhase: VotePhase;
-  uploader: {
-    firstName: string;
-    fullName: string;
-    initials: string;
-    avatar: number;
-    customAvatar: string | null;
-    teamName: string;
-  }
+  uploader: UserAvatarData;
   vote_id: number | null;
   votedAt: Date | null;
 }
@@ -84,11 +70,8 @@ export interface AssetItemForGameFeed {
   createdAt: Date;
   currentPhase: VotePhase;
   status: AssetStatus;
-  uploader: {
-    firstName: string;
-    teamName: string;
-  }
-  voters: Array<AssetVoter>
+  uploader: UserAvatarData;
+  voters: Array<UserAvatarData>
 }
 
 export type AssetFeedItem = AssetItemForArtistFeed | AssetItemForVoterFeed | AssetItemForGameFeed;
@@ -100,6 +83,7 @@ export type IntermediateVoterAssetDetailsItem = {
   weight: Decimal;
   user: {
     id: number;
+    firstName: string;
     fullName: string;
     initials: string;
     avatar: number;
@@ -110,15 +94,6 @@ export type IntermediateVoterAssetDetailsItem = {
   }
 }
 
-export interface VoterInfo {
-  id: number;
-  fullName: string;
-  initials: string;
-  avatar: number;
-  customAvatar: string | null;
-  teamName: string;
-}
-
 export interface GetAssetDetailsResponse {
   id: number;
   title: string;
@@ -127,6 +102,7 @@ export interface GetAssetDetailsResponse {
   createdAt: Date;
   currentPhase: VotePhase;
   uploader: {
+    id: number;
     firstName: string;
     fullName: string;
     initials: string;
@@ -138,7 +114,7 @@ export interface GetAssetDetailsResponse {
     rejectPercentage: number;
     approvePercentage: number;
     pendingCount: number;
-    approved: Array<VoterInfo>;
-    rejected: Array<VoterInfo>;
+    approved: Array<UserAvatarData>;
+    rejected: Array<UserAvatarData>;
   }
 }

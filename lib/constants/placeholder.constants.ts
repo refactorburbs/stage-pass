@@ -15,3 +15,15 @@ export const AVATAR_BUBBLE_COLORS = [
   "#f1c40f",
   "#9b59b6"
 ];
+
+export const USER_AVATAR_SELECT_QUERY = {
+  id: true,
+  firstName: true,
+  fullName: true,
+  initials: true,
+  avatar: true,
+  customAvatar: true,
+  team: {
+    select: { name: true }
+  }
+}
