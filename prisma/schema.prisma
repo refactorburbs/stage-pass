@@ -78,6 +78,11 @@ enum VotePhase {
   PHASE2 // Owner review (only owners vote)
 }
 
+enum SubscriptionType {
+  VOTED    // User subscribed by voting on the asset
+  COMMENTED // User subscribed by commenting on the asset
+}
+
 // Teams (companies working on games)
 model Team {
   id        Int      @id @default(autoincrement())
@@ -164,11 +169,14 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  team              Team                   @relation(fields: [team_id], references: [id], onDelete: Cascade)
-  inviteCode        InviteCode?            @relation(fields: [invite_code_id], references: [id])
-  gameOwners        GameOwner[] // Games where this user is an owner
-  uploadedAssets    Asset[]                @relation("AssetUploader")
-  votes             AssetVote[]
+  team               Team                   @relation(fields: [team_id], references: [id], onDelete: Cascade)
+  inviteCode         InviteCode?            @relation(fields: [invite_code_id], references: [id])
+  gameOwners         GameOwner[] // Games where this user is an owner
+  uploadedAssets     Asset[]                @relation("AssetUploader")
+  votes              AssetVote[]
+  comments           AssetComment[]
+  assetSubscriptions AssetSubscription[]
+  pendingCommentNotifications PendingCommentNotification[]
 
   @@map("users")
 }
@@ -213,6 +221,8 @@ model Asset {
   game             Game                   @relation(fields: [game_id], references: [id], onDelete: Cascade)
   uploader         User                   @relation("AssetUploader", fields: [uploader_id], references: [id], onDelete: Cascade)
   votes            AssetVote[]
+  comments         AssetComment[]
+  subscriptions AssetSubscription[]
 
   @@index([game_id, status, currentPhase]) // For filtering assets by game and phase
   @@index([status, currentPhase]) // For dashboard queries
@@ -241,4 +251,59 @@ model AssetVote {
   @@index([asset_id, phase]) // For counting votes per asset/phase
   @@index([user_id]) // For user's voting history
   @@map("votes")
+}
+
+model AssetComment {
+  id        Int       @id @default(autoincrement())
+  content   String
+
+  // Foreign Keys
+  asset_id  Int
+  user_id   Int
+
+  // Timestamp
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user     User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  asset    Asset      @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+
+  notifications PendingCommentNotification[]
+}
+
+model AssetSubscription {
+  id        Int       @id @default(autoincrement())
+
+  // Foreign Keys
+  asset_id  Int
+  user_id   Int
+
+  subscription_type SubscriptionType
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+
+  @@unique([asset_id, user_id]) // Prevent duplicate subscriptions to the same user-asset combo
+  @@map("asset_subscriptions")
+}
+
+model PendingCommentNotification {
+  id         Int @id @default(autoincrement())
+  user_id    Int
+  comment_id Int
+
+  // Whether user has dismissed this specific notification
+  is_dismissed Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user    User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  comment AssetComment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, comment_id]) // One notification per user per comment
+  @@map("pending_comment_notifications")
 }
