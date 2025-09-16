@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { AssetFeedItem } from "@/lib/types/assets.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
-import ReactTimeAgo from "react-time-ago";
 import VoterBubbles from "../VoterBubbles/VoterBubbles";
 import { redactAssetVote } from "@/app/actions/asset.actions";
 import { useParams } from "next/navigation";
+import { timeAgo } from "@/lib/utils";
 
 import styles from "./ColumnListViewItem.module.css";
 
@@ -54,16 +55,24 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
       if (item.voters.length === 0) {
         return <span>Tallying final votes...</span>
       }
-      return <VoterBubbles voters={item.voters} />;
+      return (
+        <div style={{width: "100%"}}>
+          <VoterBubbles voters={item.voters} />
+        </div>
+      );
     } else if (hasOtherUploader) {
       return (
         <div className={styles.vote_status}>
           <div className={styles.submission_info}>
-            Voted by you • <ReactTimeAgo date={item.createdAt} locale="en-US" />
+            Voted by you • {timeAgo(item.votedAt!)}
           </div>
           <button
             type="button"
-            onClick={() => handleRedactVote(item.vote_id as number)}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault(); // stop the default link/routing behavior of clicking parent container
+              handleRedactVote(item.vote_id as number);
+            }}
             disabled={isPending}
           >
             Move to Pending
@@ -75,34 +84,36 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
   }
 
   return (
-    <div className={styles.list_item_container} style={{ backgroundColor: itemColor }}>
-      <div className={styles.image_preview_container}>
-        <Image
-          src={imageSrc}
-          alt="Asset"
-          height={1080}
-          width={1080}
-          className={styles.preview_image}
-          onError={() => setImageSrc(fallbackSrc)}
-        />
-      </div>
-      <div className={styles.list_item_info}>
-        <div className={styles.header}>
-          <span>{item.title}</span>
-          {item.currentPhase === VotePhase.PHASE1 && (
-            <span className={styles.phase_info}>
-              Internal Review
-            </span>
-          )}
+    <Link href={`/game/${gameId}/asset/${item.id}`}>
+      <div className={styles.list_item_container} style={{ backgroundColor: itemColor }}>
+        <div className={styles.image_preview_container}>
+          <Image
+            src={imageSrc}
+            alt="Asset"
+            height={1080}
+            width={1080}
+            className={styles.preview_image}
+            onError={() => setImageSrc(fallbackSrc)}
+          />
         </div>
-        <div className={styles.submission_info}>
-          {submissionInfoText} • <ReactTimeAgo date={item.createdAt} locale="en-US" />
-        </div>
+        <div className={styles.list_item_info}>
+          <div className={styles.header}>
+            <span>{item.title}</span>
+            {item.currentPhase === VotePhase.PHASE1 && (
+              <span className={styles.phase_info}>
+                Internal Review
+              </span>
+            )}
+          </div>
+          <div className={styles.submission_info}>
+            {submissionInfoText} • {timeAgo(item.createdAt)}
+          </div>
 
-        <div className={styles.item_footer}>
-          {renderFooter()}
+          <div className={styles.item_footer}>
+            {renderFooter()}
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -1,9 +1,10 @@
 import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export interface AssetVote {
   id: number;
   voteType: VoteType;
-  weight: number;
+  weight: Decimal;
 }
 
 export interface AssetVoteCalculation {
@@ -72,6 +73,7 @@ export interface AssetItemForVoterFeed {
     teamName: string;
   }
   vote_id: number | null;
+  votedAt: Date | null;
 }
 
 export interface AssetItemForGameFeed {
@@ -90,3 +92,53 @@ export interface AssetItemForGameFeed {
 }
 
 export type AssetFeedItem = AssetItemForArtistFeed | AssetItemForVoterFeed | AssetItemForGameFeed;
+
+export type IntermediateVoterAssetDetailsItem = {
+  id: number;
+  voteType: VoteType;
+  phase: VotePhase;
+  weight: Decimal;
+  user: {
+    id: number;
+    fullName: string;
+    initials: string;
+    avatar: number;
+    customAvatar: string | null;
+    team: {
+      name: string;
+    }
+  }
+}
+
+export interface VoterInfo {
+  id: number;
+  fullName: string;
+  initials: string;
+  avatar: number;
+  customAvatar: string | null;
+  teamName: string;
+}
+
+export interface GetAssetDetailsResponse {
+  id: number;
+  title: string;
+  category: string;
+  imageUrl: string;
+  createdAt: Date;
+  currentPhase: VotePhase;
+  uploader: {
+    firstName: string;
+    fullName: string;
+    initials: string;
+    avatar: number;
+    customAvatar: string | null;
+    teamName: string;
+  }
+  votes: {
+    rejectPercentage: number;
+    approvePercentage: number;
+    pendingCount: number;
+    approved: Array<VoterInfo>;
+    rejected: Array<VoterInfo>;
+  }
+}

@@ -6,8 +6,116 @@ import {
 } from "@/app/generated/prisma";
 import { calculateRawAssetVotes } from "../utils";
 import { GetAssetFeedForArtistResponse, GetAssetFeedForGameResponse, GetAssetFeedForVoterResponse } from "../types/dto.types";
-import { AssetItemForGameFeed, AssetItemForVoterFeed, AssetVoter, IntermediateVoterAssetItem } from "../types/assets.types";
+import { AssetItemForGameFeed, AssetItemForVoterFeed, AssetVoter, GetAssetDetailsResponse, IntermediateVoterAssetDetailsItem, IntermediateVoterAssetItem } from "../types/assets.types";
 import { getAllEligibleVoters } from "./user.data";
+
+export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsResponse> {
+  const asset = await prisma.asset.findUnique({
+    where: {
+      id: assetId
+    },
+    select: {
+      id: true,
+      title: true,
+      category: true,
+      imageUrl: true,
+      createdAt: true,
+      currentPhase: true,
+      game_id: true,
+      uploader_id: true,
+      uploader: {
+        select: {
+          firstName: true,
+          fullName: true,
+          initials: true,
+          avatar: true,
+          customAvatar: true,
+          team: {
+            select: {
+              name: true
+            }
+          }
+        }
+      },
+      votes: {
+        select: {
+          id: true,
+          voteType: true,
+          phase: true,
+          weight: true,
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              initials: true,
+              avatar: true,
+              customAvatar: true,
+              team: {
+                select: { name: true }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!asset) {
+    throw new Error("No asset found with this id");
+  }
+
+  const targetPhase = asset.currentPhase;
+  const currentAssetVotes = asset.votes.filter((vote) => vote.phase === targetPhase);
+  const eligibleVoters = await getAllEligibleVoters(asset.game_id, targetPhase, [asset.uploader_id]);
+
+  const { rejectCount, approveCount } = calculateRawAssetVotes(currentAssetVotes);
+  const totalVotes = rejectCount + approveCount;
+  const rejectPercentage = Math.round((rejectCount / totalVotes) * 100);
+  const approvePercentage = Math.round((approveCount / totalVotes) * 100);
+
+  const transformVote = (vote: IntermediateVoterAssetDetailsItem) => ({
+    id: vote.user.id,
+    fullName: vote.user.fullName,
+    initials: vote.user.initials,
+    avatar: vote.user.avatar,
+    customAvatar: vote.user.customAvatar || null,
+    teamName: vote.user.team.name
+  })
+
+  const approvedVotes = asset.votes
+    .filter(vote => vote.voteType === VoteType.APPROVE)
+    .map(transformVote);
+
+  const rejectedVotes = asset.votes
+    .filter(vote => vote.voteType === VoteType.REJECT)
+    .map(transformVote);
+
+  const assetDetailsDTO = {
+    id: asset.id,
+    title: asset.title,
+    category: asset.category,
+    imageUrl: asset.imageUrl,
+    createdAt: asset.createdAt,
+    currentPhase: asset.currentPhase,
+    uploader: {
+      firstName: asset.uploader.firstName,
+      fullName: asset.uploader.fullName,
+      initials: asset.uploader.initials,
+      avatar: asset.uploader.avatar,
+      customAvatar: asset.uploader.customAvatar || null,
+      teamName: asset.uploader.team.name
+    },
+    votes: {
+      rejectPercentage,
+      approvePercentage,
+      pendingCount: eligibleVoters.length - asset.votes.length,
+      approved: approvedVotes,
+      rejected: rejectedVotes
+    }
+  };
+
+  return assetDetailsDTO;
+}
 
 export async function getAssetFeedForArtist(
   userId: number,
@@ -130,7 +238,8 @@ export async function getAssetFeedForVoter(
       customAvatar: asset.uploader.customAvatar,
       teamName: asset.uploader.team.name
     },
-    vote_id: asset.votes[0]?.id || null // Used to reference assetVote if user wants to switch vote back to pending
+    vote_id: asset.votes[0]?.id || null, // Used to reference assetVote if user wants to switch vote back to pending
+    votedAt: asset.votes[0]?.createdAt || null
   });
 
   // Group by user's personal voting status

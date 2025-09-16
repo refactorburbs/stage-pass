@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "public"."votes" ALTER COLUMN "weight" SET DEFAULT 1.0,
+ALTER COLUMN "weight" SET DATA TYPE DECIMAL(65,30);

@@ -1,0 +1,44 @@
+.asset_page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.asset_content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.uploader_info {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.image_preview_container {
+  max-width: 960px;
+  max-height: 540px;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vote_info_container {
+  display: flex;
+  gap: 1rem;
+}
+
+.vote_info_content {
+  display: flex;
+  align-items: center;
+}

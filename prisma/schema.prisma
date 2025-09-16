@@ -224,7 +224,7 @@ model AssetVote {
   id        Int       @id @default(autoincrement())
   voteType  VoteType
   phase     VotePhase
-  weight    Int       @default(1) // LEADs get a slightly higher weight than VOTERs
+  weight    Decimal       @default(1.0) // LEADs get a slightly higher weight than VOTERs
 
   // Foreign Keys
   asset_id Int
