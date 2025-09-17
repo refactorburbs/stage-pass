@@ -355,21 +355,23 @@ export async function getAssetFeedForGame(
       sortedAssets.rejected.push(assetDTO);
     } else if (isApprove) {
       sortedAssets.approved.push(assetDTO);
-    } else {
-      // For pending assets (tied votes or no votes), show voters who haven't voted yet
-      const pendingVoters = eligibleVoters
-        .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id)
-        .map((voter) => ({
-          id: voter.id,
-          firstName: voter.firstName,
-          fullName: voter.fullName,
-          initials: voter.initials,
-          avatar: voter.avatar,
-          customAvatar: voter.customAvatar,
-          teamName: voter.teamName
-        }));
-      assetDTO.voters = pendingVoters;
-      sortedAssets.pending.push(assetDTO);
+    }
+    // For pending assets (tied votes or no votes), show voters who haven't voted yet
+    const pendingVoters = eligibleVoters
+      .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id)
+      .map((voter) => ({
+        id: voter.id,
+        firstName: voter.firstName,
+        fullName: voter.fullName,
+        initials: voter.initials,
+        avatar: voter.avatar,
+        customAvatar: voter.customAvatar,
+        teamName: voter.teamName
+      }));
+    if (pendingVoters.length) {
+      const assetDTOClone = { ...assetDTO };
+      assetDTOClone.voters = pendingVoters;
+      sortedAssets.pending.push(assetDTOClone);
     }
   });
   return sortedAssets;
