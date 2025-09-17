@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useOptimistic, useState } from "react";
-import { AssetFeedItem, AssetItemForVoterFeed, PendingCommentData, UserAssetComment } from "@/lib/types/assets.types";
+import { AssetFeedItem, AssetItemForVoterFeed, PendingCommentData } from "@/lib/types/assets.types";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import PendingAssetCard from "../PendingAssetCard/PendingAssetCard";
 import PendingCommentCard from "../PendingCommentCard/PendingCommentCard";
@@ -9,7 +9,7 @@ import PendingCommentCard from "../PendingCommentCard/PendingCommentCard";
 import styles from "./CardCarousel.module.css";
 
 interface CardCarouselProps {
-  items: Array<AssetFeedItem | UserAssetComment>
+  items: Array<AssetFeedItem | PendingCommentData>
   type: "asset" | "comment";
 }
 export default function CardCarousel({ items, type }: CardCarouselProps) {

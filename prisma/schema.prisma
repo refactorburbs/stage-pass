@@ -294,9 +294,9 @@ model AssetSubscription {
 
 model PendingCommentNotification {
   id         Int @id @default(autoincrement())
-  user_id    Int
-  comment_id Int
-  asset_id   Int
+  user_id    Int // Who the notification is for
+  comment_id Int // Which comment it's associated with
+  asset_id   Int // Which asset it's associated with
 
   // Whether user has dismissed this specific notification
   is_dismissed Boolean @default(false)

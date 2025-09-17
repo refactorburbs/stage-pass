@@ -1,11 +1,11 @@
-import { UserAssetComment } from "@/lib/types/assets.types";
+import { PendingCommentData } from "@/lib/types/assets.types";
 import CardCarousel from "../CardCarousel/CardCarousel";
 
 import styles from "./CommentCardCarouselView.module.css";
 
 interface AssetCardListViewProps {
   title: string;
-  items: Array<UserAssetComment>
+  items: Array<PendingCommentData>
 }
 
 export default function CommentCardCarouselView({ title, items }: AssetCardListViewProps) {

@@ -133,5 +133,6 @@ export interface PendingCommentData {
   assetImage: string;
   asset_id: number;
   game_id: number;
-  user: UserAvatarData;
+  subscriber_id: number;
+  commenter: UserAvatarData;
 }

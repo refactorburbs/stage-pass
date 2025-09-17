@@ -1,4 +1,4 @@
-import { AssetFeedItem } from "@/lib/types/assets.types";
+import { AssetFeedItem, PendingCommentData } from "@/lib/types/assets.types";
 import ColumnListViewItem from "../ColumnListViewItem/ColumnListViewItem";
 
 import styles from "./ColumnListView.module.css";
@@ -6,8 +6,9 @@ import styles from "./ColumnListView.module.css";
 interface ColumnListViewProps {
   title: string;
   items: Array<AssetFeedItem>;
+  notifications?: Array<PendingCommentData>
 }
-export default function ColumnListView({ title, items }: ColumnListViewProps) {
+export default function ColumnListView({ title, items, notifications }: ColumnListViewProps) {
   return (
     <div className={styles.column}>
       <div className={styles.column_header}>
@@ -16,7 +17,7 @@ export default function ColumnListView({ title, items }: ColumnListViewProps) {
       <div className={styles.column_content}>
         {items.length > 0 ? (
           items.map(item => (
-            <ColumnListViewItem key={item.id} item={item} />
+            <ColumnListViewItem key={item.id} item={item} notifications={notifications}/>
           ))
         ) : (
           <div className={styles.no_items}>

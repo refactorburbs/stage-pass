@@ -39,7 +39,8 @@ export async function getUserPendingComments(userId: number): Promise<Array<Pend
     assetImage: comment.comment.asset.imageUrl,
     asset_id: comment.asset_id,
     game_id: comment.comment.asset.game_id,
-    user: {
+    subscriber_id: userId,
+    commenter: {
       id: comment.comment.user.id,
       firstName: comment.comment.user.firstName,
       fullName: comment.comment.user.fullName,

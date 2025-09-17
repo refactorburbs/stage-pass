@@ -52,6 +52,7 @@ export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }:
         <ColumnListView
           title="Pending Review"
           items={assetFeed.pending}
+          notifications={pendingComments}
         />
         <ColumnListView
           title="Approved Assets"

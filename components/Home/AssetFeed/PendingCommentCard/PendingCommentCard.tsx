@@ -35,7 +35,7 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
 
         <div className={styles.text_content}>
           <div className={styles.user_info}>
-            <AvatarBubble size="medium" user={comment.user} />
+            <AvatarBubble size="medium" user={comment.commenter} />
             <span>{timeAgo(comment.createdAt)}</span>
           </div>
           <span className={styles.comment}>

@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { AssetFeedItem } from "@/lib/types/assets.types";
+import { AssetFeedItem, PendingCommentData } from "@/lib/types/assets.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
 import VoterBubbles from "../VoterBubbles/VoterBubbles";
+import PendingCommentsFooter from "../PendingCommentsFooter/PendingCommentsFooter";
 import { redactAssetVote } from "@/app/actions/asset.actions";
 import { useParams } from "next/navigation";
 import { timeAgo } from "@/lib/utils";
@@ -14,6 +15,7 @@ import styles from "./ColumnListViewItem.module.css";
 
 interface ColumnListViewProps {
   item: AssetFeedItem;
+  notifications?: Array<PendingCommentData>
 }
 
 // Assets that have a final vote on them are colored. Pending are white.
@@ -30,7 +32,7 @@ const getItemColor = (status: AssetStatus) => {
   }
 }
 
-export default function ColumnListViewItem({ item }: ColumnListViewProps) {
+export default function ColumnListViewItem({ item, notifications }: ColumnListViewProps) {
   const { gameId } = useParams();
   const [isPending, startTransition] = useTransition();
   // If the imageUrl exists but is a broken link (can happen with improper database deletions), then have fallback.
@@ -44,6 +46,8 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
   const itemColor = hasStatus ? getItemColor(item.status) : "white";
   const submissionInfoText = `Submitted by ${hasOtherUploader ? item.uploader.firstName : "you"}`;
 
+  const commentsForThisAsset = notifications?.filter((notification) => notification.asset_id === item.id) || [];
+
   const handleRedactVote = (voteId: number) => {
     startTransition(async () => {
       await redactAssetVote(voteId, Number(gameId));
@@ -51,15 +55,18 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
   };
 
   const renderFooter = () => {
+    // For the game feed, where one asset item has several voters
     if (hasVoters) {
       if (item.voters.length === 0) {
-        return <span>Tallying final votes...</span>
+        return <span>Voting Complete: Tie</span>
       }
       return (
         <div style={{width: "100%"}}>
           <VoterBubbles voters={item.voters} />
         </div>
       );
+      // If there are no voters on the item, check if we uploaded or
+      // if we are voting (someone else uploaded)
     } else if (hasOtherUploader) {
       return (
         <div className={styles.vote_status}>
@@ -80,7 +87,9 @@ export default function ColumnListViewItem({ item }: ColumnListViewProps) {
         </div>
       );
     }
-    return <></>
+    // Default case is artists: show a footer of how many pending comments
+    // are on the asset they uploaded.
+    return <PendingCommentsFooter notifications={commentsForThisAsset}/>
   }
 
   return (
