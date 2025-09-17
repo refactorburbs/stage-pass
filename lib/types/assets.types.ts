@@ -118,3 +118,20 @@ export interface GetAssetDetailsResponse {
     rejected: Array<UserAvatarData>;
   }
 }
+
+export interface UserAssetComment {
+  id: number;
+  content: string;
+  createdAt: Date,
+  user: UserAvatarData;
+}
+
+export interface PendingCommentData {
+  id: number;
+  content: string;
+  createdAt: Date,
+  assetImage: string;
+  asset_id: number;
+  game_id: number;
+  user: UserAvatarData;
+}

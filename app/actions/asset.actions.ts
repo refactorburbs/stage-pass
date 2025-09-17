@@ -5,11 +5,12 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { verifySession } from "@/lib/sessions";
 import prisma from "@/lib/prisma";
-import { UserRole, VotePhase, VoteType } from "../generated/prisma";
+import { SubscriptionType, UserRole, VotePhase, VoteType } from "../generated/prisma";
 import { USER_VOTE_WEIGHT, VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { getAllEligibleVoters, getUser } from "@/lib/data";
 import { calculateRawAssetVotes } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { subscribeUserToAsset } from "./comment.actions";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
@@ -56,7 +57,7 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
 
   try {
     // 3. Create a new asset in Prisma
-    await prisma.asset.create({
+    const newAsset = await prisma.asset.create({
       data: {
         title,
         category,
@@ -65,13 +66,15 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
         uploader_id: uploaderId
       }
     });
+    // 4. Subscribe the uploader to comments on their asset
+    await subscribeUserToAsset(uploaderId, newAsset.id, SubscriptionType.UPLOADED);
   } catch (error) {
     console.error("Image upload error:", error)
     return {
       message: `Image upload error: ${error}`
     }
   }
-  // Redirect to the user's feed (should see their post in pending)
+  // 5. Redirect to the user's feed (should see their post in pending)
   redirect(`/game/${gameId}`);
 }
 
@@ -136,6 +139,9 @@ export async function castAssetVote(
       user_id: voter.id
     }
   });
+
+  // Voting is a user interaction, subscribe them to comments on it:
+  await subscribeUserToAsset(voter.id, assetId, SubscriptionType.VOTED);
 
   revalidatePath(`/game/${gameId}`);
 }

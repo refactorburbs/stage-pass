@@ -1,9 +1,22 @@
+import { UserAssetComment } from "@/lib/types/assets.types";
+import AvatarBubble from "../AvatarBubble/AvatarBubble";
+import { timeAgo } from "@/lib/utils";
+
 import styles from "./AssetComment.module.css";
 
-export default function AssetComment() {
+interface AssetCommentProps {
+  comment: UserAssetComment;
+}
+
+export default function AssetComment({ comment }: AssetCommentProps) {
+  const commenterInfo = `${comment.user.fullName} - ${comment.user.teamName} ● ${timeAgo(comment.createdAt)}`;
   return (
     <div className={styles.comment_container}>
-      <p>This is a temportary comment with nonsense words that arent even spelled right wahoo!</p>
+      <div className={styles.commenter}>
+        <AvatarBubble size="medium" user={comment.user}/>
+        <span>{commenterInfo}</span>
+      </div>
+      <p>{comment.content}</p>
     </div>
   );
 }

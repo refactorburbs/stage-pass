@@ -1,8 +1,9 @@
 import { UserRole } from "@/app/generated/prisma";
-import { getAssetFeedForArtist, getAssetFeedForGame, getAssetFeedForVoter } from "@/lib/data";
+import { getAssetFeedForArtist, getAssetFeedForGame, getAssetFeedForVoter, getUserPendingComments } from "@/lib/data";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
 import ColumnListView from "./ColumnListView/ColumnListView";
 import AssetCardCarouselView from "./AssetCardCarouselView/AssetCardCarouselView";
+import CommentCardCarouselView from "./CommentCardCarouselView/CommentCardCarouselView";
 import { FeedType } from "@/lib/types/feed.types";
 import { notFound } from "next/navigation";
 
@@ -33,6 +34,7 @@ async function getFeedData (
 
 export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }: AssetFeedProps) {
   const assetFeed = await getFeedData(feedType, user.id, gameId, user.role, hasFinalSay);
+  const pendingComments = await getUserPendingComments(user.id);
 
   if (!assetFeed) {
     notFound();
@@ -67,7 +69,7 @@ export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }:
       />
       <div className={styles.pending_column}>
         <AssetCardCarouselView title="Pending Assets" items={assetFeed.pending}/>
-        {/* <CommentCardCarouselView /> */}
+        <CommentCardCarouselView title="Pending Comments" items={pendingComments}/>
       </div>
       <ColumnListView
         title="Approved Assets"

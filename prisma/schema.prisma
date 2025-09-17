@@ -32,7 +32,7 @@
 
 // To completely wipe everything and start over:
 // 1. Delete the entirety of the migrations folder
-// 2. npx prisma migrate reset --force
+// 2. npx prisma migrate reset --force (you'll see an error, it's ok ignore it)
 // 3. npx prisma migrate dev --name init
 
 // In production, it is recommended to use the command:
@@ -81,6 +81,7 @@ enum VotePhase {
 enum SubscriptionType {
   VOTED    // User subscribed by voting on the asset
   COMMENTED // User subscribed by commenting on the asset
+  UPLOADED // LEAD or ARTIST who uploaded a specific asset
 }
 
 // Teams (companies working on games)
@@ -222,7 +223,8 @@ model Asset {
   uploader         User                   @relation("AssetUploader", fields: [uploader_id], references: [id], onDelete: Cascade)
   votes            AssetVote[]
   comments         AssetComment[]
-  subscriptions AssetSubscription[]
+  subscriptions    AssetSubscription[]
+  notifications    PendingCommentNotification[]
 
   @@index([game_id, status, currentPhase]) // For filtering assets by game and phase
   @@index([status, currentPhase]) // For dashboard queries
@@ -294,6 +296,7 @@ model PendingCommentNotification {
   id         Int @id @default(autoincrement())
   user_id    Int
   comment_id Int
+  asset_id   Int
 
   // Whether user has dismissed this specific notification
   is_dismissed Boolean @default(false)
@@ -303,6 +306,7 @@ model PendingCommentNotification {
   // Relations
   user    User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   comment AssetComment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  asset   Asset        @relation(fields: [asset_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, comment_id]) // One notification per user per comment
   @@map("pending_comment_notifications")

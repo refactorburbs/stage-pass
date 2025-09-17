@@ -2,10 +2,11 @@ import Image from "next/image";
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
-import { getAssetDetails, getUser } from "@/lib/data";
+import { getAssetDetails, getCommentsForAsset, getUser } from "@/lib/data";
 import VoterBubbles from "@/components/Home/AssetFeed/VoterBubbles/VoterBubbles";
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import CommentForm from "@/components/Forms/CommentForm/CommentForm";
+import AssetComment from "@/components/AssetComment/AssetComment";
 
 import styles from "./AssetPage.module.css";
 
@@ -28,6 +29,7 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
   const assetDetails = await getAssetDetails(Number(assetId));
   const uploaderInfoString = `${assetDetails.uploader.fullName} - ${assetDetails.uploader.teamName}`
 
+  const assetComments = await getCommentsForAsset(Number(assetId));
   return (
     <div className={styles.asset_page}>
       <div className={styles.asset_content}>
@@ -46,43 +48,32 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
             width={1080}
             className={styles.preview_image}
           />
+          {isPending && (
+            <VoteButtons
+              assetId={assetDetails.id}
+              currentPhase={assetDetails.currentPhase}
+              gameId={Number(gameId)}
+            />
+          )}
         </div>
-        {isPending && (
-          <VoteButtons
-            assetId={assetDetails.id}
-            currentPhase={assetDetails.currentPhase}
-            gameId={Number(gameId)}
-          />
-        )}
+        <div className={styles.vote_info_container}>
+          <div className={styles.vote_info_content}>
+            <span>{`Approved (${assetDetails.votes.approvePercentage}%): `}</span>
+            <VoterBubbles voters={assetDetails.votes.approved} />
+          </div>
+          <div className={styles.vote_info_content}>
+            <span>{`Rejected (${assetDetails.votes.rejectPercentage}%): `}</span>
+            <VoterBubbles voters={assetDetails.votes.rejected} />
+          </div>
+          <div className={styles.vote_info_content}>
+            <span>{`Pending Votes: ${assetDetails.votes.pendingCount} `}</span>
+          </div>
+        </div>
+        <div className={styles.asset_comments}>
+          <h3>Comments</h3>
+          {assetComments.map((comment) => <AssetComment comment={comment} key={comment.id}/>)}
+        </div>
       </div>
-      <div className={styles.vote_info_container}>
-        <div className={styles.vote_info_content}>
-          {`Approved (${assetDetails.votes.approvePercentage}%): `}
-          <VoterBubbles voters={assetDetails.votes.approved} />
-        </div>
-        <div className={styles.vote_info_content}>
-          {`Rejected (${assetDetails.votes.rejectPercentage}%): `}
-          <VoterBubbles voters={assetDetails.votes.rejected} />
-        </div>
-        <div className={styles.vote_info_content}>
-          {`Pending Votes: ${assetDetails.votes.pendingCount} `}
-        </div>
-      </div>
-
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
-      <span>TESTSSALSDFJAK</span>
       <CommentForm
         gameId={Number(gameId)}
         assetId={Number(assetId)}

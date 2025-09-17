@@ -51,7 +51,8 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
   const eligibleVoters = await getAllEligibleVoters(asset.game_id, targetPhase, [asset.uploader_id]);
 
   const { rejectCount, approveCount } = calculateRawAssetVotes(currentAssetVotes);
-  const totalVotes = rejectCount + approveCount;
+  let totalVotes = rejectCount + approveCount;
+  if (totalVotes === 0) totalVotes = 1; // Prevent dividing by 0 and getting NaN
   const rejectPercentage = Math.round((rejectCount / totalVotes) * 100);
   const approvePercentage = Math.round((approveCount / totalVotes) * 100);
 

@@ -1,0 +1,15 @@
+.comment_container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgb(224, 224, 224);
+}
+
+.commenter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgb(117, 117, 117);
+  font-size: 14px;
+}

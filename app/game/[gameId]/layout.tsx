@@ -33,6 +33,7 @@ export default async function GamePageLayout({
         gameName={gameData.name}
         teamString={gameData.teams.join(" x ")}
         user={user}
+        gameId={Number(gameId)}
       />
       {children}
       {rules.canUpload && (<UploadButton/>)}

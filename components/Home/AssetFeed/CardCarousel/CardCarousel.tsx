@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback, useOptimistic, useState } from "react";
-import { AssetFeedItem, AssetItemForVoterFeed } from "@/lib/types/assets.types";
+import { AssetFeedItem, AssetItemForVoterFeed, PendingCommentData, UserAssetComment } from "@/lib/types/assets.types";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import PendingAssetCard from "../PendingAssetCard/PendingAssetCard";
+import PendingCommentCard from "../PendingCommentCard/PendingCommentCard";
 
 import styles from "./CardCarousel.module.css";
 
 interface CardCarouselProps {
-  items: Array<AssetFeedItem>
+  items: Array<AssetFeedItem | UserAssetComment>
   type: "asset" | "comment";
 }
 export default function CardCarousel({ items, type }: CardCarouselProps) {
@@ -72,7 +73,9 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
               onVote={handleOptimisticVote}
             />
           ) : (
-            <div>Comment Card</div>
+            <PendingCommentCard
+              comment={currentItem as PendingCommentData}
+            />
           )
         }
         <CarouselArrow

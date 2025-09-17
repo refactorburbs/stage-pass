@@ -1,11 +1,11 @@
-import { AssetVoter } from "@/lib/types/assets.types";
 import TooltipHover from "@/components/TooltipHover";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
+import { UserAvatarData } from "@/lib/types/users.types";
 
 import styles from "./VoterBubbles.module.css";
 
 interface VoterBubblesProps {
-  voters: Array<AssetVoter>;
+  voters: Array<UserAvatarData>;
 }
 
 export default function VoterBubbles({ voters }: VoterBubblesProps) {

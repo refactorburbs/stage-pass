@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import {
+  AssetStatus,
   SubscriptionType,
 } from "@/app/generated/prisma";
 import z from "zod";
@@ -43,6 +44,40 @@ export async function subscribeUserToAsset(userId: number, assetId: number, type
   });
 }
 
+export async function unsubscribeUserToAsset(userId: number, assetId: number){
+  // delete all pending notifactions
+  await prisma.pendingCommentNotification.deleteMany({
+    where: {
+      user_id: userId,
+      asset_id: assetId
+    }
+  });
+  // Delete subscription entry and cleanup any subs from status changes
+  await prisma.assetSubscription.deleteMany({
+    where: {
+      user_id: userId,
+      asset_id: assetId,
+      asset: {
+        status: {
+          in: [AssetStatus.ARCHIVED, AssetStatus.REVISED, AssetStatus.PHASE2_APPROVED, AssetStatus.PHASE2_REJECTED]
+        }
+      }
+    }
+  })
+}
+
+export async function dismissCommentsForAsset(userId: number, assetId: number) {
+  await prisma.pendingCommentNotification.updateMany({
+    where: {
+      asset_id: assetId,
+      user_id: userId
+    },
+    data : {
+      is_dismissed: true
+    }
+  });
+}
+
 export async function createCommentAndNotify(formData: FormData): Promise<void> {
   const validatedFields = createCommentSchema.safeParse({
     assetId: formData.get("assetId"),
@@ -81,7 +116,8 @@ export async function createCommentAndNotify(formData: FormData): Promise<void> 
   // in their pendingCommentNotification table
   const notifications = subscribers.map(sub => ({
     user_id: sub.user_id,
-    comment_id: comment.id
+    comment_id: comment.id,
+    asset_id: comment.asset_id
   }));
 
   await prisma.pendingCommentNotification.createMany({

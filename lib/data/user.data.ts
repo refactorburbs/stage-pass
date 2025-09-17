@@ -171,6 +171,9 @@ export const getAllEligibleVoters = cache(async (
         id: { notIn: excludeUserIds },
         isActive: true,
         role: { in: [UserRole.LEAD, UserRole.VOTER] },
+        gameOwners: {
+          none: { game_id: gameId }, // Exclude any user who owns this game
+        },
         team: {
           gameTeams: {
             some: {

@@ -1,5 +1,4 @@
 .voter_bubble_container {
-  min-width: 2.5rem;
   max-width: 100%;
   display: flex;
   justify-content: flex-end;
@@ -9,4 +8,8 @@
 .voter_bubble {
   margin-left: -0.5rem;
   cursor: pointer;
+}
+
+.voter_bubble:first-child {
+  margin-left: 0;
 }
