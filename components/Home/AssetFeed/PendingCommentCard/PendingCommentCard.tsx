@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import styles from "./PendingCommentCard.module.css";
+import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 
 interface PendingCommentCardProps {
   comment: PendingCommentData;
@@ -16,17 +17,20 @@ interface PendingCommentCardProps {
 export default function PendingCommentCard({ comment }: PendingCommentCardProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    handleDismissClick(e);
+  const handleCardClick = () => {
+    startTransition(async () => {
+      await dismissCommentsForAsset(comment.subscriber_id, comment.asset_id);
+    });
     router.push(`/game/${comment.game_id}/asset/${comment.asset_id}`);
   }
 
-  const handleDismissClick = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement>) => {
+  const handleDismissClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
     startTransition(async () => {
-      // await redactAssetVote();
+      await dismissCommentsForAsset(comment.subscriber_id, comment.asset_id);
     });
+    window.location.reload(); // Hard reload - not the best option but meh
   }
 
   return (
