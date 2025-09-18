@@ -119,13 +119,41 @@ export async function castAssetVote(
     const approvalPercentage = (finalApproveCount / finalVoteTotal) * 100;
     const rejectPercentage = (finalRejectCount / finalVoteTotal) * 100;
 
-    // For cases of a tie, we need to accept the higher vote weight % (since there are no more voters)
-    if (approvalPercentage >= VOTE_DECISION_THRESHOLD || approvalPercentage > rejectPercentage) {
+    if (approvalPercentage >= VOTE_DECISION_THRESHOLD || finalApproveCount > finalRejectCount) {
       // Let's set a cron or something to officially change an assets status after 2 hours (giving people time to change their mind)
       console.log("Last vote on this asset! Locking approval in 2 hours");
+      await prisma.assetPendingLock.upsert({
+        where: {
+          asset_id: assetId
+        },
+        create: {
+          voteType: VoteType.APPROVE,
+          currentPhase: phase,
+          asset_id: assetId,
+          game_id: gameId
+        },
+        update: {
+          voteType: VoteType.APPROVE
+        }
+      });
     } else if (rejectPercentage >= VOTE_DECISION_THRESHOLD || rejectPercentage > approvalPercentage) {
       console.log("Last vote on this asset! Locking rejection in 2 hours");
+      await prisma.assetPendingLock.upsert({
+        where: {
+          asset_id: assetId
+        },
+        create: {
+          voteType: VoteType.REJECT,
+          currentPhase: phase,
+          asset_id: assetId,
+          game_id: gameId
+        },
+        update: {
+          voteType: VoteType.REJECT
+        }
+      });
     }
+    // @TODO  else: if it's a tie, maybe send a discord notification that this asset needs manual review
     // If the asset category was "Full Asset" and the asset status was phase1_approved then update the asset to phase2 and phase1completedat
     console.log("updating current asset status and phase - this should happen in the cron job");
   }

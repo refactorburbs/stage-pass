@@ -34,6 +34,7 @@
 // 1. Delete the entirety of the migrations folder
 // 2. npx prisma migrate reset --force (you'll see an error, it's ok ignore it)
 // 3. npx prisma migrate dev --name init
+// 4. seed the database: npx prisma db seed
 
 // In production, it is recommended to use the command:
 // prisma generate --no-engine
@@ -111,6 +112,7 @@ model Game {
   gameTeams        GameTeam[]
   gameOwners       GameOwner[] // Junction table for game-specific ownership
   assets           Asset[]
+  lockJobs         AssetPendingLock[]
 
   @@map("games")
 }
@@ -200,7 +202,7 @@ model GameOwner {
 
 model Asset {
   id          Int    @id @default(autoincrement())
-  title       String @unique
+  title       String
   category    String // Must be one of the categories from the associated game
   imageUrl    String
 
@@ -225,6 +227,7 @@ model Asset {
   comments         AssetComment[]
   subscriptions    AssetSubscription[]
   notifications    PendingCommentNotification[]
+  lockJob          AssetPendingLock?
 
   @@index([game_id, status, currentPhase]) // For filtering assets by game and phase
   @@index([status, currentPhase]) // For dashboard queries
@@ -310,4 +313,16 @@ model PendingCommentNotification {
 
   @@unique([user_id, comment_id]) // One notification per user per comment
   @@map("pending_comment_notifications")
+}
+
+model AssetPendingLock {
+  id            Int       @id @default(autoincrement())
+  voteType      VoteType
+  currentPhase  VotePhase
+  asset_id      Int      @unique
+  game_id       Int
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  asset         Asset @relation(fields: [asset_id], references: [id], onDelete: Cascade)
+  game          Game  @relation(fields: [game_id], references: [id], onDelete: Cascade)
 }

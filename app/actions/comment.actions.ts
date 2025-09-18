@@ -44,18 +44,16 @@ export async function subscribeUserToAsset(userId: number, assetId: number, type
   });
 }
 
-export async function unsubscribeUserToAsset(userId: number, assetId: number){
+export async function cleanupPendingCommentsAndSubs(assetId: number){
   // delete all pending notifactions
   await prisma.pendingCommentNotification.deleteMany({
     where: {
-      user_id: userId,
       asset_id: assetId
     }
   });
   // Delete subscription entry and cleanup any subs from status changes
   await prisma.assetSubscription.deleteMany({
     where: {
-      user_id: userId,
       asset_id: assetId,
       asset: {
         status: {
