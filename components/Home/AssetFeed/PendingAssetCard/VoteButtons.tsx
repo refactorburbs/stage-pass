@@ -37,7 +37,6 @@ export default function VoteButtons({ assetId, currentPhase, gameId, onVote }: V
           e.preventDefault();
           handleVote(VoteType.REJECT);
         }}
-        disabled={isPending}
         >
           No
         </button>
@@ -47,7 +46,6 @@ export default function VoteButtons({ assetId, currentPhase, gameId, onVote }: V
             e.preventDefault();
             handleVote(VoteType.APPROVE);
           }}
-          disabled={isPending}
         >
           Yes
         </button>

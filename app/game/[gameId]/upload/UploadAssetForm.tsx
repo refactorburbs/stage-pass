@@ -61,6 +61,9 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
       {state?.errors?.title && <span className="error-msg">{state.errors.title}</span>}
 
       <label htmlFor="categoryDropdown">Choose a Category:</label>
+      <span style={{ fontSize: "14px" }}>
+        {'*Uploads in the "Full Asset" category will automatically go to external review once it is approved internally'}
+      </span>
       <select id="categoryDropdown" name="category">
         {gameData.assetCategories.map((category) => (
           <option key={category} value={category}>{category}</option>

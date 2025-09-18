@@ -34,7 +34,7 @@ export default function PendingCommentsFooter({ notifications }: PendingComments
     <div className={styles.pending_comment_footer}>
       <span>{commentCountString}</span>
       <button disabled={isPending} onClick={handleDismiss}>
-        Dismiss
+        View
       </button>
     </div>
   );

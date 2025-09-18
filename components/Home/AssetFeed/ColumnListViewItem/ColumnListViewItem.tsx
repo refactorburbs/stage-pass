@@ -19,9 +19,10 @@ interface ColumnListViewProps {
 }
 
 // Assets that have a final vote on them are colored. Pending are white.
-const getItemColor = (status: AssetStatus) => {
+const getItemColor = (status: AssetStatus, currentPhase: VotePhase) => {
   switch (status) {
     case AssetStatus.PHASE1_APPROVED:
+      if (currentPhase === VotePhase.PHASE2) return "white";
     case AssetStatus.PHASE2_APPROVED:
       return "#a8d899ff";
     case AssetStatus.PHASE1_REJECTED:
@@ -43,7 +44,7 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
   const hasVoters = "voters" in item;
   const hasOtherUploader = "uploader" in item;
 
-  const itemColor = hasStatus ? getItemColor(item.status) : "white";
+  const itemColor = hasStatus ? getItemColor(item.status, item.currentPhase) : "white";
   const submissionInfoText = `Submitted by ${hasOtherUploader ? item.uploader.firstName : "you"}`;
 
   const commentsForThisAsset = notifications?.filter((notification) => notification.asset_id === item.id) || [];

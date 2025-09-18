@@ -20,6 +20,7 @@ const gameData: Prisma.GameCreateInput[] = [
       "Cleats",
       "Clothing",
       "Tattoos",
+      "Environment",
       "Full Asset"
     ]
   }

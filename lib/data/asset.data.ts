@@ -370,8 +370,14 @@ export async function getAssetFeedForGame(
       }));
     if (pendingVoters.length) {
       const assetDTOClone = { ...assetDTO };
-      assetDTOClone.voters = pendingVoters;
-      sortedAssets.pending.push(assetDTOClone);
+      // only add to this asset's pending if the asset voting phase hasn't locked.
+      if (
+        assetDTOClone.currentPhase === VotePhase.PHASE1 &&
+        (assetDTOClone.status !== AssetStatus.PHASE1_APPROVED && assetDTOClone.status !== AssetStatus.PHASE1_REJECTED)
+      ) {
+        assetDTOClone.voters = pendingVoters;
+        sortedAssets.pending.push(assetDTOClone);
+      }
     }
   });
   return sortedAssets;

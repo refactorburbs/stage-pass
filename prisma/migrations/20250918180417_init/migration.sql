@@ -11,7 +11,7 @@ CREATE TYPE "public"."VoteType" AS ENUM ('APPROVE', 'REJECT');
 CREATE TYPE "public"."VotePhase" AS ENUM ('PHASE1', 'PHASE2');
 
 -- CreateEnum
-CREATE TYPE "public"."SubscriptionType" AS ENUM ('VOTED', 'COMMENTED');
+CREATE TYPE "public"."SubscriptionType" AS ENUM ('VOTED', 'COMMENTED', 'UPLOADED');
 
 -- CreateTable
 CREATE TABLE "public"."teams" (
@@ -156,6 +156,18 @@ CREATE TABLE "public"."pending_comment_notifications" (
     CONSTRAINT "pending_comment_notifications_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."AssetPendingLock" (
+    "id" SERIAL NOT NULL,
+    "voteType" "public"."VoteType" NOT NULL,
+    "currentPhase" "public"."VotePhase" NOT NULL,
+    "asset_id" INTEGER NOT NULL,
+    "game_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "AssetPendingLock_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "teams_name_key" ON "public"."teams"("name");
 
@@ -170,9 +182,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "public"."users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "game_owners_game_id_user_id_key" ON "public"."game_owners"("game_id", "user_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "assets_title_key" ON "public"."assets"("title");
 
 -- CreateIndex
 CREATE INDEX "assets_game_id_status_currentPhase_idx" ON "public"."assets"("game_id", "status", "currentPhase");
@@ -194,6 +203,9 @@ CREATE UNIQUE INDEX "asset_subscriptions_asset_id_user_id_key" ON "public"."asse
 
 -- CreateIndex
 CREATE UNIQUE INDEX "pending_comment_notifications_user_id_comment_id_key" ON "public"."pending_comment_notifications"("user_id", "comment_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AssetPendingLock_asset_id_key" ON "public"."AssetPendingLock"("asset_id");
 
 -- AddForeignKey
 ALTER TABLE "public"."game_teams" ADD CONSTRAINT "game_teams_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."games"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -248,3 +260,9 @@ ALTER TABLE "public"."pending_comment_notifications" ADD CONSTRAINT "pending_com
 
 -- AddForeignKey
 ALTER TABLE "public"."pending_comment_notifications" ADD CONSTRAINT "pending_comment_notifications_asset_id_fkey" FOREIGN KEY ("asset_id") REFERENCES "public"."assets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."AssetPendingLock" ADD CONSTRAINT "AssetPendingLock_asset_id_fkey" FOREIGN KEY ("asset_id") REFERENCES "public"."assets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."AssetPendingLock" ADD CONSTRAINT "AssetPendingLock_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."games"("id") ON DELETE CASCADE ON UPDATE CASCADE;
