@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getGame } from "@/lib/data/index";
 
 import styles from "./GameProjectOption.module.css";
+import { notFound } from "next/navigation";
 
 interface GameProjectOptionProps {
   game: {
@@ -12,7 +13,11 @@ interface GameProjectOptionProps {
 
 export default async function GameProjectOption({ game }: GameProjectOptionProps) {
   const gameData = await getGame(game.id);
-  const teamNameString = gameData?.teams.join(" x ") || "No teams associated";
+  if (!gameData) {
+    notFound();
+  }
+
+  const teamNameString = gameData.teams.join(" x ");
 
   return (
     <Link href={`/game/${game.id}`} className={styles.game_option_link}>

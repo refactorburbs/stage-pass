@@ -11,7 +11,7 @@ import { VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { getAllEligibleVoters } from "@/lib/data";
 import prisma from "@/lib/prisma";
 import { AssetUpdateData, LockJob } from "@/lib/types/cron.types";
-import { calculateRawAssetVotes } from "@/lib/utils";
+import { calculateRawAssetVotes, sendDiscordVoteResultNotification } from "@/lib/utils";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
         asset: {
           select: {
             id: true,
+            title: true,
             uploader_id: true,
             category: true,
           }
@@ -125,10 +126,17 @@ async function processAssetLock(lockJob: LockJob) {
     updateData.currentPhase = VotePhase.PHASE2;
   }
 
-  await prisma.asset.update({
+  const updatedAsset = await prisma.asset.update({
     where: { id: asset.id },
     data: updateData
   });
+
+  await sendDiscordVoteResultNotification({
+    id: updatedAsset.id,
+    title: updatedAsset.title,
+    category: updatedAsset.category,
+    imageUrl: updatedAsset.imageUrl
+  }, lockJob.currentPhase, finalDecision, shouldMoveToPhase2);
 
   await cleanupPendingCommentsAndSubs(asset.id);
 

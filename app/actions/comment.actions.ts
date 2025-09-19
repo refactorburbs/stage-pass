@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import {
   AssetStatus,
   SubscriptionType,
+  VotePhase,
 } from "@/app/generated/prisma";
 import z from "zod";
 import { revalidatePath } from "next/cache";
@@ -25,7 +26,8 @@ const createCommentSchema = z.object({
     if (isNaN(num)) throw new Error("Invalid game ID");
     return num;
   }),
-  content: z.string()
+  content: z.string(),
+  phase: z.enum([VotePhase.PHASE1, VotePhase.PHASE2])
 });
 // -----------------------------------------------------------------------------------
 
@@ -81,20 +83,22 @@ export async function createCommentAndNotify(formData: FormData): Promise<void> 
     assetId: formData.get("assetId"),
     userId: formData.get("userId"),
     gameId: formData.get("gameId"),
-    content: formData.get("content")
+    content: formData.get("content"),
+    phase: formData.get("phase")
   })
 
   if (!validatedFields.success) {
     return;
   }
 
-  const { assetId, userId, gameId, content } = validatedFields.data;
+  const { assetId, userId, gameId, content, phase } = validatedFields.data;
 
   const comment = await prisma.assetComment.create({
     data: {
       asset_id: assetId,
       user_id: userId,
-      content
+      content,
+      phase
     }
   });
 

@@ -25,7 +25,7 @@ export default async function GamePageLayout({
     return notFound();
   }
 
-  const rules = await getUserPermissions(user, gameData);
+  const rules = await getUserPermissions(user, Number(gameId));
 
   return (
     <div className={styles.game_layout_page}>

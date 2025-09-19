@@ -1,8 +1,7 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import AssetFeed from "@/components/Home/AssetFeed/AssetFeed";
 import FeedToggle from "@/components/Home/AssetFeed/FeedToggle/FeedToggle";
-import { getGame, getUser, getUserPermissions } from "@/lib/data/index";
-import { notFound } from "next/navigation";
+import { getUser, getUserPermissions } from "@/lib/data/index";
 import { FeedType } from "@/lib/types/feed.types";
 
 import styles from "./GamePage.module.css";
@@ -22,17 +21,12 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
   const feedType = feed || "user";
 
   const user = await getUser();
-  const gameData = await getGame(Number(gameId));
 
   if (!user) {
     return <NotAuthorized />
   }
 
-  if (!gameData) {
-    return notFound();
-  }
-
-  const rules = await getUserPermissions(user, gameData);
+  const rules = await getUserPermissions(user, Number(gameId));
 
   return (
     <div className={styles.game_page_container}>

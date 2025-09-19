@@ -2,11 +2,12 @@ import Image from "next/image";
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
-import { getAssetDetails, getCommentsForAsset, getUser } from "@/lib/data";
+import { getAssetDetails, getCommentsForAsset, getUser, getUserPermissions } from "@/lib/data";
 import VoterBubbles from "@/components/Home/AssetFeed/VoterBubbles/VoterBubbles";
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import CommentForm from "@/components/Forms/CommentForm/CommentForm";
 import AssetComment from "@/components/AssetComment/AssetComment";
+import { VotePhase } from "@/app/generated/prisma";
 
 import styles from "./AssetPage.module.css";
 
@@ -26,10 +27,13 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
     return <NotAuthorized />
   }
 
-  const assetDetails = await getAssetDetails(Number(assetId));
-  const uploaderInfoString = `${assetDetails.uploader.fullName} - ${assetDetails.uploader.teamName}`
+  const rules = await getUserPermissions(user, Number(gameId));
+  const targetPhase = rules.hasFinalSay ? VotePhase.PHASE2 : VotePhase.PHASE1;
+  const assetComments = await getCommentsForAsset(Number(assetId), targetPhase);
 
-  const assetComments = await getCommentsForAsset(Number(assetId));
+  const assetDetails = await getAssetDetails(Number(assetId));
+  const uploaderInfoString = `${assetDetails.uploader.fullName} - ${assetDetails.uploader.teamName}`;
+
   return (
     <div className={styles.asset_page}>
       <div className={styles.asset_content}>
@@ -78,6 +82,7 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
         gameId={Number(gameId)}
         assetId={Number(assetId)}
         userId={user.id}
+        phase={targetPhase}
       />
     </div>
   );

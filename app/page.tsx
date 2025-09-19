@@ -20,7 +20,9 @@ export default async function GameProjectSelectionPage() {
 
   return (
     <div className={styles.page}>
-      <h1>StagePass</h1>
+      <h1>StagePass (MVP)</h1>
+      <h2>{`Hi, ${user.firstName}!`}</h2>
+      <span>(Proper UI design is underway! Thank you for your patience)</span>
       <span>Select Game Project:</span>
       <div className="content-wrapper">
         {teamData.games.map((game) => (

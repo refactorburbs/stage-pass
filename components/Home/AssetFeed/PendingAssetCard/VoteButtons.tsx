@@ -15,7 +15,7 @@ interface VoteButtonProps {
 }
 
 export default function VoteButtons({ assetId, currentPhase, gameId, onVote }: VoteButtonProps) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleVote = (voteType: VoteType) => {
     startTransition(async () => {

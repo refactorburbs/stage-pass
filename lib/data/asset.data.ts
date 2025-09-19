@@ -23,6 +23,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       imageUrl: true,
       createdAt: true,
       currentPhase: true,
+      status: true,
       game_id: true,
       uploader_id: true,
       uploader: {
@@ -66,13 +67,27 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
     teamName: vote.user.team.name
   })
 
-  const approvedVotes = asset.votes
+  const approvedVotes = currentAssetVotes
     .filter(vote => vote.voteType === VoteType.APPROVE)
     .map(transformVote);
 
-  const rejectedVotes = asset.votes
+  const rejectedVotes = currentAssetVotes
     .filter(vote => vote.voteType === VoteType.REJECT)
     .map(transformVote);
+
+  let pendingVoteCount = eligibleVoters.length - currentAssetVotes.length;
+  // If the asset is locked, return 0 for pending voters
+  if ((asset.currentPhase === VotePhase.PHASE1
+    && (asset.status === AssetStatus.PHASE1_APPROVED
+    || asset.status === AssetStatus.PHASE1_REJECTED))
+    // Same for phase 2 - if locked in phase2, return 0 for pending
+    || (asset.currentPhase === VotePhase.PHASE2
+      && (asset.status === AssetStatus.PHASE2_APPROVED
+        || asset.status === AssetStatus.PHASE2_REJECTED
+      )
+    )) {
+      pendingVoteCount = 0;
+    }
 
   const assetDetailsDTO = {
     id: asset.id,
@@ -93,7 +108,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
     votes: {
       rejectPercentage,
       approvePercentage,
-      pendingCount: eligibleVoters.length - asset.votes.length,
+      pendingCount: pendingVoteCount,
       approved: approvedVotes,
       rejected: rejectedVotes
     }

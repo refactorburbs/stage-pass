@@ -4,7 +4,6 @@ import { UserRole, VotePhase } from "@/app/generated/prisma";
 import { cache } from "react";
 import {
   GetDetailedUserDataResponse,
-  GetGameDataResponse,
   GetUserDataResponse,
   GetUserPermissionsResponse
 } from "../types/dto.types";
@@ -142,11 +141,11 @@ export async function getDetailedUserData(): Promise<GetDetailedUserDataResponse
 
 export const getUserPermissions = cache(async (
   user: GetUserDataResponse,
-  game: GetGameDataResponse
+  gameId: number,
 ): Promise<GetUserPermissionsResponse> => {
   const isIPOwner = await prisma.gameOwner.findFirst({
     where: {
-      game_id: game.id,
+      game_id: gameId,
       user_id: user.id
     }
   });

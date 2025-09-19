@@ -8,7 +8,7 @@ import prisma from "@/lib/prisma";
 import { SubscriptionType, UserRole, VotePhase, VoteType } from "../generated/prisma";
 import { USER_VOTE_WEIGHT, VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { getAllEligibleVoters, getUser } from "@/lib/data";
-import { calculateRawAssetVotes } from "@/lib/utils";
+import { calculateRawAssetVotes, sendDiscordNotification } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { subscribeUserToAsset } from "./comment.actions";
 
@@ -96,6 +96,7 @@ export async function castAssetVote(
       id: assetId
     },
     select: {
+      title: true,
       uploader_id: true
     }
   });
@@ -152,10 +153,10 @@ export async function castAssetVote(
           voteType: VoteType.REJECT
         }
       });
+    } else {
+      console.log("Asset voting tie! Sending Discord notification");
+      await sendDiscordNotification(`"${assetBeingVotedOn?.title}" received a tie vote. This asset needs manual review.`);
     }
-    // @TODO  else: if it's a tie, maybe send a discord notification that this asset needs manual review
-    // If the asset category was "Full Asset" and the asset status was phase1_approved then update the asset to phase2 and phase1completedat
-    console.log("updating current asset status and phase - this should happen in the cron job");
   }
   // Add a new vote record (not in an else b/c it should happen regardless if this is the final vote)
   await prisma.assetVote.create({

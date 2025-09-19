@@ -25,7 +25,7 @@ const signupSchema = z.object({
   customAvatarUrl: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
-  path: ["confirmpassword"],
+  path: ["confirmPassword"],
 });
 // -----------------------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
 
     // 3. Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email: email.toLowerCase() }
     })
 
     if (existingUser) {
@@ -98,7 +98,7 @@ export async function signup(state: AuthFormState, formData: FormData): Promise<
         lastName,
         fullName: createFullName(firstName, lastName),
         initials: createInitials(firstName, lastName),
-        email,
+        email: email.toLowerCase(), // normalizing this so that different case emails aren't separate users
         passwordHash: hashedPassword,
         avatar,
         customAvatar: customAvatarUrl,

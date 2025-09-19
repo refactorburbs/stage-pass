@@ -18,6 +18,7 @@ export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path) || path.startsWith("/game/");
   const isAuthPage = authPages.includes(path);
+
   const cookieStore = await cookies();
   const cookie = cookieStore.get("session")?.value;
   const session = await decrypt(cookie);

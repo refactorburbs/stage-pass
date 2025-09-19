@@ -4,11 +4,9 @@ import { signup } from "@/app/actions/auth.actions";
 import { useActionState, useState } from "react";
 import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
 import DynamicImageAvatarBubble from "@/components/AvatarBubble/DynamicImageAvatarBubble";
-
-import styles from "../auth.module.css";
 import { uploadFileToPinata } from "@/app/actions/pinata.actions";
 
-// then use this logic that's in here currently for the asset uploads (larger file)
+import styles from "../auth.module.css";
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(signup, undefined);
@@ -19,18 +17,18 @@ export default function SignUpForm () {
   const [clientError, setClientError] = useState("");
 
   const handleInitialChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.name === "firstName") {
-      setFirstInitial(event.target.value.charAt(0).toUpperCase());
-    }
-    if (event.target.name === "lastName") {
-      setLastInitial(event.target.value.charAt(0).toUpperCase());
-    }
+    const { name, value } = event.target;
+    setClientError("");
+
+    if (name === "firstName") setFirstInitial(value.charAt(0).toUpperCase());
+    if (name === "lastName") setLastInitial(value.charAt(0).toUpperCase());
   }
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     setClientError("");
-    // Check file size (0.5MB = 512KB)
+    // Check file size (0.5MB = 512KB). Keeping profile pics small, allowing asset uploads to be bigger (more cost efficient)
     if (file.size > 0.5 * 1024 * 1024) {
       setClientError("File size must be less than 0.5MB (500KB). Please choose a smaller image.");
       event.target.value = "";
@@ -53,7 +51,7 @@ export default function SignUpForm () {
       formData.set("customAvatarUrl", customAvatarUrl);
     }
     // Call the original form action
-    action(formData);
+    await action(formData);
   };
 
   return (

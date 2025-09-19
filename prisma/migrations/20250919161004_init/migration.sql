@@ -126,6 +126,7 @@ CREATE TABLE "public"."votes" (
 CREATE TABLE "public"."AssetComment" (
     "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
+    "phase" "public"."VotePhase" NOT NULL,
     "asset_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

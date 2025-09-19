@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { USER_AVATAR_SELECT_QUERY } from "../constants/placeholder.constants";
 import { PendingCommentData, UserAssetComment } from "../types/assets.types";
+import { VotePhase } from "@/app/generated/prisma";
 
 export async function getUserPendingComments(userId: number): Promise<Array<PendingCommentData>> {
   const comments = await prisma.pendingCommentNotification.findMany({
@@ -52,10 +53,11 @@ export async function getUserPendingComments(userId: number): Promise<Array<Pend
   }));
 }
 
-export async function getCommentsForAsset (assetId: number): Promise<Array<UserAssetComment>> {
+export async function getCommentsForAsset (assetId: number, phase: VotePhase): Promise<Array<UserAssetComment>> {
   const assetComments = await prisma.assetComment.findMany({
     where: {
-      asset_id: assetId
+      asset_id: assetId,
+      phase,
     },
     select: {
       id: true,
