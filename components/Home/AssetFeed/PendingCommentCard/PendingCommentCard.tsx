@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
 import { PendingCommentData } from "@/lib/types/assets.types";
@@ -16,6 +16,8 @@ interface PendingCommentCardProps {
 
 export default function PendingCommentCard({ comment }: PendingCommentCardProps) {
   const [isPending, startTransition] = useTransition();
+  const fallbackSrc = "/no-image-available.webp";
+  const [imageSrc, setImageSrc] = useState(comment.assetImage || fallbackSrc);
   const router = useRouter();
   const handleCardClick = () => {
     startTransition(async () => {
@@ -49,11 +51,12 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
 
         <div className={styles.image_preview_container}>
           <Image
-            src={comment.assetImage}
+            src={imageSrc}
             alt="Asset Preview"
             className={styles.preview_image}
             height={1080}
             width={1080}
+            onError={() => setImageSrc(fallbackSrc)}
           />
         </div>
       </div>

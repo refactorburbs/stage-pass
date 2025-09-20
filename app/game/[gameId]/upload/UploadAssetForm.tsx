@@ -1,5 +1,6 @@
 "use client";
 
+import { ALLOWED_UPLOAD_FILE_TYPES } from "@/lib/constants/placeholder.constants";
 import { uploadAssetImage } from "@/app/actions/asset.actions";
 import { uploadFileToPinataClient } from "@/lib/pinata-client";
 import { GetGameAssetCategoriesResponse } from "@/lib/types/dto.types";
@@ -15,10 +16,17 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
   const [state, action] = useActionState(uploadAssetImage, undefined);
   const [uploading, setUploading] = useState(false);
   const [assetUrl, setAssetUrl] = useState("");
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (!ALLOWED_UPLOAD_FILE_TYPES.includes(file.type)) {
+      setFileError(`File type "${file.type}" is not supported. Allowed: ${ALLOWED_UPLOAD_FILE_TYPES.join(", ")}`);
+      event.target.value = "";
+      return;
+    }
 
     setUploading(true);
     try {
@@ -50,11 +58,11 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
         <input
           type="file"
           name="screenshot-raw"
-          accept=".png,.jpg,.jpeg,.gif,.svg"
+          accept={ALLOWED_UPLOAD_FILE_TYPES.join(",")}
           disabled={uploading}
           onChange={handleFileUpload}
         />
-        {state?.errors?.imageUrl && <span className="error-msg">{state.errors.imageUrl}</span>}
+        {fileError && <span className="error-msg">{fileError}</span>}
       </div>
 
       <input name="title" type="text" placeholder="Asset Title"/>

@@ -27,3 +27,5 @@ export const USER_AVATAR_SELECT_QUERY = {
     select: { name: true }
   }
 }
+
+export const ALLOWED_UPLOAD_FILE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/tiff"];

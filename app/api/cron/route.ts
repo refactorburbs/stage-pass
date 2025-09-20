@@ -5,8 +5,8 @@
 // locking it for this phase. The cron happens on vercel, which is configured
 // to this api route in the vercel.json.
 
-import { cleanupPendingCommentsAndSubs } from "@/app/actions/comment.actions";
-import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
+import { cleanupPendingCommentsAndSubs, subscribeUserToAsset } from "@/app/actions/comment.actions";
+import { AssetStatus, SubscriptionType, VotePhase, VoteType } from "@/app/generated/prisma";
 import { VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { getAllEligibleVoters } from "@/lib/data";
 import prisma from "@/lib/prisma";
@@ -139,6 +139,10 @@ async function processAssetLock(lockJob: LockJob) {
   }, lockJob.currentPhase, finalDecision, shouldMoveToPhase2);
 
   await cleanupPendingCommentsAndSubs(asset.id);
+  // If the asset is moving onto phase 2, re-subscribe the uploader to new comments
+  if (updatedAsset.currentPhase === VotePhase.PHASE2) {
+    await subscribeUserToAsset(lockJob.asset.uploader_id, asset.id, SubscriptionType.UPLOADED);
+  }
 
   // Remove the completed lock job
   await prisma.assetPendingLock.delete({

@@ -1,15 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState, useTransition } from "react";
 import { AssetFeedItem, PendingCommentData } from "@/lib/types/assets.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
 import VoterBubbles from "../VoterBubbles/VoterBubbles";
 import PendingCommentsFooter from "../PendingCommentsFooter/PendingCommentsFooter";
 import { redactAssetVote } from "@/app/actions/asset.actions";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { timeAgo } from "@/lib/utils";
+import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 
 import styles from "./ColumnListViewItem.module.css";
 
@@ -35,6 +35,7 @@ const getItemColor = (status: AssetStatus, currentPhase: VotePhase) => {
 
 export default function ColumnListViewItem({ item, notifications }: ColumnListViewProps) {
   const { gameId } = useParams();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   // If the imageUrl exists but is a broken link (can happen with improper database deletions), then have fallback.
   const fallbackSrc = "/no-image-available.webp";
@@ -54,6 +55,16 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
       await redactAssetVote(voteId, Number(gameId));
     });
   };
+
+  const onCardClick = () => {
+    // If this is the Artist's personal feed with comments, dismiss them all on asset click
+    if (commentsForThisAsset.length > 0) {
+      startTransition(async () => {
+        await dismissCommentsForAsset(commentsForThisAsset[0].subscriber_id, item.id);
+      });
+    }
+    router.push(`/game/${gameId}/asset/${item.id}`);
+  }
 
   const renderFooter = () => {
     // For the game feed, where one asset item has several voters
@@ -94,36 +105,34 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
   }
 
   return (
-    <Link href={`/game/${gameId}/asset/${item.id}`}>
-      <div className={styles.list_item_container} style={{ backgroundColor: itemColor }}>
-        <div className={styles.image_preview_container}>
-          <Image
-            src={imageSrc}
-            alt="Asset"
-            height={1080}
-            width={1080}
-            className={styles.preview_image}
-            onError={() => setImageSrc(fallbackSrc)}
-          />
+    <div onClick={onCardClick} className={styles.list_item_container} style={{ backgroundColor: itemColor }}>
+      <div className={styles.image_preview_container}>
+        <Image
+          src={imageSrc}
+          alt="Asset"
+          height={1080}
+          width={1080}
+          className={styles.preview_image}
+          onError={() => setImageSrc(fallbackSrc)}
+        />
+      </div>
+      <div className={styles.list_item_info}>
+        <div className={styles.header}>
+          <span>{item.title}</span>
+          {item.currentPhase === VotePhase.PHASE1 && (
+            <span className={styles.phase_info}>
+              Internal Review
+            </span>
+          )}
         </div>
-        <div className={styles.list_item_info}>
-          <div className={styles.header}>
-            <span>{item.title}</span>
-            {item.currentPhase === VotePhase.PHASE1 && (
-              <span className={styles.phase_info}>
-                Internal Review
-              </span>
-            )}
-          </div>
-          <div className={styles.submission_info}>
-            {submissionInfoText} • {timeAgo(item.createdAt)}
-          </div>
+        <div className={styles.submission_info}>
+          {submissionInfoText} • {timeAgo(item.createdAt)}
+        </div>
 
-          <div className={styles.item_footer}>
-            {renderFooter()}
-          </div>
+        <div className={styles.item_footer}>
+          {renderFooter()}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
