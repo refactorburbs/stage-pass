@@ -14,7 +14,7 @@ import { subscribeUserToAsset } from "./comment.actions";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
-  imageUrl: z.string(),
+  imageUrls: z.array(z.string()).length(4, "Maximum 4 images per asset"),
   title: z.string().min(5, "Title should be more descriptive."),
   category: z.string(),
   gameId: z.string().transform((id) => { // Form fields are strings, so transform to num.
@@ -28,7 +28,7 @@ const uploadAssetSchema = z.object({
 export async function uploadAssetImage(_state: UploadAssetFormState, formData: FormData): Promise<UploadAssetFormState> {
   // 1. Validate upload form fields with zod
   const validatedFields = uploadAssetSchema.safeParse({
-    imageUrl: formData.get("imageUrl"),
+    imageUrls: formData.getAll("image-urls"),
     title: formData.get("title"),
     category: formData.get("category"),
     gameId: formData.get("gameId")
@@ -46,7 +46,7 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
     return { errors: fieldErrors };
   }
 
-  const { imageUrl, title, category, gameId } = validatedFields.data;
+  const { imageUrls, title, category, gameId } = validatedFields.data;
   // 2. Get user id (uploader_id) from the session store
   const session = await verifySession();
   if (!session.userId) {
@@ -61,7 +61,7 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
       data: {
         title,
         category,
-        imageUrl,
+        imageUrls,
         game_id: gameId,
         uploader_id: uploaderId
       }

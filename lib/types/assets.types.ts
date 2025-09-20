@@ -17,7 +17,7 @@ export interface AssetItemForArtistFeed {
   id: number;
   title: string;
   category: string;
-  imageUrl: string;
+  imageUrls: string[];
   status: AssetStatus;
   currentPhase: VotePhase;
   createdAt: Date;
@@ -29,7 +29,7 @@ export type IntermediateVoterAssetItem = {
   id: number;
   title: string;
   category: string;
-  imageUrl: string;
+  imageUrls: string[];
   createdAt: Date;
   currentPhase: VotePhase;
   uploader: {
@@ -54,7 +54,7 @@ export interface AssetItemForVoterFeed {
   id: number;
   title: string;
   category: string;
-  imageUrl: string;
+  imageUrls: string[];
   createdAt: Date;
   currentPhase: VotePhase;
   uploader: UserAvatarData;
@@ -66,7 +66,7 @@ export interface AssetItemForGameFeed {
   id: number;
   title: string;
   category: string;
-  imageUrl: string;
+  imageUrls: string[];
   createdAt: Date;
   currentPhase: VotePhase;
   status: AssetStatus;
@@ -98,7 +98,7 @@ export interface GetAssetDetailsResponse {
   id: number;
   title: string;
   category: string;
-  imageUrl: string;
+  imageUrls: string[];
   createdAt: Date;
   currentPhase: VotePhase;
   uploader: {

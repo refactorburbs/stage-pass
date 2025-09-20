@@ -204,7 +204,7 @@ model Asset {
   id          Int    @id @default(autoincrement())
   title       String
   category    String // Must be one of the categories from the associated game
-  imageUrl    String
+  imageUrls   String[]
 
   // Status and phase tracking
   status               AssetStatus @default(PENDING)

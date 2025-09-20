@@ -14,7 +14,7 @@ export type AuthFormState = {
 
 export type UploadAssetFormState = {
   errors?: {
-    imageUrl?: string[]
+    imageUrls?: string[]
     title?: string[]
     category?: string[]
   }

@@ -21,7 +21,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       id: true,
       title: true,
       category: true,
-      imageUrl: true,
+      imageUrls: true,
       createdAt: true,
       currentPhase: true,
       status: true,
@@ -94,7 +94,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
     id: asset.id,
     title: asset.title,
     category: asset.category,
-    imageUrl: asset.imageUrl,
+    imageUrls: asset.imageUrls,
     createdAt: asset.createdAt,
     currentPhase: asset.currentPhase,
     uploader: {
@@ -138,7 +138,7 @@ export async function getAssetFeedForArtist(
       id: true,
       title: true,
       category: true,
-      imageUrl: true,
+      imageUrls: true,
       status: true,
       currentPhase: true,
       createdAt: true,
@@ -191,7 +191,7 @@ export async function getAssetFeedForVoter(
       id: true,
       title: true,
       category: true,
-      imageUrl: true,
+      imageUrls: true,
       currentPhase: true,
       createdAt: true,
       uploader: {
@@ -219,7 +219,7 @@ export async function getAssetFeedForVoter(
     id: asset.id,
     title: asset.title,
     category: asset.category,
-    imageUrl: asset.imageUrl,
+    imageUrls: asset.imageUrls,
     createdAt: asset.createdAt,
     currentPhase: asset.currentPhase,
     uploader: {
@@ -270,7 +270,7 @@ export async function getAssetFeedForGame(
   // If the asset's votes for this phase are higher for approved than rejected, it's in approved. Also if its status is approved for this phase.
   // If the asset's votes for this phase are even, it is in pending.
   // Fields we need to retrieve from each qualifying asset:
-  // Asset: id, title, imageUrl, category, status, uploader_id (to get uploader name), createdAt.
+  // Asset: id, title, imageUrls, category, status, uploader_id (to get uploader name), createdAt.
   // Asset votes: if the asset is trending towards rejected, then all users who cast rejected votes
   //  -> Get the voter's fullName, initials, avatar, customAvatar
   const targetPhase = hasFinalSay ? VotePhase.PHASE2 : VotePhase.PHASE1;
@@ -291,7 +291,7 @@ export async function getAssetFeedForGame(
       id: true,
       title: true,
       category: true,
-      imageUrl: true,
+      imageUrls: true,
       createdAt: true,
       currentPhase: true,
       status: true,
@@ -335,7 +335,7 @@ export async function getAssetFeedForGame(
       id: asset.id,
       title: asset.title,
       category: asset.category,
-      imageUrl: asset.imageUrl,
+      imageUrls: asset.imageUrls,
       createdAt: asset.createdAt,
       currentPhase: asset.currentPhase,
       status: asset.status,

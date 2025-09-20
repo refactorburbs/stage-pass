@@ -18,7 +18,7 @@ export async function getUserPendingComments(userId: number): Promise<Array<Pend
           createdAt: true,
           asset: {
             select: {
-              imageUrl: true,
+              imageUrls: true,
               game_id: true
             }
           },
@@ -37,7 +37,7 @@ export async function getUserPendingComments(userId: number): Promise<Array<Pend
     id: comment.id,
     content: comment.comment.content,
     createdAt: comment.comment.createdAt,
-    assetImage: comment.comment.asset.imageUrl,
+    assetImage: comment.comment.asset.imageUrls[0],
     asset_id: comment.asset_id,
     game_id: comment.comment.asset.game_id,
     subscriber_id: userId,

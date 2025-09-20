@@ -135,7 +135,7 @@ async function processAssetLock(lockJob: LockJob) {
     id: updatedAsset.id,
     title: updatedAsset.title,
     category: updatedAsset.category,
-    imageUrl: updatedAsset.imageUrl
+    imageUrl: updatedAsset.imageUrls[0]
   }, lockJob.currentPhase, finalDecision, shouldMoveToPhase2);
 
   await cleanupPendingCommentsAndSubs(asset.id);
