@@ -21,6 +21,14 @@ export type UploadAssetFormState = {
   message?: string
 } | undefined;
 
+export type UploadAssetRevisionFormState = {
+  errors?: {
+    imageUrls?: string[]
+    revisionDescription?: string[]
+  }
+  message?: string
+} | undefined;
+
 export type UpdateUserProfileFormState = {
   errors?: {
     customAvatar?: string[]

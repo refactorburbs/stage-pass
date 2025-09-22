@@ -10,10 +10,6 @@ export default function UploadButton() {
   const isOnRevisionPage = currentRoute === `/game/${gameId}/asset/${assetId}/upload`;
   const isOnAssetPage = currentRoute.includes(`/game/${gameId}/asset/`) && assetId;
 
-  const handleUploadRevision = () => {
-    console.log('add a revision to pinata and db!')
-  }
-
   if (isOnUploadPage) {
     // Using native browser linking by form id so that
     // layout button can be outside the upload form component.
@@ -32,8 +28,10 @@ export default function UploadButton() {
   if (isOnRevisionPage) {
     return (
       <button
+        id="upload-asset-revision-button"
         className="upload-button"
-        onClick={handleUploadRevision}
+        type="submit"
+        form="uploadAssetRevisionForm"
       >
         Add Revision
       </button>

@@ -8,9 +8,10 @@ import { calculateRawAssetVotes } from "../utils";
 import { GetAssetFeedForArtistResponse, GetAssetFeedForGameResponse, GetAssetFeedForVoterResponse } from "../types/dto.types";
 import { AssetItemForGameFeed, AssetItemForVoterFeed, GetAssetDetailsResponse, IntermediateVoterAssetDetailsItem, IntermediateVoterAssetItem } from "../types/assets.types";
 import { getAllEligibleVoters } from "./user.data";
-import { USER_AVATAR_SELECT_QUERY } from "../constants/placeholder.constants";
 import { UserAvatarData } from "../types/users.types";
 import { isAssetLocked } from "../utils/asset.utils";
+import { ASSET_DETAILS_SELECT_QUERY, ASSET_REVISION_SELECT_QUERY, USER_AVATAR_SELECT_QUERY } from "../constants/query.constants";
+import { transformRevisionData, transformUserAvatarData } from "../utils/transforms.utils";
 
 export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsResponse> {
   const asset = await prisma.asset.findUnique({
@@ -18,30 +19,19 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       id: assetId
     },
     select: {
-      id: true,
-      title: true,
-      category: true,
-      imageUrls: true,
-      createdAt: true,
-      currentPhase: true,
-      status: true,
+      ...ASSET_DETAILS_SELECT_QUERY,
       game_id: true,
       uploader_id: true,
-      uploader: {
-        select: USER_AVATAR_SELECT_QUERY
+      originalAsset: {
+        select: ASSET_REVISION_SELECT_QUERY
       },
-      votes: {
-        select: {
-          id: true,
-          voteType: true,
-          phase: true,
-          weight: true,
-          user: {
-            select: USER_AVATAR_SELECT_QUERY
-          }
+      revisions: {
+        select: ASSET_REVISION_SELECT_QUERY,
+        orderBy: {
+          revisionNumber: "asc"
         }
-      }
-    }
+      },
+    },
   });
 
   if (!asset) {
@@ -97,25 +87,38 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
     imageUrls: asset.imageUrls,
     createdAt: asset.createdAt,
     currentPhase: asset.currentPhase,
-    uploader: {
-      id: asset.uploader.id,
-      firstName: asset.uploader.firstName,
-      fullName: asset.uploader.fullName,
-      initials: asset.uploader.initials,
-      avatar: asset.uploader.avatar,
-      customAvatar: asset.uploader.customAvatar || null,
-      teamName: asset.uploader.team.name
-    },
+    status: asset.status,
+    revisionNumber: asset.revisionNumber,
+    revisionDescription: asset.revisionDescription,
+    uploader: transformUserAvatarData(asset.uploader),
     votes: {
       rejectPercentage,
       approvePercentage,
       pendingCount: pendingVoteCount,
       approved: approvedVotes,
       rejected: rejectedVotes
-    }
+    },
+    originalAsset: asset.originalAsset ? transformRevisionData(asset.originalAsset) : null,
+    revisions: asset.revisions.map(transformRevisionData)
   };
 
   return assetDetailsDTO;
+}
+
+export async function getShortAssetDetails(assetId: number) {
+  const asset = await prisma.asset.findUnique({
+    where: {
+      id: assetId
+    },
+    select: {
+      id: true,
+      title: true,
+      category: true,
+      createdAt: true,
+      revisionNumber: true
+    }
+  });
+  return asset;
 }
 
 export async function getAssetFeedForArtist(
@@ -222,15 +225,7 @@ export async function getAssetFeedForVoter(
     imageUrls: asset.imageUrls,
     createdAt: asset.createdAt,
     currentPhase: asset.currentPhase,
-    uploader: {
-      id: asset.uploader.id,
-      firstName: asset.uploader.firstName,
-      fullName: asset.uploader.fullName,
-      initials: asset.uploader.initials,
-      avatar: asset.uploader.avatar,
-      customAvatar: asset.uploader.customAvatar,
-      teamName: asset.uploader.team.name
-    },
+    uploader: transformUserAvatarData(asset.uploader),
     vote_id: asset.votes[0]?.id || null, // Used to reference assetVote if user wants to switch vote back to pending
     votedAt: asset.votes[0]?.createdAt || null
   });
@@ -339,15 +334,7 @@ export async function getAssetFeedForGame(
       createdAt: asset.createdAt,
       currentPhase: asset.currentPhase,
       status: asset.status,
-      uploader: {
-        id: asset.uploader.id,
-        firstName: asset.uploader.firstName,
-        fullName: asset.uploader.fullName,
-        initials: asset.uploader.initials,
-        avatar: asset.uploader.avatar,
-        customAvatar: asset.uploader.customAvatar,
-        teamName: asset.uploader.team.name
-      },
+      uploader: transformUserAvatarData(asset.uploader),
       voters: [] as Array<UserAvatarData>
     }
     const isReject = rejectCount > approveCount;

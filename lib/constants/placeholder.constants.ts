@@ -16,16 +16,4 @@ export const AVATAR_BUBBLE_COLORS = [
   "#9b59b6"
 ];
 
-export const USER_AVATAR_SELECT_QUERY = {
-  id: true,
-  firstName: true,
-  fullName: true,
-  initials: true,
-  avatar: true,
-  customAvatar: true,
-  team: {
-    select: { name: true }
-  }
-}
-
 export const ALLOWED_UPLOAD_FILE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/tiff"];

@@ -32,6 +32,7 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
   const assetComments = await getCommentsForAsset(Number(assetId), targetPhase);
 
   const assetDetails = await getAssetDetails(Number(assetId));
+  console.log('asset details are ', assetDetails)
   const uploaderInfoString = `${assetDetails.uploader.fullName} - ${assetDetails.uploader.teamName}`;
 
   return (
@@ -46,17 +47,6 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
         </div>
         <div className={styles.image_grid_container}>
           <ImageGrid imageUrls={assetDetails.imageUrls} />
-          {/* <Image
-            src={assetDetails.imageUrls[0]}
-            alt="Asset"
-            height={1920}
-            width={1080}
-            className={styles.preview_image}
-          /> */}
-          {/* <ImageGrid
-            imageUrls={assetDetails.imageUrls}
-            alt="Asset"
-          /> */}
           {isPending && (
             <VoteButtons
               assetId={assetDetails.id}

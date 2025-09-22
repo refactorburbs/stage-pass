@@ -1,6 +1,6 @@
 import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
-import { UserAvatarData } from "./users.types";
+import { RawUserAvatarData, UserAvatarData } from "./users.types";
 
 export interface AssetVote {
   id: number;
@@ -94,13 +94,16 @@ export type IntermediateVoterAssetDetailsItem = {
   }
 }
 
-export interface GetAssetDetailsResponse {
+export interface AssetDetails {
   id: number;
   title: string;
   category: string;
   imageUrls: string[];
   createdAt: Date;
   currentPhase: VotePhase;
+  status: AssetStatus;
+  revisionNumber: number;
+  revisionDescription: string;
   uploader: {
     id: number;
     firstName: string;
@@ -117,6 +120,31 @@ export interface GetAssetDetailsResponse {
     approved: Array<UserAvatarData>;
     rejected: Array<UserAvatarData>;
   }
+}
+
+export type RawAssetRevisionDetails = {
+  id: number;
+  imageUrls: string[];
+  createdAt: Date;
+  status: AssetStatus;
+  revisionNumber: number;
+  revisionDescription: string;
+  uploader: RawUserAvatarData;
+}
+
+export interface AssetRevisionDetails {
+  id: number;
+  imageUrls: string[];
+  createdAt: Date;
+  status: AssetStatus;
+  revisionNumber: number;
+  revisionDescription: string;
+  uploader: UserAvatarData;
+}
+
+export interface GetAssetDetailsResponse extends AssetDetails {
+  originalAsset: AssetRevisionDetails | null;
+  revisions: Array<AssetRevisionDetails>;
 }
 
 export interface UserAssetComment {

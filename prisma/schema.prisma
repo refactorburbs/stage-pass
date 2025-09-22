@@ -201,33 +201,42 @@ model GameOwner {
 }
 
 model Asset {
-  id          Int    @id @default(autoincrement())
-  title       String
-  category    String // Must be one of the categories from the associated game
-  imageUrls   String[]
+  id                 Int    @id @default(autoincrement())
+  title              String
+  category           String // Must be one of the categories from the associated game
+  imageUrls          String[]
 
   // Status and phase tracking
-  status               AssetStatus @default(PENDING)
-  currentPhase         VotePhase   @default(PHASE1)
+  status             AssetStatus @default(PENDING)
+  currentPhase       VotePhase   @default(PHASE1)
+
+  // Revision tracking (revisions are treated as new assets)
+  original_asset_id   Int?
+  revisionNumber      Int @default(0) // 0 = original, 1+ = revision
+  revisionDescription String @default("")
 
   // Foreign Keys
-  game_id     Int
-  uploader_id Int
+  game_id            Int
+  uploader_id        Int
 
   // Timestamps
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-  phase1CompletedAt DateTime? @map("phase1_completed_at")
-  phase2CompletedAt DateTime? @map("phase2_completed_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  phase1CompletedAt  DateTime? @map("phase1_completed_at")
+  phase2CompletedAt  DateTime? @map("phase2_completed_at")
 
   // Relations
-  game             Game                   @relation(fields: [game_id], references: [id], onDelete: Cascade)
-  uploader         User                   @relation("AssetUploader", fields: [uploader_id], references: [id], onDelete: Cascade)
-  votes            AssetVote[]
-  comments         AssetComment[]
-  subscriptions    AssetSubscription[]
-  notifications    PendingCommentNotification[]
-  lockJob          AssetPendingLock?
+  game              Game                   @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  uploader          User                   @relation("AssetUploader", fields: [uploader_id], references: [id], onDelete: Cascade)
+  votes             AssetVote[]
+  comments          AssetComment[]
+  subscriptions     AssetSubscription[]
+  notifications     PendingCommentNotification[]
+  lockJob           AssetPendingLock?
+
+  // Self-referencing table for revisions (a recursive relationship - if original_asset_id is not null, store in revisions[])
+  originalAsset     Asset?  @relation("AssetRevisions", fields: [original_asset_id], references: [id])
+  revisions         Asset[] @relation("AssetRevisions")
 
   @@index([game_id, status, currentPhase]) // For filtering assets by game and phase
   @@index([status, currentPhase]) // For dashboard queries

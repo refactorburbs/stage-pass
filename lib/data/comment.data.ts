@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { USER_AVATAR_SELECT_QUERY } from "../constants/placeholder.constants";
+import { USER_AVATAR_SELECT_QUERY } from "../constants/query.constants";
 import { PendingCommentData, UserAssetComment } from "../types/assets.types";
 import { VotePhase } from "@/app/generated/prisma";
 

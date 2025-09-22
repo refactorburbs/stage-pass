@@ -99,6 +99,9 @@ CREATE TABLE "public"."assets" (
     "imageUrls" TEXT[],
     "status" "public"."AssetStatus" NOT NULL DEFAULT 'PENDING',
     "currentPhase" "public"."VotePhase" NOT NULL DEFAULT 'PHASE1',
+    "original_asset_id" INTEGER,
+    "revisionNumber" INTEGER NOT NULL DEFAULT 0,
+    "revisionDescription" TEXT NOT NULL DEFAULT '',
     "game_id" INTEGER NOT NULL,
     "uploader_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -234,6 +237,9 @@ ALTER TABLE "public"."assets" ADD CONSTRAINT "assets_game_id_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "public"."assets" ADD CONSTRAINT "assets_uploader_id_fkey" FOREIGN KEY ("uploader_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."assets" ADD CONSTRAINT "assets_original_asset_id_fkey" FOREIGN KEY ("original_asset_id") REFERENCES "public"."assets"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."votes" ADD CONSTRAINT "votes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

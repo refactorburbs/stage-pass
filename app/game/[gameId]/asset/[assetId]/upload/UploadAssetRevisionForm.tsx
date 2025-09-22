@@ -1,20 +1,23 @@
 "use client";
 
 import { ALLOWED_UPLOAD_FILE_TYPES } from "@/lib/constants/placeholder.constants";
-import { uploadAssetImage } from "@/app/actions/asset.actions";
+import { uploadAssetRevisionImage } from "@/app/actions/asset.actions";
 import { uploadFileToPinataClient } from "@/lib/pinata-client";
 import { GetGameAssetCategoriesResponse } from "@/lib/types/dto.types";
 import { useActionState, useEffect, useRef, useState } from "react";
 import CloudUploadIcon from "@/components/Icons/CloudUploadIcon";
 
-import styles from "./upload.module.css";
+import styles from "./UploadRevision.module.css";
 
 interface UploadAssetFormProps {
-  gameData: GetGameAssetCategoriesResponse
+  gameData: GetGameAssetCategoriesResponse;
+  originalAssetId: number;
+  title: string;
+  category: string;
 }
 
-export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
-  const [state, action, isPending] = useActionState(uploadAssetImage, undefined);
+export default function UploadAssetRevisionForm({ gameData, originalAssetId, title, category }: UploadAssetFormProps) {
+  const [state, action, isPending] = useActionState(uploadAssetRevisionImage, undefined);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [assetUrls, setAssetUrls] = useState<string[]>([]);
@@ -23,7 +26,7 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
   const uploadButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(function getElementAfterMount() {
-    uploadButtonRef.current = document.getElementById("upload-asset-button") as HTMLButtonElement;
+    uploadButtonRef.current = document.getElementById("upload-asset-revision-button") as HTMLButtonElement;
   }, [])
 
   const uploadImagesToPinata = async (files: File[]) => {
@@ -46,11 +49,10 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
       } catch (error) {
         console.error("Upload failed:", error);
         return false;
-      } finally {
-        uploadButtonRef.current.disabled = false;
-        uploadButtonRef.current.classList.remove("disabled");
       }
     }
+    uploadButtonRef.current.disabled = false;
+    uploadButtonRef.current.classList.remove("disabled");
     setUploading(false);
     setAssetUrls(urls);
     return true;
@@ -66,7 +68,7 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
     setFileError("");
     const newFiles = Array.from(e.dataTransfer.files);
     if (files.length + newFiles.length > 4) {
-      setFileError(`Up to 4 images can be uploaded for a single asset.`);
+      setFileError("Up to 4 images can be uploaded for a single asset.");
       return;
     }
     setFiles((prev) => [...prev, ...newFiles]);
@@ -85,9 +87,14 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileError("");
     const files = e.target.files;
     if (!files|| files.length === 0) return;
     const newFiles = Array.from(files);
+    if (files.length + newFiles.length > 4) {
+      setFileError("Up to 4 images can be uploaded for a single asset.");
+      return;
+    }
     setFiles((prev) => [...prev, ...newFiles]);
 
     const isSuccess = await uploadImagesToPinata(newFiles);
@@ -100,7 +107,6 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
 
   const handleFormSubmit = async (formData: FormData) => {
     formData.delete("image-files");
-    console.log("submitting! assetURLs are ", assetUrls)
     assetUrls.forEach((url) => {
       formData.append("image-urls", url);
     })
@@ -110,7 +116,7 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
 
   return (
     <div>
-      <form id="uploadAssetForm" action={handleFormSubmit} className={styles.upload_form}>
+      <form id="uploadAssetRevisionForm" action={handleFormSubmit} className={styles.upload_form}>
         <div className={styles.column}>
           <span className={styles.input_label}>
             Image Upload
@@ -138,20 +144,14 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
           {fileError && <span className="error-msg">{fileError}</span>}
         </div>
         <div className={styles.column}>
-          <input name="title" type="text" placeholder="Asset Title"/>
-          {state?.errors?.title && <span className="error-msg">{state.errors.title}</span>}
-
-          <label className={styles.input_label} htmlFor="categoryDropdown">
-            Choose a Category:
+          <label htmlFor="title">
+            Asset Title:
           </label>
-          <span style={{ fontSize: "14px" }}>
-            {'*Uploads in the "Full Asset" category will automatically go to external review once it is approved internally'}
-          </span>
-          <select id="categoryDropdown" name="category">
-            {gameData.assetCategories.map((category) => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
+          <input name="title" type="text" value={title} disabled className="locked-input"/>
+          <span>{`Category: ${category}`}</span>
+
+          <textarea name="revisionDescription" placeholder="Description of changes made..."/>
+          {state?.errors?.revisionDescription && <span className="error-msg">{state.errors.revisionDescription}</span>}
 
           <span className={styles.input_label}>
             Images (up to 4):
@@ -165,7 +165,8 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
           </ul>
           {state?.errors?.imageUrls && <span className="error-msg">{state.errors.imageUrls}</span>}
 
-          {/* Hidden field to submit the associated gameId. UserId is pulled from cookie store */}
+          {/* Hidden fields */}
+          <input type="hidden" name="originalAssetId" value={originalAssetId} />
           <input type="hidden" name="gameId" value={gameData.game_id} />
 
           {state?.message && (
@@ -175,7 +176,7 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
           )}
         </div>
       </form>
-      <span>{isPending ? "Creating Asset..." : uploading ? "Uploading image(s)..." : ""}</span>
+      <span>{isPending ? "Revising Asset..." : uploading ? "Uploading image(s)..." : ""}</span>
     </div>
   );
 }

@@ -1,16 +1,16 @@
 "use server";
 
-import { UploadAssetFormState } from "@/lib/types/forms.types";
+import { UploadAssetFormState, UploadAssetRevisionFormState } from "@/lib/types/forms.types";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { verifySession } from "@/lib/sessions";
 import prisma from "@/lib/prisma";
-import { SubscriptionType, UserRole, VotePhase, VoteType } from "../generated/prisma";
+import { AssetStatus, SubscriptionType, UserRole, VotePhase, VoteType } from "../generated/prisma";
 import { USER_VOTE_WEIGHT, VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { getAllEligibleVoters, getUser } from "@/lib/data";
 import { calculateRawAssetVotes, sendDiscordNotification } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { subscribeUserToAsset } from "./comment.actions";
+import { cleanupPendingCommentsAndSubs, subscribeUserToAsset } from "./comment.actions";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
@@ -18,6 +18,21 @@ const uploadAssetSchema = z.object({
   title: z.string().min(5, "Title should be more descriptive."),
   category: z.string(),
   gameId: z.string().transform((id) => { // Form fields are strings, so transform to num.
+    const num = parseInt(id);
+    if (isNaN(num)) throw new Error("Invalid game ID");
+    return num;
+  })
+});
+
+const uploadAssetRevisionSchema = z.object({
+  imageUrls: z.array(z.string()).min(1, "Must upload at least one image - ").max(4, "Maximum 4 images per asset"),
+  revisionDescription: z.string().min(5, "Must write a description of what's changed in this revision"),
+  originalAssetId: z.string().transform((id) => {
+    const num = parseInt(id);
+    if (isNaN(num)) throw new Error("Invalid game ID");
+    return num;
+  }),
+  gameId: z.string().transform((id) => {
     const num = parseInt(id);
     if (isNaN(num)) throw new Error("Invalid game ID");
     return num;
@@ -78,6 +93,95 @@ export async function uploadAssetImage(_state: UploadAssetFormState, formData: F
   redirect(`/game/${gameId}`);
 }
 
+export async function uploadAssetRevisionImage(_state: UploadAssetRevisionFormState, formData: FormData): Promise<UploadAssetRevisionFormState> {
+  const validatedFields = uploadAssetRevisionSchema.safeParse({
+    imageUrls: formData.getAll("image-urls"),
+    revisionDescription: formData.get("revisionDescription"),
+    originalAssetId: formData.get("originalAssetId"),
+    gameId: formData.get("gameId")
+  });
+
+  if (!validatedFields.success) {
+    const tree = z.treeifyError(validatedFields.error);
+    const fieldErrors: Record<string, string[]> = {};
+
+    for (const [key, value] of Object.entries(tree.properties ?? {})) {
+      if (value?.errors?.length > 0) {
+        fieldErrors[key] = value.errors;
+      }
+    }
+    return { errors: fieldErrors };
+  }
+
+  const { imageUrls, revisionDescription, originalAssetId, gameId } = validatedFields.data;
+  // Get user id (uploader_id) from the session store
+  const session = await verifySession();
+  if (!session.userId) {
+    console.log("No userId found in session");
+    return { message: "Something went wrong. Invalid user session id." }
+  }
+  const uploaderId = Number(session.userId);
+
+  try {
+    // Get the original asset and extract the next revision number based on how many revisions exist
+    const originalAsset = await prisma.asset.findUnique({
+      where: {
+        id: originalAssetId
+      },
+      select: {
+        title: true,
+        category: true,
+        revisions: {
+          select: {
+            id: true
+          }
+        }
+      }
+    });
+    if (!originalAsset) {
+      console.log("No original asset found");
+      return { message: "Something went wrong. Invalid original asset id." }
+    }
+    const revisionNumber = originalAsset.revisions.length + 1;
+    const lastRevisionId = originalAsset.revisions[originalAsset.revisions.length - 1]?.id || originalAssetId;
+    // Update the last asset to be status "REVISED"
+    await prisma.asset.update({
+      where: {
+        id: lastRevisionId,
+        revisionNumber: originalAsset.revisions.length
+      },
+      data: {
+        status: AssetStatus.REVISED
+      }
+    });
+    // Unsubscribe all users to the old asset.
+    await cleanupPendingCommentsAndSubs(lastRevisionId);
+
+    // Create a new asset in Prisma
+    const newAsset = await prisma.asset.create({
+      data: {
+        title: originalAsset.title,
+        category: originalAsset.category,
+        imageUrls,
+        original_asset_id: originalAssetId,
+        revisionNumber,
+        revisionDescription,
+        game_id: gameId,
+        uploader_id: uploaderId
+      }
+    });
+    // 4. Subscribe the uploader to comments on their asset
+    await subscribeUserToAsset(uploaderId, newAsset.id, SubscriptionType.UPLOADED);
+  } catch (error) {
+    console.error("Image upload error:", error)
+    return {
+      message: `Image upload error: ${error}`
+    }
+  }
+  // 5. Redirect to the user's feed (should see their post in pending)
+  redirect(`/game/${gameId}`);
+}
+
 export async function castAssetVote(
   assetId: number,
   gameId: number,
@@ -93,7 +197,10 @@ export async function castAssetVote(
   // the eligible voter count (LEADs can upload but can't vote on their own asset)
   const assetBeingVotedOn = await prisma.asset.findUnique({
     where: {
-      id: assetId
+      id: assetId,
+      status: {
+        notIn: [AssetStatus.REVISED, AssetStatus.ARCHIVED]
+      }
     },
     select: {
       title: true,

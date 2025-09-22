@@ -58,3 +58,8 @@ a {
 .error-msg {
   color: indianred;
 }
+
+.locked-input {
+  background-color: rgb(214, 214, 214);
+  cursor: not-allowed;
+}
