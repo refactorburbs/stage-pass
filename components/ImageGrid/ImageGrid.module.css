@@ -1,0 +1,49 @@
+.image_container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #f3f4f6;
+  min-height: 120px;
+  cursor: pointer;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image:hover {
+  transform: scale(1.02);
+}
+
+.grid_row {
+  display: flex;
+  gap: 4px;
+}
+
+.single_layout {
+  max-width: 100%;
+}
+
+.two_layout {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.three_layout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Four image layout - 2x2 grid */
+.four_layout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}

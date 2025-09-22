@@ -14,7 +14,7 @@ import { subscribeUserToAsset } from "./comment.actions";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
-  imageUrls: z.array(z.string()).length(4, "Maximum 4 images per asset"),
+  imageUrls: z.array(z.string()).min(1, "Must upload at least one image - ").max(4, "Maximum 4 images per asset"),
   title: z.string().min(5, "Title should be more descriptive."),
   category: z.string(),
   gameId: z.string().transform((id) => { // Form fields are strings, so transform to num.

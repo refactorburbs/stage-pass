@@ -39,7 +39,7 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
       <div className={styles.asset_card_container}>
         <div className={styles.image_preview_container}>
           <Image
-            src={asset.imageUrl}
+            src={asset.imageUrls[0]}
             alt="Asset"
             height={1080}
             width={1080}

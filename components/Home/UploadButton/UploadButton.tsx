@@ -19,6 +19,7 @@ export default function UploadButton() {
     // layout button can be outside the upload form component.
     return (
       <button
+        id="upload-asset-button"
         className="upload-button"
         type="submit"
         form="uploadAssetForm"

@@ -39,7 +39,7 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
   const [isPending, startTransition] = useTransition();
   // If the imageUrl exists but is a broken link (can happen with improper database deletions), then have fallback.
   const fallbackSrc = "/no-image-available.webp";
-  const [imageSrc, setImageSrc] = useState(item.imageUrl || fallbackSrc);
+  const [imageSrc, setImageSrc] = useState(item.imageUrls[0] || fallbackSrc);
 
   const hasStatus = "status" in item;
   const hasVoters = "voters" in item;

@@ -46,6 +46,15 @@ a {
   padding: 0.5rem 1rem;
 }
 
+.upload-button:not(.disabled):hover {
+  background-color: rgb(126, 125, 125);
+}
+
+.disabled {
+  cursor: not-allowed;
+  background-color: rgb(228, 164, 164);
+}
+
 .error-msg {
   color: indianred;
 }

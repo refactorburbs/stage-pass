@@ -1,4 +1,3 @@
-import Image from "next/image";
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
@@ -8,6 +7,7 @@ import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import CommentForm from "@/components/Forms/CommentForm/CommentForm";
 import AssetComment from "@/components/AssetComment/AssetComment";
 import { VotePhase } from "@/app/generated/prisma";
+import ImageGrid from "@/components/ImageGrid/ImageGrid";
 
 import styles from "./AssetPage.module.css";
 
@@ -44,14 +44,19 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
             {uploaderInfoString} • {timeAgo(assetDetails.createdAt)}
           </div>
         </div>
-        <div className={styles.image_preview_container}>
-          <Image
-            src={assetDetails.imageUrl}
+        <div className={styles.image_grid_container}>
+          <ImageGrid imageUrls={assetDetails.imageUrls} />
+          {/* <Image
+            src={assetDetails.imageUrls[0]}
             alt="Asset"
             height={1920}
             width={1080}
             className={styles.preview_image}
-          />
+          /> */}
+          {/* <ImageGrid
+            imageUrls={assetDetails.imageUrls}
+            alt="Asset"
+          /> */}
           {isPending && (
             <VoteButtons
               assetId={assetDetails.id}

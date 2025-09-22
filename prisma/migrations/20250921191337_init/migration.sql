@@ -96,7 +96,7 @@ CREATE TABLE "public"."assets" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "category" TEXT NOT NULL,
-    "imageUrl" TEXT NOT NULL,
+    "imageUrls" TEXT[],
     "status" "public"."AssetStatus" NOT NULL DEFAULT 'PENDING',
     "currentPhase" "public"."VotePhase" NOT NULL DEFAULT 'PHASE1',
     "game_id" INTEGER NOT NULL,
