@@ -31,6 +31,8 @@ export default function AssetDetailsCarousel({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [comments, setComments] = useState<Array<UserAssetComment>>([]);
   const contactFormRef = useRef<HTMLFormElement | null>(null);
+  const uploadButtonRef = useRef<HTMLLinkElement | null>(null);
+
   const itemCount = assetHistoryArray.length;
   // Check if we're at the first or last slide for arrow states
   const isFirstSlide = currentIndex === 0;
@@ -53,11 +55,19 @@ export default function AssetDetailsCarousel({
 
     // Can only comment on the latest revision (the most current asset in review)
     contactFormRef.current = document.getElementById("asset-details-comment-form") as HTMLFormElement;
+    uploadButtonRef.current = document.getElementsByClassName("upload-button")[0] as HTMLLinkElement;
+
     if (!contactFormRef.current) return;
     if (currentIndex !== 0 || assetIsLocked) {
       contactFormRef.current.style.visibility = "hidden";
     } else {
       contactFormRef.current.style.visibility = "visible";
+    }
+
+    if (assetIsLocked) {
+      uploadButtonRef.current.style.visibility = "hidden";
+    } else {
+      uploadButtonRef.current.style.visibility = "visible";
     }
   }, [assetHistoryArray, assetIsLocked, currentIndex, getAssetComments, targetPhase]);
 
