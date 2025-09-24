@@ -27,6 +27,7 @@ CREATE TABLE "public"."teams" (
 CREATE TABLE "public"."games" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "banner" TEXT NOT NULL DEFAULT 'https://stagepass.mypinata.cloud/ipfs/bafkreigeqbk7dbhapxn5k522nkdbpcqv5zdloepoqev2qdv6rhymy6el6i',
     "assetCategories" TEXT[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
