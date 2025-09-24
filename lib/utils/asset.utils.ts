@@ -1,7 +1,7 @@
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
 import { AssetDetails, AssetHistoryArray, AssetItemForGameFeed, AssetRevisionDetails } from "../types/assets.types";
 
-export function isAssetLocked(asset: AssetItemForGameFeed) {
+export function isAssetLocked(asset: AssetItemForGameFeed | AssetDetails) {
   if (asset.currentPhase === VotePhase.PHASE1) {
     return asset.status === AssetStatus.PHASE1_APPROVED ||
            asset.status === AssetStatus.PHASE1_REJECTED;

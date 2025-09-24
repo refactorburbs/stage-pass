@@ -23,19 +23,24 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       game_id: true,
       uploader_id: true,
       originalAsset: {
-        select: ASSET_REVISION_SELECT_QUERY
-      },
-      revisions: {
-        select: ASSET_REVISION_SELECT_QUERY,
-        orderBy: {
-          revisionNumber: "desc" // latest revision first in array
+        select: {
+          ...ASSET_REVISION_SELECT_QUERY,
+          revisions: {
+            where: {
+              id: { not: assetId } // If the current asset from assetId arguement is a revision, don't include it again.
+            },
+            select: ASSET_REVISION_SELECT_QUERY,
+            orderBy: {
+              revisionNumber: "desc" // latest revision is first in array
+            }
+          },
         }
       },
     },
   });
 
   if (!asset) {
-    throw new Error("No asset found with this id");
+    throw new Error("No asset found with this Id");
   }
 
   const targetPhase = asset.currentPhase;
@@ -101,7 +106,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       rejected: rejectedVotes
     },
     originalAsset: asset.originalAsset && asset.originalAsset.currentPhase === targetPhase ? transformRevisionData(asset.originalAsset) : null,
-    revisions: asset.revisions.filter((revision) => revision.currentPhase === targetPhase).map(transformRevisionData)
+    revisions: asset.originalAsset ? asset.originalAsset.revisions.filter((revision) => revision.currentPhase === targetPhase).map(transformRevisionData) : []
   };
 
   return assetDetailsDTO;
@@ -117,6 +122,7 @@ export async function getShortAssetDetails(assetId: number) {
       title: true,
       category: true,
       createdAt: true,
+      original_asset_id: true,
       revisionNumber: true
     }
   });

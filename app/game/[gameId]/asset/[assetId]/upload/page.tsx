@@ -24,6 +24,8 @@ export default async function UploadAssetRevisionPage({ params }: UploadAssetRev
     notFound();
   }
 
+  const originalAssetId = asset.original_asset_id ? asset.original_asset_id : Number(assetId);
+
   return (
     <div className={styles.upload_page}>
       <div className={styles.upload_card}>
@@ -36,7 +38,7 @@ export default async function UploadAssetRevisionPage({ params }: UploadAssetRev
             {`Previous revisions can still be viewed, but not interacted with.`}
           </li>
         </ul>
-        <UploadAssetRevisionForm gameData={gameData} originalAssetId={Number(assetId)} title={asset.title} category={asset.category}/>
+        <UploadAssetRevisionForm gameData={gameData} originalAssetId={originalAssetId} title={asset.title} category={asset.category}/>
       </div>
     </div>
   );

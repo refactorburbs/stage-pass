@@ -1,42 +1,30 @@
 "use server";
 
+import { calculateRawAssetVotes, sendDiscordNotification, transformZodStringToNumber } from "@/lib/utils";
 import { UploadAssetFormState, UploadAssetRevisionFormState } from "@/lib/types/forms.types";
-import { z } from "zod";
-import { redirect } from "next/navigation";
-import { verifySession } from "@/lib/sessions";
-import prisma from "@/lib/prisma";
 import { AssetStatus, SubscriptionType, UserRole, VotePhase, VoteType } from "../generated/prisma";
 import { USER_VOTE_WEIGHT, VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
-import { getAllEligibleVoters, getUser } from "@/lib/data";
-import { calculateRawAssetVotes, sendDiscordNotification } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
 import { cleanupPendingCommentsAndSubs, subscribeUserToAsset } from "./comment.actions";
+import { getAllEligibleVoters, getUser } from "@/lib/data";
+import { verifySession } from "@/lib/sessions";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+import { z } from "zod";
 
 // Validation schemas ----------------------------------------------------------------
 const uploadAssetSchema = z.object({
   imageUrls: z.array(z.string()).min(1, "Must upload at least one image - ").max(4, "Maximum 4 images per asset"),
   title: z.string().min(5, "Title should be more descriptive."),
   category: z.string(),
-  gameId: z.string().transform((id) => { // Form fields are strings, so transform to num.
-    const num = parseInt(id);
-    if (isNaN(num)) throw new Error("Invalid game ID");
-    return num;
-  })
+  gameId: transformZodStringToNumber
 });
 
 const uploadAssetRevisionSchema = z.object({
   imageUrls: z.array(z.string()).min(1, "Must upload at least one image - ").max(4, "Maximum 4 images per asset"),
   revisionDescription: z.string().min(5, "Must write a description of what's changed in this revision"),
-  originalAssetId: z.string().transform((id) => {
-    const num = parseInt(id);
-    if (isNaN(num)) throw new Error("Invalid game ID");
-    return num;
-  }),
-  gameId: z.string().transform((id) => {
-    const num = parseInt(id);
-    if (isNaN(num)) throw new Error("Invalid game ID");
-    return num;
-  })
+  originalAssetId: transformZodStringToNumber,
+  gameId: transformZodStringToNumber
 });
 // -----------------------------------------------------------------------------------
 
@@ -142,7 +130,7 @@ export async function uploadAssetRevisionImage(_state: UploadAssetRevisionFormSt
       console.log("No original asset found");
       return { message: "Something went wrong. Invalid original asset id." }
     }
-    const revisionNumber = originalAsset.revisions.length + 1;
+    const nextRevisionNumber = originalAsset.revisions.length + 1;
     const lastRevisionId = originalAsset.revisions[originalAsset.revisions.length - 1]?.id || originalAssetId;
     // Update the last asset to be status "REVISED"
     await prisma.asset.update({
@@ -164,7 +152,7 @@ export async function uploadAssetRevisionImage(_state: UploadAssetRevisionFormSt
         category: originalAsset.category,
         imageUrls,
         original_asset_id: originalAssetId,
-        revisionNumber,
+        revisionNumber: nextRevisionNumber,
         revisionDescription,
         game_id: gameId,
         uploader_id: uploaderId

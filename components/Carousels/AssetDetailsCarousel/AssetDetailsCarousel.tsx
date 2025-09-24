@@ -7,9 +7,9 @@ import VoterBubbles from "@/components/Home/AssetFeed/VoterBubbles/VoterBubbles"
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
 import CarouselArrow from "@/components/Home/AssetFeed/CarouselArrow/CarouselArrow";
 import ImageGrid from "@/components/ImageGrid/ImageGrid";
-import { AssetStatus, VotePhase } from "@/app/generated/prisma";
+import { VotePhase } from "@/app/generated/prisma";
 import AssetComment from "@/components/AssetComment/AssetComment";
-import { timeAgo } from "@/lib/utils";
+import { isAssetLocked, timeAgo } from "@/lib/utils";
 
 import styles from "./AssetDetailsCarousel.module.css";
 
@@ -40,11 +40,7 @@ export default function AssetDetailsCarousel({
   const currentAsset = assetHistoryArray[currentIndex];
   const latestAsset = assetHistoryArray[0]; // contains category and title info that stays the same for all revisions.
   const uploaderInfoString = `${currentAsset.uploader.fullName} - ${currentAsset.uploader.teamName}`;
-  const assetIsLocked = targetPhase === VotePhase.PHASE1 ?
-    latestAsset.status !== AssetStatus.PENDING : (
-      latestAsset.status === AssetStatus.PHASE2_APPROVED
-      || latestAsset.status === AssetStatus.PHASE2_REJECTED
-    );
+  const assetIsLocked = isAssetLocked(latestAsset);
 
   useEffect(() => {
     const refreshAssetComments = async () => {

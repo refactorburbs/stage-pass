@@ -2,6 +2,35 @@ import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { RawUserAvatarData, UserAvatarData } from "./users.types";
 
+export interface BaseAsset {
+  id: number;
+  title: string;
+  category: string;
+  imageUrls: string[];
+  createdAt: Date;
+  currentPhase: VotePhase;
+}
+
+export interface AssetItemForArtistFeed extends BaseAsset {
+  status: AssetStatus;
+  phase1CompletedAt: Date | null;
+  phase2CompletedAt: Date | null;
+}
+
+export interface AssetItemForVoterFeed extends BaseAsset {
+  uploader: UserAvatarData;
+  vote_id: number | null;
+  votedAt: Date | null;
+}
+
+export interface AssetItemForGameFeed extends BaseAsset {
+  status: AssetStatus;
+  uploader: UserAvatarData;
+  voters: Array<UserAvatarData>
+}
+
+export type AssetFeedItem = AssetItemForArtistFeed | AssetItemForVoterFeed | AssetItemForGameFeed;
+
 export interface AssetVote {
   id: number;
   voteType: VoteType;
@@ -11,18 +40,6 @@ export interface AssetVote {
 export interface AssetVoteCalculation {
   approveCount: number;
   rejectCount: number;
-}
-
-export interface AssetItemForArtistFeed {
-  id: number;
-  title: string;
-  category: string;
-  imageUrls: string[];
-  status: AssetStatus;
-  currentPhase: VotePhase;
-  createdAt: Date;
-  phase1CompletedAt: Date | null;
-  phase2CompletedAt: Date | null;
 }
 
 export type IntermediateVoterAssetItem = {
@@ -49,32 +66,6 @@ export type IntermediateVoterAssetItem = {
     createdAt: Date;
   }[];
 };
-
-export interface AssetItemForVoterFeed {
-  id: number;
-  title: string;
-  category: string;
-  imageUrls: string[];
-  createdAt: Date;
-  currentPhase: VotePhase;
-  uploader: UserAvatarData;
-  vote_id: number | null;
-  votedAt: Date | null;
-}
-
-export interface AssetItemForGameFeed {
-  id: number;
-  title: string;
-  category: string;
-  imageUrls: string[];
-  createdAt: Date;
-  currentPhase: VotePhase;
-  status: AssetStatus;
-  uploader: UserAvatarData;
-  voters: Array<UserAvatarData>
-}
-
-export type AssetFeedItem = AssetItemForArtistFeed | AssetItemForVoterFeed | AssetItemForGameFeed;
 
 export type IntermediateVoterAssetDetailsItem = {
   id: number;
