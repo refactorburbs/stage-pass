@@ -35,7 +35,7 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
     );
   }
   return (
-    <Link href={`/game/${gameId}/asset/${asset.id}?isPending=true`}>
+    <Link href={`/game/${gameId}/asset/${asset.id}?isPendingVote=true`}>
       <div className={styles.asset_card_container}>
         <div className={styles.image_preview_container}>
           <Image

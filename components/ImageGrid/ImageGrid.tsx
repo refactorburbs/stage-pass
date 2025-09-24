@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./ImageGrid.module.css";
 
@@ -19,16 +19,20 @@ interface BentoImageGridProps {
 }
 
 export default function ImageGrid({ imageUrls }: BentoImageGridProps) {
-  const [images, setImages] = useState<ImageData[]>(
-    imageUrls.slice(0, 4).map((url, index) => ({
-      url,
-      width: 0,
-      height: 0,
-      aspectRatio: 1,
-      originalIndex: index,
-      loaded: false
-    }))
-  );
+  const [images, setImages] = useState<ImageData[]>([]);
+
+  useEffect(function resetStateOnCarouselArrowChange() {
+    setImages(
+      imageUrls.slice(0, 4).map((url, index) => ({
+        url,
+        width: 0,
+        height: 0,
+        aspectRatio: 1,
+        originalIndex: index,
+        loaded: false
+      }))
+    );
+  }, [imageUrls]);
 
   const handleImageLoad = (index: number, event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const img = event.target as HTMLImageElement;
@@ -124,7 +128,7 @@ export default function ImageGrid({ imageUrls }: BentoImageGridProps) {
     // Calculate flex ratio for the two smaller images
     const img2 = images[remainingImages[0].originalIndex];
     const img3 = images[remainingImages[1].originalIndex];
-    const flexRatio = img2.width > 0 && img3.width > 0 ? 1 - (img3.width / img2.width) : 1;
+    const flexRatio = allImagesLoaded ? img2.width > 0 && img3.width > 0 ? 1 - (img3.width / img2.width) : 1 : 1;
 
     return (
       <div className={styles.three_layout}>
@@ -191,7 +195,7 @@ export default function ImageGrid({ imageUrls }: BentoImageGridProps) {
     const img2 = images[imagesSortedByWidth[1].originalIndex];
     const img3 = images[imagesSortedByWidth[2].originalIndex];
     const img4 = images[imagesSortedByWidth[3].originalIndex];
-    // Try to create balanced rows
+    // Try to create balanced rows with flex 1
     return (
       <div className={styles.four_layout}>
         <div className={hasMultipleWideImages ? styles.grid_row : ""}>

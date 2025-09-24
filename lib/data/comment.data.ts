@@ -1,3 +1,5 @@
+"use server";
+
 import prisma from "@/lib/prisma";
 import { USER_AVATAR_SELECT_QUERY } from "../constants/query.constants";
 import { PendingCommentData, UserAssetComment } from "../types/assets.types";

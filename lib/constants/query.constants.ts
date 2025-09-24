@@ -41,6 +41,7 @@ export const ASSET_REVISION_SELECT_QUERY = {
   imageUrls: true,
   createdAt: true,
   status: true,
+  currentPhase: true,
   revisionNumber: true,
   revisionDescription: true,
   uploader: {

@@ -33,17 +33,21 @@ const createCommentSchema = z.object({
 
 // When a user casts votes, call this function with SubscriptionType.VOTED
 export async function subscribeUserToAsset(userId: number, assetId: number, type: SubscriptionType) {
-  await prisma.assetSubscription.upsert({
-    where: {
-      asset_id_user_id: { asset_id: assetId, user_id: userId } // satisfies the @@unique constraint
-    },
-    create: { // If not subscribed, this is the create condition
-      asset_id: assetId,
-      user_id: userId,
-      subscription_type: type
-    },
-    update: {} // If already subscribed, do nothing
-  });
+  try {
+    await prisma.assetSubscription.upsert({
+      where: {
+        asset_id_user_id: { asset_id: assetId, user_id: userId } // satisfies the @@unique constraint
+      },
+      create: { // If not subscribed, this is the create condition
+        asset_id: assetId,
+        user_id: userId,
+        subscription_type: type
+      },
+      update: {} // If already subscribed, do nothing
+    });
+  } catch (error) {
+    console.log(`Couldn't subscribe user ${userId} to asset ${assetId}: ${error}`);
+  }
 }
 
 export async function cleanupPendingCommentsAndSubs(assetId: number){

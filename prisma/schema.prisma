@@ -103,6 +103,7 @@ model Team {
 model Game {
   id              Int      @id @default(autoincrement())
   name            String
+  banner          String   @default("https://stagepass.mypinata.cloud/ipfs/bafkreigeqbk7dbhapxn5k522nkdbpcqv5zdloepoqev2qdv6rhymy6el6i") // Header image of the game
   assetCategories String[] // ["Heads", "Cleats", "Clothing", "Tattoos", "Full Asset"]
 
   createdAt DateTime @default(now()) @map("created_at")

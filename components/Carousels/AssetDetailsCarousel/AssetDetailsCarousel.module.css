@@ -1,0 +1,52 @@
+.asset_content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 60%;
+}
+
+.uploader_info {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.submission_info {
+  color: rgb(73, 73, 73);
+}
+
+.carousel_container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.image_grid_container {
+  overflow: hidden;
+  position: relative;
+}
+
+.vote_info_container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.vote_info_content {
+  display: flex;
+  align-items: center;
+}
+
+.asset_comments {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0 5rem 0;
+}

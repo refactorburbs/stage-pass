@@ -12,7 +12,7 @@ interface CommentFormProps {
 
 export default async function CommentForm({ gameId, assetId, userId, phase }: CommentFormProps) {
   return (
-    <form action={createCommentAndNotify} className={styles.comment_form}>
+    <form id="asset-details-comment-form" action={createCommentAndNotify} className={styles.comment_form}>
       <input type="text" name="content" placeholder="Add a comment"/>
       <input type="hidden" name="gameId" value={gameId} />
       <input type="hidden" name="assetId" value={assetId} />

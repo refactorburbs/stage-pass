@@ -1,5 +1,5 @@
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
-import { AssetItemForGameFeed } from "../types/assets.types";
+import { AssetDetails, AssetHistoryArray, AssetItemForGameFeed, AssetRevisionDetails } from "../types/assets.types";
 
 export function isAssetLocked(asset: AssetItemForGameFeed) {
   if (asset.currentPhase === VotePhase.PHASE1) {
@@ -13,4 +13,16 @@ export function isAssetLocked(asset: AssetItemForGameFeed) {
   }
 
   return false;
+}
+
+export function buildAssetHistoryArray(
+  asset: AssetDetails,
+  revisions: AssetRevisionDetails[],
+  originalAsset?: AssetRevisionDetails | null
+): AssetHistoryArray {
+  return [
+    asset,
+    ...revisions,
+    ...(originalAsset ? [originalAsset] : []),
+  ];
 }

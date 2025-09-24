@@ -164,3 +164,7 @@ export interface PendingCommentData {
   subscriber_id: number;
   commenter: UserAvatarData;
 }
+
+export type AssetHistoryArray =
+  | [AssetDetails, ...AssetRevisionDetails[]] // no originalAsset
+  | [AssetDetails, ...AssetRevisionDetails[], AssetRevisionDetails]; // with originalAsset

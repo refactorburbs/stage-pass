@@ -28,7 +28,7 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       revisions: {
         select: ASSET_REVISION_SELECT_QUERY,
         orderBy: {
-          revisionNumber: "asc"
+          revisionNumber: "desc" // latest revision first in array
         }
       },
     },
@@ -74,12 +74,14 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
     // Same for phase 2 - if locked in phase2, return 0 for pending
     || (asset.currentPhase === VotePhase.PHASE2
       && (asset.status === AssetStatus.PHASE2_APPROVED
-        || asset.status === AssetStatus.PHASE2_REJECTED
-      )
+        || asset.status === AssetStatus.PHASE2_REJECTED)
     )) {
-      pendingVoteCount = 0;
-    }
+    pendingVoteCount = 0;
+  }
 
+  // This DTO will be phase specific - revisions and history too.
+  // That way if there are dinky revisions we don't want external reviewers to see, they won't.
+  // Same with previous conversations/comments - phase specific.
   const assetDetailsDTO = {
     id: asset.id,
     title: asset.title,
@@ -98,8 +100,8 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
       approved: approvedVotes,
       rejected: rejectedVotes
     },
-    originalAsset: asset.originalAsset ? transformRevisionData(asset.originalAsset) : null,
-    revisions: asset.revisions.map(transformRevisionData)
+    originalAsset: asset.originalAsset && asset.originalAsset.currentPhase === targetPhase ? transformRevisionData(asset.originalAsset) : null,
+    revisions: asset.revisions.filter((revision) => revision.currentPhase === targetPhase).map(transformRevisionData)
   };
 
   return assetDetailsDTO;
