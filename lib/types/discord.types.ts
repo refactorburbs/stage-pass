@@ -1,10 +1,3 @@
-export interface DiscordAssetInfo {
-  id: number;
-  title: string;
-  category: string;
-  imageUrl: string;
-}
-
 export interface DiscordEmbedField {
   name: string;
   value: string;
@@ -96,11 +89,6 @@ export interface CreateDiscordEmbedParams {
     iconUrl?: string;
   };
   url?: string;
-}
-
-export interface DiscordNotificationResult {
-  success: boolean;
-  error?: string;
 }
 
 export interface SendDiscordNotifcationOptions {

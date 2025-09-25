@@ -1,6 +1,10 @@
 :root {
   --background: #fafafa;
   --foreground: #171717;
+  --color-primary: #213043;
+  --color-secondary: #19ADEA;
+  --color-approved: #4EA230;
+  --color-rejected: #A33139;
 }
 
 html,

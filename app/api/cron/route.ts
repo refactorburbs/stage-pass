@@ -11,7 +11,8 @@ import { VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { getAllEligibleVoters } from "@/lib/data";
 import prisma from "@/lib/prisma";
 import { AssetUpdateData, LockJob } from "@/lib/types/cron.types";
-import { calculateRawAssetVotes, sendDiscordVoteResultNotification } from "@/lib/utils";
+import { calculateRawAssetVotes } from "@/lib/utils";
+import { sendSlackVoteResultNotification } from "@/lib/utils/slack.utils";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -131,12 +132,20 @@ async function processAssetLock(lockJob: LockJob) {
     data: updateData
   });
 
-  await sendDiscordVoteResultNotification({
+  await sendSlackVoteResultNotification({
     id: updatedAsset.id,
     title: updatedAsset.title,
     category: updatedAsset.category,
     imageUrl: updatedAsset.imageUrls[0]
-  }, lockJob.currentPhase, finalDecision, shouldMoveToPhase2);
+  }, lockJob.currentPhase, finalDecision, shouldMoveToPhase2)
+
+  // Company has now moved to Slack for communication.
+  // await sendDiscordVoteResultNotification({
+  //   id: updatedAsset.id,
+  //   title: updatedAsset.title,
+  //   category: updatedAsset.category,
+  //   imageUrl: updatedAsset.imageUrls[0]
+  // }, lockJob.currentPhase, finalDecision, shouldMoveToPhase2);
 
   await cleanupPendingCommentsAndSubs(asset.id);
   // If the asset is moving onto phase 2, re-subscribe the uploader to new comments

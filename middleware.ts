@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { decrypt, updateSession } from "./lib/sessions";
 
 // If the user is not authenticated, they will be redirected to the login page.
+// Route exact matches (use startsWith for dynamic routes like /game/:id)
 const protectedRoutes = [
   "/",
   "/profile"

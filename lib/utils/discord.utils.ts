@@ -1,19 +1,18 @@
 import { VotePhase, VoteType } from "@/app/generated/prisma";
 import {
   CreateDiscordEmbedParams,
-  DiscordAssetInfo,
   DiscordEmbed,
-  DiscordNotificationResult,
   DiscordWebhookPayload,
   SendDiscordNotifcationOptions
 } from "../types/discord.types";
+import { WebhookAssetInfo, WebhookNotificationResult } from "../types/webhook.types";
 
 export async function sendDiscordVoteResultNotification(
-  asset: DiscordAssetInfo,
+  asset: WebhookAssetInfo,
   phase: VotePhase,
   decision: VoteType,
   shouldMoveToPhase2: boolean
-): Promise<DiscordNotificationResult> {
+): Promise<WebhookNotificationResult> {
   const now = new Date();
   const decisionText = decision === VoteType.APPROVE ? "Approved" : "Rejected";
   const decisionEmoji = decision === VoteType.APPROVE ? "✅" : "❌";
@@ -96,7 +95,7 @@ export function createDiscordEmbed(params: CreateDiscordEmbedParams): DiscordEmb
 export async function sendDiscordNotification(
   message: string,
   options: SendDiscordNotifcationOptions = {}
-): Promise<DiscordNotificationResult> {
+): Promise<WebhookNotificationResult> {
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
   if (!webhookUrl) {
     console.error("Discord webhook URL environment variable is not configured");
