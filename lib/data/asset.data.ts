@@ -295,7 +295,7 @@ export async function getAssetFeedForGame(
 
   // Note this creates complete phase segregation - users a part of phase 1 will never see phase 2 results
   // in their game feed and vice versa. Artists who post for both phases can see it in their personal feed, however,
-  // separated by "Internal Review" and "External Review" on their asset card.
+  // separated by "Internal Review" and "Pending Final Review" on their asset card.
   const allAssets = await prisma.asset.findMany({
     where: {
       status: {
@@ -377,7 +377,7 @@ export async function getAssetFeedForGame(
       .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id);
 
     if (pendingVoters.length) {
-      // Don't want to overwrite the existing assetDTO voters if this asset has votes already.
+      // Don't want to overwrite the existing assetDTO voters if this asset has votes trending already.
       // Create a shallow clone to avoid mutating the original assetDTO in approved/rejected lists.
       const assetDTOClone = { ...assetDTO };
       // only add to this asset's pending list if the asset voting phase hasn't locked.
