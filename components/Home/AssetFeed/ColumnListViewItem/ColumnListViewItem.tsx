@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useState, useTransition } from "react";
-import { AssetFeedItem, PendingCommentData } from "@/lib/types/assets.types";
+import { AssetFeedItem } from "@/lib/types/assets.types";
+import { PendingCommentData } from "@/lib/types/comments.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
 import VoterBubbles from "../VoterBubbles/VoterBubbles";
 import PendingCommentsFooter from "../PendingCommentsFooter/PendingCommentsFooter";
@@ -41,14 +42,15 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
   const fallbackSrc = "/no-image-available.webp";
   const [imageSrc, setImageSrc] = useState(item.imageUrls[0] || fallbackSrc);
 
-  const hasStatus = "status" in item;
-  const hasVoters = "voters" in item;
-  const hasOtherUploader = "uploader" in item;
+  const hasVoters = "voters" in item; // like AssetItemForGameFeed
+  const hasOtherUploader = "uploader" in item; // Voter or Game feed, not Artist feed
+  const isArtistFeed = !hasOtherUploader;
 
-  const itemColor = hasStatus ? getItemColor(item.status, item.currentPhase) : "white";
+  const itemColor = getItemColor(item.status, item.currentPhase);
   const submissionInfoText = `Submitted by ${hasOtherUploader ? item.uploader.firstName : "you"}`;
 
   const commentsForThisAsset = notifications?.filter((notification) => notification.asset_id === item.id) || [];
+  const reviewPhaseText = isArtistFeed && item.currentPhase === VotePhase.PHASE2 ? "Pending Final Review" : item.currentPhase === VotePhase.PHASE1 ? "Internal Review" : "";
 
   const handleRedactVote = (voteId: number) => {
     startTransition(async () => {
@@ -119,11 +121,9 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
       <div className={styles.list_item_info}>
         <div className={styles.header}>
           <span>{item.title}</span>
-          {item.currentPhase === VotePhase.PHASE1 && (
-            <span className={styles.phase_info}>
-              Internal Review
-            </span>
-          )}
+          <span className={styles.phase_info}>
+            {reviewPhaseText}
+          </span>
         </div>
         <div className={styles.submission_info}>
           {submissionInfoText} • {timeAgo(item.createdAt)}

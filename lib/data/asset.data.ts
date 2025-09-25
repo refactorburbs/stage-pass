@@ -149,8 +149,6 @@ export async function getAssetRevisionBaseData(assetId: number): Promise<AssetRe
  * 2. **Pending:** Assets uploaded by the artist that are still PENDING.
  * 3. **Approved:** Assets uploaded by the artist that have been definitively approved in either phase 1 or phase 2.
  *
- * Within each column, assets are sorted so that **actionable assets appear first**,
- * and **locked/finalized assets appear at the bottom**.
 */
 export async function getAssetFeedForArtist(
   userId: number,
@@ -177,18 +175,20 @@ export async function getAssetFeedForArtist(
   const rejected = allAssets
     .filter(asset =>
       asset.status === AssetStatus.PHASE1_REJECTED
-      || asset.status === AssetStatus.PHASE2_REJECTED)
-    .sort(sortUnlockedAssetsFirst);
+      || asset.status === AssetStatus.PHASE2_REJECTED
+    );
 
   const pending = allAssets
-    .filter(asset => asset.status === AssetStatus.PENDING)
-    .sort(sortUnlockedAssetsFirst);
+    .filter(asset =>
+      asset.status === AssetStatus.PENDING
+      || (asset.status === AssetStatus.PHASE1_APPROVED && asset.currentPhase === VotePhase.PHASE2)
+    );
 
   const approved = allAssets
     .filter(asset =>
-      asset.status === AssetStatus.PHASE1_APPROVED
-      || asset.status === AssetStatus.PHASE2_APPROVED)
-    .sort(sortUnlockedAssetsFirst);
+      asset.status === AssetStatus.PHASE2_APPROVED
+      || (asset.status === AssetStatus.PHASE1_APPROVED && asset.currentPhase === VotePhase.PHASE1)
+    )
 
   return { rejected, pending, approved };
 }
@@ -282,6 +282,9 @@ export async function getAssetFeedForVoter(
  * **Phase-specific behavior:**
  * - Users only see results for their phase; phase 1 users won't see phase 2 results and vice versa.
  * - This ensures votes and asset visibility are segregated by voting phase.
+ *
+ * Within each column, assets are sorted so that **actionable assets appear first**,
+ * and **locked/finalized assets appear at the bottom**.
  *
 */
 export async function getAssetFeedForGame(
@@ -384,5 +387,7 @@ export async function getAssetFeedForGame(
       }
     }
   });
+  sortedAssets.approved.sort(sortUnlockedAssetsFirst);
+  sortedAssets.rejected.sort(sortUnlockedAssetsFirst);
   return sortedAssets;
 }

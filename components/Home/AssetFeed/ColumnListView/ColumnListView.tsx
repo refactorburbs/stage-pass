@@ -1,4 +1,5 @@
-import { AssetFeedItem, PendingCommentData } from "@/lib/types/assets.types";
+import { AssetFeedItem } from "@/lib/types/assets.types";
+import { PendingCommentData } from "@/lib/types/comments.types";
 import ColumnListViewItem from "../ColumnListViewItem/ColumnListViewItem";
 
 import styles from "./ColumnListView.module.css";
@@ -8,6 +9,7 @@ interface ColumnListViewProps {
   items: Array<AssetFeedItem>;
   notifications?: Array<PendingCommentData>
 }
+
 export default function ColumnListView({ title, items, notifications }: ColumnListViewProps) {
   return (
     <div className={styles.column}>
