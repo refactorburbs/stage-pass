@@ -1,6 +1,7 @@
 import { AssetStatus, VotePhase, VoteType } from "@/app/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
-import { RawUserAvatarData, UserAvatarData } from "./users.types";
+import { GetUserDataResponse } from "./dto.types";
+import { RawUserQueryData } from "./users.types";
 
 export interface BaseAsset {
   id: number;
@@ -8,25 +9,24 @@ export interface BaseAsset {
   category: string;
   imageUrls: string[];
   createdAt: Date;
+  status: AssetStatus;
   currentPhase: VotePhase;
 }
 
 export interface AssetItemForArtistFeed extends BaseAsset {
-  status: AssetStatus;
   phase1CompletedAt: Date | null;
   phase2CompletedAt: Date | null;
 }
 
 export interface AssetItemForVoterFeed extends BaseAsset {
-  uploader: UserAvatarData;
+  uploader: GetUserDataResponse;
   vote_id: number | null;
   votedAt: Date | null;
 }
 
 export interface AssetItemForGameFeed extends BaseAsset {
-  status: AssetStatus;
-  uploader: UserAvatarData;
-  voters: Array<UserAvatarData>
+  uploader: GetUserDataResponse;
+  voters: Array<GetUserDataResponse>
 }
 
 export type AssetFeedItem = AssetItemForArtistFeed | AssetItemForVoterFeed | AssetItemForGameFeed;
@@ -37,52 +37,9 @@ export interface AssetVote {
   weight: Decimal;
 }
 
-export interface AssetVoteCalculation {
+export type AssetVoteCalculation = {
   approveCount: number;
   rejectCount: number;
-}
-
-export type IntermediateVoterAssetItem = {
-  id: number;
-  title: string;
-  category: string;
-  imageUrls: string[];
-  createdAt: Date;
-  currentPhase: VotePhase;
-  uploader: {
-    id: number;
-    firstName: string;
-    fullName: string;
-    initials: string;
-    avatar: number;
-    customAvatar: string | null;
-    team: {
-      name: string;
-    };
-  };
-  votes: {
-    id: number;
-    voteType: VoteType;
-    createdAt: Date;
-  }[];
-};
-
-export type IntermediateVoterAssetDetailsItem = {
-  id: number;
-  voteType: VoteType;
-  phase: VotePhase;
-  weight: Decimal;
-  user: {
-    id: number;
-    firstName: string;
-    fullName: string;
-    initials: string;
-    avatar: number;
-    customAvatar: string | null;
-    team: {
-      name: string;
-    }
-  }
 }
 
 export interface AssetDetails {
@@ -95,32 +52,24 @@ export interface AssetDetails {
   status: AssetStatus;
   revisionNumber: number;
   revisionDescription: string;
-  uploader: {
-    id: number;
-    firstName: string;
-    fullName: string;
-    initials: string;
-    avatar: number;
-    customAvatar: string | null;
-    teamName: string;
-  }
+  uploader: GetUserDataResponse;
   votes: {
     rejectPercentage: number;
     approvePercentage: number;
     pendingCount: number;
-    approved: Array<UserAvatarData>;
-    rejected: Array<UserAvatarData>;
+    approved: Array<GetUserDataResponse>;
+    rejected: Array<GetUserDataResponse>;
   }
 }
 
-export type RawAssetRevisionDetails = {
+// For the UploadAssetRevisionForm - locked data from original asset.
+export interface AssetRevisionBaseData {
   id: number;
-  imageUrls: string[];
+  title: string;
+  category: string;
   createdAt: Date;
-  status: AssetStatus;
+  original_asset_id: number | null;
   revisionNumber: number;
-  revisionDescription: string;
-  uploader: RawUserAvatarData;
 }
 
 export interface AssetRevisionDetails {
@@ -130,32 +79,45 @@ export interface AssetRevisionDetails {
   status: AssetStatus;
   revisionNumber: number;
   revisionDescription: string;
-  uploader: UserAvatarData;
+  uploader: GetUserDataResponse;
 }
 
-export interface GetAssetDetailsResponse extends AssetDetails {
+export interface GetAssetDetailsAndHistoryResponse extends AssetDetails {
   originalAsset: AssetRevisionDetails | null;
   revisions: Array<AssetRevisionDetails>;
-}
-
-export interface UserAssetComment {
-  id: number;
-  content: string;
-  createdAt: Date,
-  user: UserAvatarData;
-}
-
-export interface PendingCommentData {
-  id: number;
-  content: string;
-  createdAt: Date,
-  assetImage: string;
-  asset_id: number;
-  game_id: number;
-  subscriber_id: number;
-  commenter: UserAvatarData;
 }
 
 export type AssetHistoryArray =
   | [AssetDetails, ...AssetRevisionDetails[]] // no originalAsset
   | [AssetDetails, ...AssetRevisionDetails[], AssetRevisionDetails]; // with originalAsset
+
+// ------------------------------------------------------------------------------------
+// Intermediate, Raw Query Data Types for transforming into DTOs ----------------------
+// ------------------------------------------------------------------------------------
+
+export type RawVoterAssetQueryData = {
+  id: number;
+  title: string;
+  category: string;
+  imageUrls: string[];
+  createdAt: Date;
+  status: AssetStatus;
+  currentPhase: VotePhase;
+  uploader: RawUserQueryData;
+  votes: Array<{
+    id: number;
+    voteType: VoteType;
+    createdAt: Date;
+  }>;
+};
+
+export type RawAssetRevisionQueryData = {
+  id: number;
+  imageUrls: string[];
+  createdAt: Date;
+  status: AssetStatus;
+  revisionNumber: number;
+  revisionDescription: string;
+  currentPhase: VotePhase;
+  uploader: RawUserQueryData;
+}

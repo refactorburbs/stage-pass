@@ -1,12 +1,19 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { USER_AVATAR_SELECT_QUERY } from "../constants/query.constants";
-import { PendingCommentData, UserAssetComment } from "../types/assets.types";
+import { USER_DATA_SELECT_QUERY } from "../constants/query.constants";
+import { PendingCommentData, UserAssetComment } from "../types/comments.types";
 import { VotePhase } from "@/app/generated/prisma";
+import { transformUserData } from "../utils";
 
+/**
+ * Fetches all **pending comment notifications** for a given user.
+ *
+ * - Only returns notifications that are not dismissed by this user.
+ * - Results are ordered with the most recent comments first.
+*/
 export async function getUserPendingComments(userId: number): Promise<Array<PendingCommentData>> {
-  const comments = await prisma.pendingCommentNotification.findMany({
+  const pendingNotifications = await prisma.pendingCommentNotification.findMany({
     where: {
       user_id: userId,
       is_dismissed: false
@@ -25,36 +32,34 @@ export async function getUserPendingComments(userId: number): Promise<Array<Pend
             }
           },
           user: {
-            select: USER_AVATAR_SELECT_QUERY
+            select: USER_DATA_SELECT_QUERY
           }
         }
       }
     },
     orderBy: {
-      createdAt: "asc"
+      createdAt: "desc" // Most recent first
     }
   });
 
-  return comments.map((comment) => ({
-    id: comment.id,
-    content: comment.comment.content,
-    createdAt: comment.comment.createdAt,
-    assetImage: comment.comment.asset.imageUrls[0],
-    asset_id: comment.asset_id,
-    game_id: comment.comment.asset.game_id,
+  return pendingNotifications.map((notification) => ({
+    id: notification.id,
+    content: notification.comment.content,
+    createdAt: notification.comment.createdAt,
+    assetImage: notification.comment.asset.imageUrls[0],
+    asset_id: notification.asset_id,
+    game_id: notification.comment.asset.game_id,
     subscriber_id: userId,
-    commenter: {
-      id: comment.comment.user.id,
-      firstName: comment.comment.user.firstName,
-      fullName: comment.comment.user.fullName,
-      initials: comment.comment.user.initials,
-      avatar: comment.comment.user.avatar,
-      customAvatar: comment.comment.user.customAvatar,
-      teamName: comment.comment.user.team.name
-    }
+    commenter: transformUserData(notification.comment.user)
   }));
 }
 
+/**
+ * Retrieves all comments for a specific asset in a given voting phase.
+ *
+ * - Includes the commenter’s transformed user data for consistent UI handling.
+ * - Results are ordered chronologically (oldest first).
+*/
 export async function getCommentsForAsset (assetId: number, phase: VotePhase): Promise<Array<UserAssetComment>> {
   const assetComments = await prisma.assetComment.findMany({
     where: {
@@ -66,7 +71,7 @@ export async function getCommentsForAsset (assetId: number, phase: VotePhase): P
       content: true,
       createdAt: true,
       user: {
-        select: USER_AVATAR_SELECT_QUERY
+        select: USER_DATA_SELECT_QUERY
       }
     },
     orderBy: {
@@ -76,14 +81,6 @@ export async function getCommentsForAsset (assetId: number, phase: VotePhase): P
 
   return assetComments.map((comment) => ({
     ...comment,
-    user: {
-      id: comment.user.id,
-      firstName: comment.user.firstName,
-      fullName: comment.user.fullName,
-      initials: comment.user.initials,
-      avatar: comment.user.avatar,
-      customAvatar: comment.user.customAvatar,
-      teamName: comment.user.team.name
-    }
+    user: transformUserData(comment.user)
   }));
 }

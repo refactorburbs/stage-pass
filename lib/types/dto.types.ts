@@ -1,6 +1,8 @@
 import { UserRole } from "@/app/generated/prisma";
 import { AssetItemForArtistFeed, AssetItemForGameFeed, AssetItemForVoterFeed } from "./assets.types";
 
+// USER DATA ----------------------------------------------------------------------------
+
 export interface GetUserDataResponse {
   id: number;
   firstName: string;
@@ -13,18 +15,9 @@ export interface GetUserDataResponse {
   teamName: string;
 }
 
-export interface GetDetailedUserDataResponse {
-  id: number;
-  firstName: string;
+export interface GetDetailedUserDataResponse extends GetUserDataResponse {
   lastName: string;
-  fullName: string;
-  initials: string;
-  role: UserRole
   email: string;
-  avatar: number;
-  customAvatar: string;
-  team_id: number;
-  teamName: string;
   gamesOwned: Array<{ id: number, name: string }>; // Games this user is the ip owner of (GameOwner table)
   teamGames: Array<{ id: number, name: string }>; // Games this team is working on, that this user is a part of
 }
@@ -36,10 +29,14 @@ export interface GetUserPermissionsResponse {
   hasFinalSay: boolean;
 }
 
+// GAME/TEAM DATA -------------------------------------------------------------------------
+
 export interface GetGameDataResponse {
   id: number;
   name: string;
+  banner: string;
   teams: Array<string>;
+  totalCollaborators: number;
 }
 
 export interface GetGameAssetCategoriesResponse {
@@ -54,11 +51,7 @@ export interface GetTeamDataResponse {
   games: Array<{ id: number, name: string}>;
 }
 
-export interface GetGameDataResponse {
-  id: number;
-  name: string;
-  teams: Array<string>;
-}
+// ASSET FEED DATA -----------------------------------------------------------------------
 
 export interface GetAssetFeedForArtistResponse {
   rejected: Array<AssetItemForArtistFeed>;

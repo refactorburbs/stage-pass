@@ -1,4 +1,4 @@
-import { getGameAssetCategories, getShortAssetDetails, getUser } from "@/lib/data";
+import { getGameAssetCategories, getAssetRevisionBaseData, getUser } from "@/lib/data";
 import UploadAssetRevisionForm from "./UploadAssetRevisionForm";
 import { notFound } from "next/navigation";
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
@@ -14,7 +14,7 @@ export default async function UploadAssetRevisionPage({ params }: UploadAssetRev
   const { gameId, assetId } = await params;
   const gameData = await getGameAssetCategories(Number(gameId));
   const user = await getUser();
-  const asset = await getShortAssetDetails(Number(assetId));
+  const asset = await getAssetRevisionBaseData(Number(assetId));
 
   if (!user || user.role === UserRole.VOTER) {
     return <NotAuthorized />
@@ -38,7 +38,12 @@ export default async function UploadAssetRevisionPage({ params }: UploadAssetRev
             {`Previous revisions can still be viewed, but not interacted with.`}
           </li>
         </ul>
-        <UploadAssetRevisionForm gameData={gameData} originalAssetId={originalAssetId} title={asset.title} category={asset.category}/>
+        <UploadAssetRevisionForm
+          gameData={gameData}
+          originalAssetId={originalAssetId}
+          title={asset.title}
+          category={asset.category}
+        />
       </div>
     </div>
   );

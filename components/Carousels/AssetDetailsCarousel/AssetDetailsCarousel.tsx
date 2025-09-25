@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AssetHistoryArray, UserAssetComment } from "@/lib/types/assets.types";
+import { AssetHistoryArray } from "@/lib/types/assets.types";
+import { UserAssetComment } from "@/lib/types/comments.types";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import VoterBubbles from "@/components/Home/AssetFeed/VoterBubbles/VoterBubbles";
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
@@ -40,7 +41,7 @@ export default function AssetDetailsCarousel({
   const currentAsset = assetHistoryArray[currentIndex];
   const latestAsset = assetHistoryArray[0]; // contains category and title info that stays the same for all revisions.
   const uploaderInfoString = `${currentAsset.uploader.fullName} - ${currentAsset.uploader.teamName}`;
-  const assetIsLocked = isAssetLocked(latestAsset);
+  const assetIsLocked = isAssetLocked(latestAsset.currentPhase, latestAsset.status);
 
   useEffect(() => {
     const refreshAssetComments = async () => {
@@ -60,6 +61,7 @@ export default function AssetDetailsCarousel({
       contactFormRef.current.style.visibility = "visible";
     }
 
+    if (!uploadButtonRef.current) return;
     if (assetIsLocked) {
       uploadButtonRef.current.style.visibility = "hidden";
     } else {

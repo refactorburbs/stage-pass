@@ -6,6 +6,18 @@ export function createInitials(firstName: string, lastName: string): string {
   return `${firstName.charAt(0).toUpperCase()}${lastName.charAt(0).toUpperCase()}`;
 }
 
+/**
+ * Converts a timestamp into a human-readable relative time string.
+ *
+ * - Supports seconds, minutes, hours, days, weeks, months, and years.
+ * - Returns `"just now"` for timestamps within the last 5 seconds.
+ * - Pluralizes units automatically (e.g., "1 minute ago" vs. "2 minutes ago").
+ *
+ * @example
+ * timeAgo(new Date(Date.now() - 3000));      // "just now"
+ * timeAgo(new Date(Date.now() - 7200000));   // "2 hours ago"
+ * timeAgo(new Date(Date.now() - 86400000));  // "1 day ago"
+*/
 export function timeAgo(timestamp: Date) {
   const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000);
 

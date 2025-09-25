@@ -5,15 +5,47 @@ import {
   VoteType
 } from "@/app/generated/prisma";
 import { calculateRawAssetVotes } from "../utils";
-import { GetAssetFeedForArtistResponse, GetAssetFeedForGameResponse, GetAssetFeedForVoterResponse } from "../types/dto.types";
-import { AssetItemForGameFeed, AssetItemForVoterFeed, GetAssetDetailsResponse, IntermediateVoterAssetDetailsItem, IntermediateVoterAssetItem } from "../types/assets.types";
+import {
+  GetAssetFeedForArtistResponse,
+  GetAssetFeedForGameResponse,
+  GetAssetFeedForVoterResponse,
+  GetUserDataResponse
+} from "../types/dto.types";
+import {
+  AssetItemForGameFeed,
+  AssetRevisionBaseData,
+  GetAssetDetailsAndHistoryResponse,
+} from "../types/assets.types";
 import { getAllEligibleVoters } from "./user.data";
-import { UserAvatarData } from "../types/users.types";
-import { isAssetLocked } from "../utils/asset.utils";
-import { ASSET_DETAILS_SELECT_QUERY, ASSET_REVISION_SELECT_QUERY, USER_AVATAR_SELECT_QUERY } from "../constants/query.constants";
-import { transformRevisionData, transformUserAvatarData } from "../utils/transforms.utils";
+import { isAssetLocked, sortUnlockedAssetsFirst } from "../utils/asset.utils";
+import {
+  ASSET_DETAILS_SELECT_QUERY,
+  ASSET_REVISION_SELECT_QUERY,
+  BASE_ASSET_FEED_SELECT_QUERY,
+  USER_DATA_SELECT_QUERY
+} from "../constants/query.constants";
+import {
+  transformRevisionData,
+  transformUserData,
+  transformVoterFeedAsset
+} from "../utils/transforms.utils";
 
-export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsResponse> {
+/**
+ * Retrieves detailed information about a specific asset (for its Asset Details Page),
+ * including its voting status, phase-specific revisions, and history.
+ *
+ * - Only includes data relevant to the **current phase** of the asset:
+ *   - Votes are filtered by the asset's current phase.
+ *   - Revisions are filtered to include only those in the current phase.
+ *   - Phase-specific DTO ensures that early or draft revisions are hidden from reviewers
+ *     in later phases, preventing accidental exposure of unfinished or incorrect versions.
+ *
+ * - Calculates voting percentages (`approvePercentage` and `rejectPercentage`) and identifies
+ *   which users approved or rejected the asset.
+ * - Determines pending voters by checking eligible users who have not yet voted,
+ *   accounting for whether the asset is locked.
+*/
+export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsAndHistoryResponse> {
   const asset = await prisma.asset.findUnique({
     where: {
       id: assetId
@@ -53,51 +85,23 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
   const rejectPercentage = Math.round((rejectCount / totalVotes) * 100);
   const approvePercentage = Math.round((approveCount / totalVotes) * 100);
 
-  const transformVote = (vote: IntermediateVoterAssetDetailsItem) => ({
-    id: vote.user.id,
-    firstName: vote.user.firstName,
-    fullName: vote.user.fullName,
-    initials: vote.user.initials,
-    avatar: vote.user.avatar,
-    customAvatar: vote.user.customAvatar || null,
-    teamName: vote.user.team.name
-  })
-
   const approvedVotes = currentAssetVotes
     .filter(vote => vote.voteType === VoteType.APPROVE)
-    .map(transformVote);
+    .map((vote) => transformUserData(vote.user));
 
   const rejectedVotes = currentAssetVotes
     .filter(vote => vote.voteType === VoteType.REJECT)
-    .map(transformVote);
+    .map((vote) => transformUserData(vote.user));
 
   let pendingVoteCount = eligibleVoters.length - currentAssetVotes.length;
-  // If the asset is locked, return 0 for pending voters
-  if ((asset.currentPhase === VotePhase.PHASE1
-    && (asset.status === AssetStatus.PHASE1_APPROVED
-    || asset.status === AssetStatus.PHASE1_REJECTED))
-    // Same for phase 2 - if locked in phase2, return 0 for pending
-    || (asset.currentPhase === VotePhase.PHASE2
-      && (asset.status === AssetStatus.PHASE2_APPROVED
-        || asset.status === AssetStatus.PHASE2_REJECTED)
-    )) {
+  // If the asset is locked, return 0 for pending voters (stops pending for new users showing up after vote lock)
+  if (isAssetLocked(asset.currentPhase, asset.status)) {
     pendingVoteCount = 0;
   }
 
-  // This DTO will be phase specific - revisions and history too.
-  // That way if there are dinky revisions we don't want external reviewers to see, they won't.
-  // Same with previous conversations/comments - phase specific.
   const assetDetailsDTO = {
-    id: asset.id,
-    title: asset.title,
-    category: asset.category,
-    imageUrls: asset.imageUrls,
-    createdAt: asset.createdAt,
-    currentPhase: asset.currentPhase,
-    status: asset.status,
-    revisionNumber: asset.revisionNumber,
-    revisionDescription: asset.revisionDescription,
-    uploader: transformUserAvatarData(asset.uploader),
+    ...asset,
+    uploader: transformUserData(asset.uploader),
     votes: {
       rejectPercentage,
       approvePercentage,
@@ -112,7 +116,15 @@ export async function getAssetDetails(assetId: number): Promise<GetAssetDetailsR
   return assetDetailsDTO;
 }
 
-export async function getShortAssetDetails(assetId: number) {
+/**
+ * Fetches the base asset information required to create a revision.
+ *
+ * - Returns only fields that are immutable during a revision:
+ *   - `title` and `category` are locked in the form to prevent changes.
+ *   - `original_asset_id` is used to link the revision to the original asset.
+ * - Designed specifically for the UploadAssetRevisionForm; not for full asset details.
+*/
+export async function getAssetRevisionBaseData(assetId: number): Promise<AssetRevisionBaseData | null> {
   const asset = await prisma.asset.findUnique({
     where: {
       id: assetId
@@ -129,14 +141,21 @@ export async function getShortAssetDetails(assetId: number) {
   return asset;
 }
 
+/**
+ * Fetches the asset feed for a specific artist within a game.
+ *
+ * The feed is split into three columns based on asset status:
+ * 1. **Rejected:** Assets uploaded by the artist that have been definitively rejected in either phase 1 or phase 2.
+ * 2. **Pending:** Assets uploaded by the artist that are still PENDING.
+ * 3. **Approved:** Assets uploaded by the artist that have been definitively approved in either phase 1 or phase 2.
+ *
+ * Within each column, assets are sorted so that **actionable assets appear first**,
+ * and **locked/finalized assets appear at the bottom**.
+*/
 export async function getAssetFeedForArtist(
   userId: number,
   gameId: number
 ): Promise<GetAssetFeedForArtistResponse> {
-  // Artists can only upload and comment. Thus their personal feed will be 3 columns:
-  // 1. All assets they've personally uploaded that have definitively been rejected by others (both phase 1 and phase 2)
-  // 2. All assets they've personally uploaded that still have a PENDING asset status
-  // 3. All assets they've personally uploaded that have definitively been accepted by others (includes both phase 1 and phase 2)
   const allAssets = await prisma.asset.findMany({
     where: {
       uploader_id: userId,
@@ -146,13 +165,7 @@ export async function getAssetFeedForArtist(
       }
     },
     select: {
-      id: true,
-      title: true,
-      category: true,
-      imageUrls: true,
-      status: true,
-      currentPhase: true,
-      createdAt: true,
+      ...BASE_ASSET_FEED_SELECT_QUERY,
       phase1CompletedAt: true,
       phase2CompletedAt: true
     },
@@ -161,31 +174,43 @@ export async function getAssetFeedForArtist(
     }
   });
 
-  // Group assets by status
-  const rejected = allAssets.filter(asset =>
-    asset.status === AssetStatus.PHASE1_REJECTED || asset.status === AssetStatus.PHASE2_REJECTED
-  );
+  const rejected = allAssets
+    .filter(asset =>
+      asset.status === AssetStatus.PHASE1_REJECTED
+      || asset.status === AssetStatus.PHASE2_REJECTED)
+    .sort(sortUnlockedAssetsFirst);
 
-  const pending = allAssets.filter(asset =>
-    asset.status === AssetStatus.PENDING
-  );
+  const pending = allAssets
+    .filter(asset => asset.status === AssetStatus.PENDING)
+    .sort(sortUnlockedAssetsFirst);
 
-  const approved = allAssets.filter(asset =>
-    asset.status === AssetStatus.PHASE1_APPROVED || asset.status === AssetStatus.PHASE2_APPROVED
-  );
+  const approved = allAssets
+    .filter(asset =>
+      asset.status === AssetStatus.PHASE1_APPROVED
+      || asset.status === AssetStatus.PHASE2_APPROVED)
+    .sort(sortUnlockedAssetsFirst);
 
   return { rejected, pending, approved };
 }
 
+/**
+ * Fetches the personalized asset feed for a voter within a game (includes LEADs and VOTERs).
+ *
+ * The feed is split into three columns based on the voter's personal interactions:
+ * 1. **Rejected:** Assets that the voter has personally rejected. If the voter has `hasFinalSay`,
+ *    this only includes assets from phase 2; otherwise phase 1.
+ * 2. **Pending:** Assets that are still PENDING and the voter has not yet voted on. The middle column
+ *    represents assets awaiting their review. Phase depends on `hasFinalSay`.
+ * 3. **Approved:** Assets that the voter has personally approved. Again, filtered by phase depending
+ *    on `hasFinalSay`.
+ *
+ * Only assets uploaded by other users are included (voter's own assets are excluded).
+*/
 export async function getAssetFeedForVoter(
   userId: number,
   gameId: number,
   hasFinalSay: boolean
 ): Promise<GetAssetFeedForVoterResponse> {
-  // Voters personal feed will be two columns with a special pending column in the middle:
-  // 1. All PENDING assets they have personally rejected. If hasFinalSay is true in their userRolePermissions, then this is only for phase 2. Else phase 1
-  // 2. In the middle is all PENDING assets they have yet to review - All assets that are PENDING and that they have not already voted on. if hasFinalSay, only phase2 else phase1
-  // 3. All PENDING assets they have personally accepted. If hasFinalSay is true, this is only for phase2. else phase1.
   const targetPhase = hasFinalSay ? VotePhase.PHASE2 : VotePhase.PHASE1;
   const targetStatus = hasFinalSay ? AssetStatus.PHASE1_APPROVED : AssetStatus.PENDING;
 
@@ -199,14 +224,9 @@ export async function getAssetFeedForVoter(
       }
     },
     select: {
-      id: true,
-      title: true,
-      category: true,
-      imageUrls: true,
-      currentPhase: true,
-      createdAt: true,
+      ...BASE_ASSET_FEED_SELECT_QUERY,
       uploader: {
-        select: USER_AVATAR_SELECT_QUERY
+        select: USER_DATA_SELECT_QUERY
       },
       votes: {
         where: {
@@ -225,34 +245,21 @@ export async function getAssetFeedForVoter(
     }
   });
 
-  // Get rid of the "votes" field and refine teamName field
-  const transformAsset = (asset: IntermediateVoterAssetItem): AssetItemForVoterFeed => ({
-    id: asset.id,
-    title: asset.title,
-    category: asset.category,
-    imageUrls: asset.imageUrls,
-    createdAt: asset.createdAt,
-    currentPhase: asset.currentPhase,
-    uploader: transformUserAvatarData(asset.uploader),
-    vote_id: asset.votes[0]?.id || null, // Used to reference assetVote if user wants to switch vote back to pending
-    votedAt: asset.votes[0]?.createdAt || null
-  });
-
   // Group by user's personal voting status
   // The vote selection query will return an array of one item or no item
   // since users can only vote once - so the vote will either be approve or reject
   // or no vote record for this asset will appear.
   const approved = pendingAssets
     .filter(asset => asset.votes.length > 0 && asset.votes[0].voteType === VoteType.APPROVE)
-    .map(transformAsset);
+    .map(transformVoterFeedAsset);
 
   const rejected = pendingAssets
     .filter(asset => asset.votes.length > 0 && asset.votes[0].voteType === VoteType.REJECT)
-    .map(transformAsset);
+    .map(transformVoterFeedAsset);
 
   const pending = pendingAssets
     .filter(asset => asset.votes.length === 0)
-    .map(transformAsset)
+    .map(transformVoterFeedAsset)
 
   return {
     approved,
@@ -261,27 +268,31 @@ export async function getAssetFeedForVoter(
   };
 }
 
+/**
+ * Fetches a game-wide asset feed (including trending and locked assets) organized into approved, rejected, and pending columns.
+ *
+ * Each asset is classified based on the vote totals for the current phase:
+ * - **Rejected:** If the asset has more reject votes than approve votes, or its status is rejected for this phase.
+ * - **Approved:** If the asset has more approve votes than reject votes, or its status is approved for this phase.
+ * - **Pending:** If votes are tied, or no votes have been cast yet.
+ *
+ * Voter bubbles are included only for users who voted for that specific outcome. Pending assets
+ * include eligible voters who haven't voted yet, excluding the uploader themselves.
+ *
+ * **Phase-specific behavior:**
+ * - Users only see results for their phase; phase 1 users won't see phase 2 results and vice versa.
+ * - This ensures votes and asset visibility are segregated by voting phase.
+ *
+*/
 export async function getAssetFeedForGame(
   gameId: number,
   hasFinalSay: boolean
 ): Promise<GetAssetFeedForGameResponse> {
-  // Game view has 3 columns, just like the artist, but instead of concrete
-  // accepted or rejected, we display current, raw vote values (not necessarily based on total eligible voters voting %)
-  // Get all assets that aren't archived or revised for this game (approved/rejected assets will be colored specially)
-  // Whether an asset winds up in rejected, pending, or approved is simple:
-  // If the asset's votes for this phase are higher for rejected than approved, it's in rejected. Also if its status is rejected for this phase.
-  // If the asset's votes for this phase are higher for approved than rejected, it's in approved. Also if its status is approved for this phase.
-  // If the asset's votes for this phase are even, it is in pending.
-  // Fields we need to retrieve from each qualifying asset:
-  // Asset: id, title, imageUrls, category, status, uploader_id (to get uploader name), createdAt.
-  // Asset votes: if the asset is trending towards rejected, then all users who cast rejected votes
-  //  -> Get the voter's fullName, initials, avatar, customAvatar
   const targetPhase = hasFinalSay ? VotePhase.PHASE2 : VotePhase.PHASE1;
 
   // Note this creates complete phase segregation - users a part of phase 1 will never see phase 2 results
-  // in their game feed and vice versa. Artists who post for both phases can see it in their personal feed, however.
-  // @TODO To let the whole team know the results of phase 2, a discord notification is sent to the uploader as well as mentioning
-  // that the asset has been archived. Rejected assets in the archive can be brought back out to voting pool by users adding a revision.
+  // in their game feed and vice versa. Artists who post for both phases can see it in their personal feed, however,
+  // separated by "Internal Review" and "External Review" on their asset card.
   const allAssets = await prisma.asset.findMany({
     where: {
       status: {
@@ -291,15 +302,9 @@ export async function getAssetFeedForGame(
       currentPhase: targetPhase,
     },
     select: {
-      id: true,
-      title: true,
-      category: true,
-      imageUrls: true,
-      createdAt: true,
-      currentPhase: true,
-      status: true,
+      ...BASE_ASSET_FEED_SELECT_QUERY,
       uploader: {
-        select: USER_AVATAR_SELECT_QUERY
+        select: USER_DATA_SELECT_QUERY
       },
       votes: {
         where: {
@@ -310,7 +315,7 @@ export async function getAssetFeedForGame(
           voteType: true,
           weight: true,
           user: {
-            select: USER_AVATAR_SELECT_QUERY
+            select: USER_DATA_SELECT_QUERY
           }
         }
       }
@@ -334,6 +339,8 @@ export async function getAssetFeedForGame(
     // If no one voted on this asset, the Set will be empty
     const votedUserIds = new Set(asset.votes.map(vote => vote.user.id));
 
+    // Each asset will be trending towards either rejected, approved, or pending
+    // and we need to display only voter bubbles for that specific vote type
     const assetDTO: AssetItemForGameFeed = {
       id: asset.id,
       title: asset.title,
@@ -342,47 +349,36 @@ export async function getAssetFeedForGame(
       createdAt: asset.createdAt,
       currentPhase: asset.currentPhase,
       status: asset.status,
-      uploader: transformUserAvatarData(asset.uploader),
-      voters: [] as Array<UserAvatarData>
+      uploader: transformUserData(asset.uploader),
+      voters: [] as Array<GetUserDataResponse>
     }
+
+    // Determine which way the asset is trending
     const isReject = rejectCount > approveCount;
     const isApprove = approveCount > rejectCount;
     assetDTO.voters = asset.votes
       .filter((vote) => {
         if (isReject) return vote.voteType === VoteType.REJECT;
         if (isApprove) return vote.voteType === VoteType.APPROVE;
-        // Note this will only be for votes that have been cast, not pending
+        // Note this will only be for votes that have been cast, filters nothing if pending.
       })
-      .map((vote) => ({
-        id: vote.user.id,
-        firstName: vote.user.firstName,
-        fullName: vote.user.fullName,
-        initials: vote.user.initials,
-        avatar: vote.user.avatar,
-        customAvatar: vote.user.customAvatar,
-        teamName: vote.user.team.name
-    }));
+      .map((vote) => transformUserData(vote.user));
     if (isReject) {
       sortedAssets.rejected.push(assetDTO);
     } else if (isApprove) {
       sortedAssets.approved.push(assetDTO);
     }
     // For pending assets (tied votes or no votes), show voters who haven't voted yet
+    // and exclude the uploader themselves since they can't vote on their own asset.
     const pendingVoters = eligibleVoters
-      .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id)
-      .map((voter) => ({
-        id: voter.id,
-        firstName: voter.firstName,
-        fullName: voter.fullName,
-        initials: voter.initials,
-        avatar: voter.avatar,
-        customAvatar: voter.customAvatar,
-        teamName: voter.teamName
-      }));
+      .filter((voter) => !votedUserIds.has(voter.id) && voter.id !== asset.uploader.id);
+
     if (pendingVoters.length) {
+      // Don't want to overwrite the existing assetDTO voters if this asset has votes already.
+      // Create a shallow clone to avoid mutating the original assetDTO in approved/rejected lists.
       const assetDTOClone = { ...assetDTO };
       // only add to this asset's pending list if the asset voting phase hasn't locked.
-      if (!isAssetLocked(assetDTOClone)) {
+      if (!isAssetLocked(assetDTOClone.currentPhase, assetDTOClone.status)) {
         assetDTOClone.voters = pendingVoters;
         sortedAssets.pending.push(assetDTOClone);
       }

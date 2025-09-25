@@ -7,138 +7,130 @@ import {
   GetUserDataResponse,
   GetUserPermissionsResponse
 } from "../types/dto.types";
+import { USER_DATA_SELECT_QUERY } from "../constants/query.constants";
+import { transformUserData } from "../utils";
 
-// Fetch user information in a data access layer (protected by auth)
-// Wrapping in React's cache so that we can call getUser in multiple components,
-// but only one request will be made to the database for the same user during a single render cycle.
+/**
+ * Fetches the currently authenticated user's data.
+ *
+ * This function acts as a data-access layer, protected by session-based auth.
+ * It verifies the session, queries the database for the active user, and
+ * transforms the raw query result into a typed response object.
+ *
+ * Uses React's {@link cache} wrapper so that multiple components can call
+ * `getUser` during a single render cycle without triggering duplicate
+ * database queries. The result is memoized for the duration of the cycle.
+ *
+ * @returns A {@link GetUserDataResponse} object containing the authenticated
+ * user's details, or `null` if:
+ * - No session userId is present
+ * - No active user record is found for the session userId
+*/
 export const getUser = cache(async (): Promise<GetUserDataResponse | null> => {
-  const session = await verifySession();
-  if (!session.userId) {
-    console.log("No userId found in session, returning null user data.");
-    return null;
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      id: Number(session.userId),
-      isActive: true
-    },
-    select: {
-      id: true,
-      firstName: true,
-      fullName: true,
-      initials: true,
-      avatar: true,
-      customAvatar: true,
-      role: true,
-      team_id: true,
-      team: {
-        select: {
-          name: true
-        }
-      }
+  try {
+    const session = await verifySession();
+    if (!session.userId) {
+      console.log("No userId found in session, returning null user data.");
+      return null;
     }
-  });
 
-  if (!user) {
-    console.log("No user found for the given userId, returning null user data.");
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(session.userId),
+        isActive: true
+      },
+      select: USER_DATA_SELECT_QUERY
+    });
+
+    if (!user) {
+      console.log("No user found for the given userId, returning null user data.");
+      return null;
+    }
+
+    return transformUserData(user);
+  } catch(error) {
+    console.error("Error in getUser:", error);
     return null;
   }
-
-  return ({
-    id: user.id,
-    firstName: user.firstName,
-    fullName: user.fullName,
-    initials: user.initials,
-    avatar: user.avatar,
-    customAvatar: user.customAvatar,
-    team_id: user.team_id,
-    role: user.role,
-    teamName: user.team.name
-  });
-
 });
 
+/**
+ * Fetches detailed user data for the user's Profile Page, including team info, owned games, and team games.
+ * Ensures session validation before querying, as some information is sensitive (email, owned games).
+*/
 export async function getDetailedUserData(): Promise<GetDetailedUserDataResponse | null> {
-  // 1. Definitely verify, even though we do in middleware. Sensitive info coming back out!
-  const session = await verifySession();
-  if (!session.userId) {
-    console.log("No userId found in session, returning null user data.");
-    return null;
-  }
-  // 2. Fetch user data and nested, related tables
-  const user = await prisma.user.findUnique({
-    where: { id: Number(session.userId) },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      fullName: true,
-      initials: true,
-      email: true,
-      role: true,
-      avatar: true,
-      customAvatar: true,
-      team_id: true,
-      team: {
-        select: {
-          name: true,
-          gameTeams: {
-            select: {
-              game: {
-                select: {
-                  id: true,
-                  name: true
+  try {
+    const session = await verifySession();
+    if (!session.userId) {
+      console.log("No userId found in session, returning null user data.");
+      return null;
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: Number(session.userId) },
+      select: {
+        ...USER_DATA_SELECT_QUERY,
+        lastName: true,
+        email: true,
+        team: {
+          select: {
+            name: true,
+            gameTeams: {
+              select: {
+                game: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
                 }
               }
             }
           }
-        }
-      },
-      gameOwners: {
-        select: {
-          game: {
-            select: {
-              id: true,
-              name: true
+        },
+        gameOwners: {
+          select: {
+            game: {
+              select: {
+                id: true,
+                name: true
+              }
             }
           }
         }
       }
-    }
-  });
+    });
 
-  if (!user) {
-    console.log("No user found for the given userId, returning null user data.");
+    if (!user) {
+      console.log("No user found for the given userId, returning null user data.");
+      return null;
+    }
+
+    const baseUser = transformUserData(user);
+
+    return {
+      ...baseUser,
+      lastName: user.lastName,
+      email: user.email,
+      gamesOwned: user.gameOwners.map(({ game }) => game),
+      teamGames: user.team.gameTeams.map(({ game }) => game)
+    }
+  } catch(error) {
+    console.error("Error fetching detailed user data:", error);
     return null;
   }
-
-  // 3. Combine the query results into our desired DTO
-  const detailedUserDTO = {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    fullName: user.fullName,
-    initials: user.initials,
-    email: user.email,
-    role: user.role,
-    avatar: user.avatar,
-    customAvatar: user.customAvatar || "",
-    team_id: user.team_id,
-    teamName: user.team.name,
-    gamesOwned: user.gameOwners.map(gameOwner => ({
-      id: gameOwner.game.id,
-      name: gameOwner.game.name
-    })),
-    teamGames: user.team.gameTeams.map(gameTeam => ({
-      id: gameTeam.game.id,
-      name: gameTeam.game.name
-    }))
-  };
-
-  return detailedUserDTO;
 }
 
+/**
+ * Determines the permission set for a given user within a specific game.
+ *
+ * This function checks the user's role and whether they are an IP Owner
+ * of the game, and returns a set of boolean flags representing the actions
+ * they are allowed to perform.
+ *
+ * Uses React's {@link cache} wrapper to memoize results within a single
+ * server-rendering cycle, preventing redundant database lookups when
+ * multiple components request the same permissions.
+ *
+*/
 export const getUserPermissions = cache(async (
   user: GetUserDataResponse,
   gameId: number,
@@ -158,6 +150,15 @@ export const getUserPermissions = cache(async (
   }
 });
 
+/**
+ * Retrieves all eligible voters for a given game and voting phase.
+ * Can pass in an optional list of user Ids to exclude from results.
+ *
+ * - **Phase 1**: Internal team members (`LEADS` and `VOTERS`) actively working on the game.
+ *   - Excludes: inactive users, game owners of the given game, users not on an active team.
+ *
+ * - **Phase 2**: External IP Owners who own the given game (regardless of other games owned).
+*/
 export const getAllEligibleVoters = cache(async (
   gameId: number,
   phase: VotePhase,
@@ -182,44 +183,22 @@ export const getAllEligibleVoters = cache(async (
           }
         }
       },
-      include: {
-        team: true
-      }
+      select: USER_DATA_SELECT_QUERY
     });
-    return phase1Users.map((user) => ({
-      id: user.id,
-      firstName: user.firstName,
-      fullName: user.fullName,
-      initials: user.initials,
-      avatar: user.avatar,
-      customAvatar: user.customAvatar,
-      role: user.role,
-      team_id: user.team.id,
-      teamName: user.team.name
-    }));
+    return phase1Users.map(transformUserData);
+
   } else {
     // Phase 2 is for external IP Owners
     const phase2Users = await prisma.user.findMany({
       where: {
+        id: { notIn: excludeUserIds },
         isActive: true,
         gameOwners: {
           some: { game_id: gameId } // "some" - get any user that owns this game; doesn't matter if they own other games
         }
       },
-      include: {
-        team: true
-      }
+      select: USER_DATA_SELECT_QUERY
     });
-    return phase2Users.map((user) => ({
-      id: user.id,
-      firstName: user.firstName,
-      fullName: user.fullName,
-      initials: user.initials,
-      avatar: user.avatar,
-      customAvatar: user.customAvatar,
-      role: user.role,
-      team_id: user.team.id,
-      teamName: user.team.name
-    }));
+    return phase2Users.map(transformUserData);
   }
 });

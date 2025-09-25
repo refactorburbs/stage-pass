@@ -145,7 +145,7 @@ export async function uploadAssetRevisionImage(_state: UploadAssetRevisionFormSt
     // Unsubscribe all users to the old asset.
     await cleanupPendingCommentsAndSubs(lastRevisionId);
 
-    // Create a new asset in Prisma
+    // Create a new asset in Prisma (will automatically add this to the original asset's "revisions" field.)
     const newAsset = await prisma.asset.create({
       data: {
         title: originalAsset.title,

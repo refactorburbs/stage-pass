@@ -237,7 +237,7 @@ model Asset {
 
   // Self-referencing table for revisions (a recursive relationship - if original_asset_id is not null, store in revisions[])
   originalAsset     Asset?  @relation("AssetRevisions", fields: [original_asset_id], references: [id])
-  revisions         Asset[] @relation("AssetRevisions")
+  revisions         Asset[] @relation("AssetRevisions") // Only original assets will have revisions in their revisions array
 
   @@index([game_id, status, currentPhase]) // For filtering assets by game and phase
   @@index([status, currentPhase]) // For dashboard queries
