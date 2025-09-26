@@ -10,7 +10,7 @@
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr; /* Single row that expands */
   min-height: 700px; /* Matches the Signup height */
-  width: 50%;
+  width: 40%;
   border-top: 6px solid white;
   border-radius: 0.5rem 1.5rem 0 0;
   filter: drop-shadow(-2px 2px 4px rgba(0, 0, 0, 0.25));
@@ -44,14 +44,41 @@
   gap: 2rem;
 }
 
+.auth_card_header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.login_wrapper {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 2.5rem;
+}
+
+.auth_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth_form input {
+  font-size: 18px;
+  padding: 0.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 0.3rem;
+}
+
 .image_container {
   position: absolute; /* Fill the entire section */
   top: 0;
   left: 6px;
   right: 6px;
   bottom: 6px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  /* Or use background-image: url('your-image.jpg'); */
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  background-image: url("/featured/messi.webp");
   background-size: cover;
   background-position: center;
   clip-path: url(#auth-top-and-bottom-wave);
@@ -66,10 +93,15 @@
   height: auto;
 }
 
-.logo_image {
+.logo_image,
+.refactor_logo {
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+.refactor_logo {
+  width: 40%;
 }
 
 .image_text_overlay {
@@ -81,24 +113,7 @@
   gap: 0.5rem;
   color: white;
   font-size: 4cqw; /* 4% of container width - scales with parent */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.auth_card_header {
-  text-align: center;
-}
-
-.auth_form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.auth_form input {
-  font-size: 20px;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.3rem;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 1);
 }
 
 .avatar_selection_group {
@@ -137,4 +152,10 @@
 /* Highlight selected circle */
 .avatar_input:checked + .avatar_circle {
   border-color: #333;
+}
+
+@media screen and (max-width: 1920px) {
+  .auth_card {
+    width: 55%;
+  }
 }

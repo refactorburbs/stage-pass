@@ -6,7 +6,6 @@ import WaveBorder from "@/components/SVG/WaveBorder";
 import Image from "next/image";
 
 import styles from "./Auth.module.css";
-import { Stint_Ultra_Condensed } from "next/font/google";
 
 export default function AuthLayout({ children }: Readonly<{children: ReactNode }>) {
   const toggleButtonOptions = [
@@ -24,7 +23,13 @@ export default function AuthLayout({ children }: Readonly<{children: ReactNode }
             <div className={styles.auth_form_wrapper}>
               <div className={styles.auth_card_header}>
                 <h2>StagePass</h2>
-                <span>Part of the pipeline for game art asset approval with Refactor Games</span>
+                <Image
+                  src="/logo/refactor-black.webp"
+                  alt="Refactor Logo"
+                  width={1725}
+                  height={353}
+                  className={styles.refactor_logo}
+                />
               </div>
               <ToggleButton options={toggleButtonOptions}/>
               {children}
@@ -33,7 +38,6 @@ export default function AuthLayout({ children }: Readonly<{children: ReactNode }
 
           <div className={`${styles.auth_card_section} ${styles.image_section}`}>
             <div className={styles.image_container}>
-              {/* Background image goes here */}
               <div className={styles.logo_wrapper}>
                 <Image
                   src="/logo/stagepass-logo-thumbs.webp"
@@ -49,7 +53,6 @@ export default function AuthLayout({ children }: Readonly<{children: ReactNode }
                 <span>game art pipeline</span>
               </div>
             </div>
-
             {/* Border SVG positioned relative to the image section */}
             <WaveBorder/>
           </div>

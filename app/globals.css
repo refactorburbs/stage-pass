@@ -14,9 +14,9 @@ body {
 }
 
 body {
-  color: var(--foreground);
+  color: var(--color-primary);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mada), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -33,6 +33,22 @@ button {
 
 a {
   text-decoration: none;
+}
+
+h2 {
+  font-family: var(--font-lunasima);
+  font-weight: 400;
+  font-size: 3rem;
+}
+
+h3 {
+  font-family: var(--font-mada);
+  font-size: 2rem;
+}
+
+.callout {
+  font-family: var(--font-lunasima);
+  font-weight: 700;
 }
 
 .content-wrapper {
