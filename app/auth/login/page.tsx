@@ -3,7 +3,7 @@
 import { login } from "@/app/actions/auth.actions";
 import { useActionState } from "react";
 
-import styles from "../auth.module.css";
+import styles from "../Auth.module.css";
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(login, undefined);

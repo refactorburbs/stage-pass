@@ -1,0 +1,140 @@
+.auth_page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+}
+
+.auth_card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr; /* Single row that expands */
+  min-height: 700px; /* Matches the Signup height */
+  width: 50%;
+  border-top: 6px solid white;
+  border-radius: 0.5rem 1.5rem 0 0;
+  filter: drop-shadow(-2px 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.auth_card_section {
+  display: flex;
+  flex-direction: column;
+}
+
+.form_section {
+  background-color: var(--background);
+  border-left: 6px solid white;
+  border-bottom: 6px solid white;
+  border-radius: 0 0 0 0.5rem;
+}
+
+.image_section {
+  position: relative;
+  background-color: var(--background);
+  clip-path: url(#auth-bottom-wave);
+  container-type: inline-size; /* Enable container queries */
+}
+
+.auth_form_wrapper {
+  align-self: center;
+  width: 85%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.image_container {
+  position: absolute; /* Fill the entire section */
+  top: 0;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Or use background-image: url('your-image.jpg'); */
+  background-size: cover;
+  background-position: center;
+  clip-path: url(#auth-top-and-bottom-wave);
+  min-height: 400px; /* Minimum height for mobile */
+}
+
+.logo_wrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 25%;
+  height: auto;
+}
+
+.logo_image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.image_text_overlay {
+  position: absolute;
+  bottom: 3rem;
+  right: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: white;
+  font-size: 4cqw; /* 4% of container width - scales with parent */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.auth_card_header {
+  text-align: center;
+}
+
+.auth_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth_form input {
+  font-size: 20px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.3rem;
+}
+
+.avatar_selection_group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.avatar_options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.avatar_label {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatar_input {
+  display: none;
+}
+
+.avatar_circle {
+  width: 3rem;
+  height: 3rem;;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid transparent;
+  font-weight: bold;
+  transition: border-color 0.2s ease;
+}
+
+/* Highlight selected circle */
+.avatar_input:checked + .avatar_circle {
+  border-color: #333;
+}

@@ -6,7 +6,7 @@ import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
 import DynamicImageAvatarBubble from "@/components/AvatarBubble/DynamicImageAvatarBubble";
 import { uploadFileToPinata } from "@/app/actions/pinata.actions";
 
-import styles from "../auth.module.css";
+import styles from "../Auth.module.css";
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(signup, undefined);
