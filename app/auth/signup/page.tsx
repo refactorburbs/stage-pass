@@ -138,7 +138,12 @@ export default function SignUpForm () {
               </div>
             ) : (
                 <div className={styles.avatar_circle} style={{ border: "2px dashed #2130439c" }}>
-                  <CloudUploadIcon color="#213043"/>
+                  {uploading ? (
+                    <div className={styles.uploading_spinner} />
+                    ) : (
+                      <CloudUploadIcon color="#213043"/>
+                    )
+                  }
                 </div>
               )
             }
