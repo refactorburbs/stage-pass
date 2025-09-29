@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: Readonly<{children: ReactNode }
           <div className={`${styles.auth_card_section} ${styles.form_section}`}>
             <div className={styles.auth_form_wrapper}>
               <div className={styles.auth_card_header}>
-                <h2>StagePass</h2>
+                <h1>StagePass</h1>
                 <Image
                   src="/logo/refactor-black.webp"
                   alt="Refactor Logo"

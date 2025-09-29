@@ -5,6 +5,13 @@
   --color-secondary: #19ADEA;
   --color-approved: #4EA230;
   --color-rejected: #A33139;
+  --xxx-large: 140px;
+  --xx-large: 115px;
+  --x-large: 48px;
+  --large: 40px;
+  --medium: 32px;
+  --small: 24px;
+  --x-small: 22px;
 }
 
 html,
@@ -29,19 +36,26 @@ body {
 
 button {
   cursor: pointer;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 16px;
+  border: 1px solid transparent;
+  border-radius: 0.3rem;
+  padding: 0.75rem 1rem;
+  transition: background-color 0.25s ease;
 }
 
 a {
   text-decoration: none;
 }
 
-h2 {
+h1 {
   font-family: var(--font-lunasima);
   font-weight: 400;
   font-size: 3rem;
 }
 
-h3 {
+h2 {
   font-family: var(--font-mada);
   font-size: 2rem;
 }
@@ -60,14 +74,21 @@ h3 {
   z-index: 5;
   bottom: 2rem;
   right: 2rem;
-  background-color: rgb(180, 180, 180);
-  color: black;
+  background-color: var(--color-primary);
+  color: white;
   font-size: 24px;
-  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  padding: 0.5rem 2rem;
+  transition: background-color 0.25s ease;
 }
 
+button:hover,
 .upload-button:not(.disabled):hover {
-  background-color: rgb(126, 125, 125);
+  background-color: #111822;
+  border-color: var(--color-secondary);
+  filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.25));
 }
 
 .disabled {

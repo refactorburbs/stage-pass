@@ -4,14 +4,14 @@
   border: 3px solid transparent;
 }
 
-.dynamic_avatar_bubble {
+/* .dynamic_avatar_bubble {
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
   border: 3px solid #c4c4c4;
   overflow: hidden;
   position: relative;
-}
+} */
 
 .avatar_image {
   border-radius: 50%;

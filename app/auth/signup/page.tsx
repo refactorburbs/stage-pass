@@ -1,10 +1,11 @@
 "use client"
 
 import { signup } from "@/app/actions/auth.actions";
-import { useActionState, useState } from "react";
-import { AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
-import DynamicImageAvatarBubble from "@/components/AvatarBubble/DynamicImageAvatarBubble";
+import { useActionState, useRef, useState } from "react";
+import { ALLOWED_UPLOAD_FILE_TYPES, AVATAR_BUBBLE_COLORS } from "@/lib/constants/placeholder.constants";
+import CloudUploadIcon from "@/components/SVG/Icons/CloudUploadIcon";
 import { uploadFileToPinata } from "@/app/actions/pinata.actions";
+import Image from "next/image";
 
 import styles from "../Auth.module.css";
 
@@ -15,26 +16,15 @@ export default function SignUpForm () {
   const [customAvatarUrl, setCustomAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [clientError, setClientError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleInitialChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setClientError("");
-
-    if (name === "firstName") setFirstInitial(value.charAt(0).toUpperCase());
-    if (name === "lastName") setLastInitial(value.charAt(0).toUpperCase());
-  }
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setClientError("");
-    // Check file size (0.5MB = 512KB). Keeping profile pics small, allowing asset uploads to be bigger (more cost efficient)
+  const uploadFile = async (file: File): Promise<boolean> => {
+    // Check file size (0.5MB = 512KB). Keeping profile pics small,
+    // but allowing asset uploads to be bigger (more cost efficient)
     if (file.size > 0.5 * 1024 * 1024) {
       setClientError("File size must be less than 0.5MB (500KB). Please choose a smaller image.");
-      event.target.value = "";
-      return;
+      return false;
     }
-
     setUploading(true);
     try {
       const url = await uploadFileToPinata(file);
@@ -44,12 +34,45 @@ export default function SignUpForm () {
     } finally {
       setUploading(false);
     }
+    return true;
+  }
+
+  const handleInitialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setClientError("");
+
+    if (name === "firstName") setFirstInitial(value.charAt(0).toUpperCase());
+    if (name === "lastName") setLastInitial(value.charAt(0).toUpperCase());
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setClientError("");
+    const success = await uploadFile(file);
+    if (!success) e.target.value = "";
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    // Prevent default to allow for the "Drop"
+    e.preventDefault();
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setClientError("");
+    const file = Array.from(e.dataTransfer.files)[0];
+    await uploadFile(file);
+  };
+
+  const handlePickFiles = () => {
+    setClientError("");
+    fileInputRef.current?.click();
   };
 
   const handleFormSubmit = async (formData: FormData) => {
-    if (customAvatarUrl) {
-      formData.set("customAvatarUrl", customAvatarUrl);
-    }
+    formData.delete("image-upload");
+    formData.set("customAvatarUrl", customAvatarUrl);
     // Call the original form action
     await action(formData);
   };
@@ -96,20 +119,41 @@ export default function SignUpForm () {
               </span>
             </label>
           ))}
+          {/* Custom Avatar Drag/Drop Bubble */}
+          <div
+            className={styles.avatar_file_picker}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={handlePickFiles}
+          >
+            {customAvatarUrl ? (
+              <div className={styles.avatar_circle}>
+                <Image
+                  src={customAvatarUrl}
+                  alt="Custom Avatar"
+                  className={styles.avatar_image}
+                  width={48}
+                  height={48}
+                />
+              </div>
+            ) : (
+                <div className={styles.avatar_circle} style={{ border: "2px dashed #2130439c" }}>
+                  <CloudUploadIcon color="#213043"/>
+                </div>
+              )
+            }
+            <input
+              ref={fileInputRef}
+              type="file"
+              name="image-upload"
+              accept={ALLOWED_UPLOAD_FILE_TYPES.join(",")}
+              disabled={uploading}
+              onChange={handleFileUpload}
+              hidden
+            />
+          </div>
         </div>
         {state?.errors?.avatar && <span className="error-msg">{state.errors.avatar}</span>}
-
-        <label>
-          Or upload a profile image:
-        </label>
-        <DynamicImageAvatarBubble src={customAvatarUrl}/>
-        <input
-          type="file"
-          name="customAvatar"
-          accept=".png,.jpg,.jpeg"
-          onChange={handleFileUpload}
-          disabled={uploading}
-        />
         {clientError && (
           <span className="error-msg">{clientError}</span>
         )}
@@ -121,8 +165,8 @@ export default function SignUpForm () {
         </span>
       )}
 
-      <button disabled={pending} type="submit">
-        {pending ? "Submitting..." : "Sign up"}
+      <button disabled={pending} type="submit" style={{ marginTop: "1rem" }}>
+        {pending ? "Submitting..." : "Let's Start!"}
       </button>
     </form>
   );

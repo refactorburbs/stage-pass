@@ -9,8 +9,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr; /* Single row that expands */
-  min-height: 700px; /* Matches the Signup height */
-  width: 40%;
+  height: 710px; /* Matches the Signup height */
+  width: 50%;
   border-top: 6px solid white;
   border-radius: 0.5rem 1.5rem 0 0;
   filter: drop-shadow(-2px 2px 4px rgba(0, 0, 0, 0.25));
@@ -51,7 +51,7 @@
   align-items: center;
 }
 
-.login_wrapper {
+.login_section {
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -147,11 +147,24 @@
   border: 3px solid transparent;
   font-weight: bold;
   transition: border-color 0.2s ease;
+  overflow: hidden;
+  position: relative;
 }
 
 /* Highlight selected circle */
 .avatar_input:checked + .avatar_circle {
-  border-color: #333;
+  border-color: var(--color-primary);
+}
+
+.avatar_circle svg {
+  width: 70%;
+}
+
+.avatar_image {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 @media screen and (max-width: 1920px) {

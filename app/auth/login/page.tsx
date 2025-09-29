@@ -9,8 +9,8 @@ export default function SignUpForm () {
   const [state, action, pending] = useActionState(login, undefined);
 
   return (
-    <div className={styles.login_wrapper}>
-      <h3>Welcome back</h3>
+    <div className={styles.login_section}>
+      <h2>Welcome back</h2>
       <form action={action} className={styles.auth_form}>
 
         <input name="email" type="email" placeholder="Email"/>
@@ -25,8 +25,8 @@ export default function SignUpForm () {
           </span>
         )}
 
-        <button disabled={pending} type="submit">
-          {pending ? "Loggin in..." : "Login"}
+        <button disabled={pending} type="submit" style={{ marginTop: "1rem" }}>
+          {pending ? "Logging in..." : "Let's go!"}
         </button>
       </form>
     </div>
