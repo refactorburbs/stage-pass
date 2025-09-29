@@ -9,8 +9,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr; /* Single row that expands */
-  height: 710px; /* Matches the Signup height */
-  width: 50%;
+  height: 725px;
+  width: 40%;
   border-top: 6px solid white;
   border-radius: 0.5rem 1.5rem 0 0;
   filter: drop-shadow(-2px 2px 4px rgba(0, 0, 0, 0.25));
@@ -125,6 +125,7 @@
 .avatar_options {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .avatar_label {
@@ -169,6 +170,45 @@
 
 @media screen and (max-width: 1920px) {
   .auth_card {
+    height: 710px;
     width: 55%;
+  }
+}
+
+@media screen and (max-width: 1440px) {
+  .auth_card {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .auth_card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto; /* Two rows, though we'll ignore the image now */
+    height: auto;
+    border: none;
+  }
+
+  .form_section {
+    border: 6px solid white;
+    border-radius: 0.5rem;
+  }
+
+  .image_section {
+    display: none;
+  }
+
+  .auth_form_wrapper {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .auth_card {
+    width: 90%;
+  }
+
+  .auth_form input {
+    font-size: 16px;
   }
 }
