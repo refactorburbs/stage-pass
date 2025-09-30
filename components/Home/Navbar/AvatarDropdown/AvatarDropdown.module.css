@@ -1,0 +1,87 @@
+.profile_button {
+  position: relative;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.profile_button:hover {
+  background-color: transparent;
+}
+
+.avatar_icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.avatar_wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.caret_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  padding-left: 0.25rem;
+  z-index: 1;
+}
+
+/* Hover bubble effect */
+.caret_wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -20%;
+  width: 0;
+  height: 0;
+  background-color: rgba(217, 217, 217, 0.15);
+  border-radius: 1rem;
+  z-index: -1;
+}
+
+.profile_button:hover .caret_wrapper::before,
+.profile_button.active .caret_wrapper::before {
+  width: 3rem;
+  height: 2rem;
+}
+
+.dropdown {
+  position: absolute;
+  margin-top: 0.45rem;
+  width: max-content;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 5;
+  background-color: var(--color-primary);
+  padding: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.menu_item {
+  font-family: var(--font-lunasima);
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+  background-color: rgba(217, 217, 217, 0.15);
+  padding: 0.15rem 0.25rem;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu_item:hover {
+  background-color: #111822;
+}
+
+@media screen and (max-width: 600px) {
+  .dropdown {
+    left: revert;
+    right: 0;
+  }
+}

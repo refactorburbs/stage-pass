@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 
+import styles from "./TooltipHover.module.css";
+
 interface TooltipHoverProps {
   text: string;
   children: ReactNode;
@@ -7,8 +9,11 @@ interface TooltipHoverProps {
 
 export default function TooltipHover ({ text, children }: TooltipHoverProps) {
   return (
-    <span title={text}>
+    <span className={styles.tooltip_container}>
       {children}
+      <span className={styles.tooltip}>
+        {text}
+      </span>
     </span>
   );
 }

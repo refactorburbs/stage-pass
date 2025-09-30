@@ -47,6 +47,7 @@ button {
 
 a {
   text-decoration: none;
+  color: white;
 }
 
 h1 {
@@ -66,7 +67,7 @@ h2 {
 }
 
 .content-wrapper {
-  padding: 0 5%;
+  padding: 0 7%;
 }
 
 .upload-button {

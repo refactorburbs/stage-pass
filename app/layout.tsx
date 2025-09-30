@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lunasima } from "next/font/google";
 import localFont from "next/font/local";
+import BlueprintGrid from "@/components/Layout/BlueprintGrid/BlueprintGrid";
 
 import "./globals.css";
 
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${lunasima.variable} ${mada.variable}`}>
-        {children}
+        <BlueprintGrid>
+          {children}
+        </BlueprintGrid>
       </body>
     </html>
   );

@@ -1,16 +1,16 @@
-import TooltipHover from "@/components/TooltipHover";
+import TooltipHover from "@/components/TooltipHover/TooltipHover";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
-import { UserAvatarData } from "@/lib/types/users.types";
+import { GetUserDataResponse } from "@/lib/types/dto.types";
 
 import styles from "./VoterBubbles.module.css";
 
 interface VoterBubblesProps {
-  voters: Array<UserAvatarData>;
+  voters: Array<GetUserDataResponse>;
 }
 
 export default function VoterBubbles({ voters }: VoterBubblesProps) {
-  // Limit the bubbles we show to maybe 10?
-  const truncatedList = voters.slice(0,9);
+  // Limit the bubbles we show to maybe 12?
+  const truncatedList = voters.slice(0,11);
   return (
     <div className={styles.voter_bubble_container}>
       {truncatedList.map((voter) => (

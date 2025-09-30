@@ -26,14 +26,18 @@ export default async function GamePageLayout({
   }
 
   const rules = await getUserPermissions(user, Number(gameId));
+  const gameInfo = {
+    gameName: gameData.name,
+    numTeams: gameData.teams.length,
+    teamString: gameData.teams.join(" x "),
+    gameId: Number(gameId)
+  }
 
   return (
     <div className={styles.game_layout_page}>
       <Navbar
-        gameName={gameData.name}
-        teamString={gameData.teams.join(" x ")}
+        gameInfo={gameInfo}
         user={user}
-        gameId={Number(gameId)}
       />
       {children}
       {rules.canUpload && (<UploadButton/>)}

@@ -4,18 +4,16 @@
   border: 3px solid transparent;
 }
 
-/* .dynamic_avatar_bubble {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  border: 3px solid #c4c4c4;
-  overflow: hidden;
-  position: relative;
-} */
-
 .avatar_image {
   border-radius: 50%;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+@media screen and (max-width: 600px) {
+  .avatar_bubble {
+    max-width: 2rem;
+    max-height: 2rem;
+  }
 }

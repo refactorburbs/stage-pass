@@ -1,28 +1,51 @@
 import { GetUserDataResponse } from '@/lib/types/dto.types';
-import UserProfileIcon from './UserProfileIcon';
+import AvatarDropdown from './AvatarDropdown/AvatarDropdown';
 import Link from "next/link";
+import Image from "next/image";
 
 import styles from './Navbar.module.css';
+import TooltipHover from '@/components/TooltipHover/TooltipHover';
 
 interface NavbarProps {
-  gameName: string;
-  teamString: string;
   user: GetUserDataResponse;
-  gameId: number;
+  gameInfo? : {
+    gameName: string;
+    numTeams: number;
+    teamString: string;
+    gameId: number;
+  }
 }
 
-export default function Navbar({ gameName, teamString, user, gameId }: NavbarProps) {
+export default function Navbar({ user, gameInfo }: NavbarProps) {
+  const gameInfoProvided = gameInfo && gameInfo.gameName && gameInfo.teamString && gameInfo.gameId;
   return (
-    <div className={styles.navbar_container}>
-      <div className={styles.game_team_info}>
-        <Link href={`/game/${gameId}`}>
-          <h2>{`${gameName} - `}</h2>
+    <div className={`content-wrapper ${styles.navbar_container}`}>
+      <div className={styles.logo_wrapper}>
+        <Link href="/">
+          <Image
+            src="/logo/stagepass-logo.webp"
+            alt="StagePass Logo"
+            width={432}
+            height={540}
+            className={styles.logo_image}
+          />
         </Link>
-        <span className={styles.team_info}>
-          {teamString}
-        </span>
       </div>
-      <UserProfileIcon user={user}/>
+
+      {gameInfoProvided ? (
+        <div className={styles.game_team_info}>
+          <Link href={`/game/${gameInfo.gameId}`} className={styles.game_name_link}>
+            <h2>{`${gameInfo.gameName}`}</h2>
+          </Link>
+          <TooltipHover text={gameInfo.teamString}>
+            <span className={styles.team_info}>
+              {`${gameInfo.numTeams} Collaborators`}
+            </span>
+          </TooltipHover>
+        </div>
+      ) : ( <span>StagePass (MVP)</span> )}
+
+      <AvatarDropdown user={user}/>
     </div>
   );
 }
