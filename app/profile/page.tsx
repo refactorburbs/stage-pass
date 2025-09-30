@@ -2,7 +2,7 @@ import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import { getDetailedUserData } from "@/lib/data";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import UpdateProfileForm from "./UpdateProfileForm";
-import { UserAvatarData } from "@/lib/types/users.types";
+import { GetUserDataResponse } from "@/lib/types/dto.types";
 import Link from "next/link";
 
 import styles from "./ProfilePage.module.css";
@@ -14,11 +14,13 @@ export default async function UserProfilePage() {
     return <NotAuthorized />
   }
 
-  const filteredUser: UserAvatarData = {
+  const filteredUser: GetUserDataResponse = {
     id: user.id,
     firstName: user.firstName,
     fullName: user.fullName,
     initials: user.initials,
+    role: user.role,
+    team_id: user.team_id,
     avatar: user.avatar,
     customAvatar: user.customAvatar,
     teamName: user.teamName
@@ -28,7 +30,7 @@ export default async function UserProfilePage() {
     <div className={styles.profile_page}>
       <div className="content-wrapper">
         <div className={styles.profile_avatar}>
-          <AvatarBubble size="large" user={filteredUser} />
+          <AvatarBubble size="x-large" user={filteredUser} />
           <h2 className={styles.page_title}>
             {`${user.firstName}'s Profile:`}
           </h2>

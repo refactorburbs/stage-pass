@@ -25,7 +25,7 @@ export default async function GamePageLayout({
     return notFound();
   }
 
-  const rules = await getUserPermissions(user, Number(gameId));
+  // const rules = await getUserPermissions(user, Number(gameId));
   const gameInfo = {
     gameName: gameData.name,
     numTeams: gameData.teams.length,
@@ -40,7 +40,7 @@ export default async function GamePageLayout({
         user={user}
       />
       {children}
-      {rules.canUpload && (<UploadButton/>)}
+      {/* {rules.canUpload && (<UploadButton/>)} */}
     </div>
   );
 }

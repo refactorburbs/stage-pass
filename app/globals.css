@@ -73,6 +73,10 @@ h2 {
   color: white;
 }
 
+.single-page-no-scroll {
+  max-height: 100svh;
+}
+
 .content-wrapper {
   padding: 0 7%;
 }

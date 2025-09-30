@@ -1,0 +1,29 @@
+.login_column {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 2.5rem;
+}
+
+.auth_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth_form input {
+  font-size: 18px;
+  padding: 0.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--card-border-radius);
+}
+
+.login_button {
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+  .auth_form input {
+    font-size: 0.75rem;
+  }
+}

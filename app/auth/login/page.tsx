@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
 import { login } from "@/app/actions/auth.actions";
 import { useActionState } from "react";
 
-import styles from "../Auth.module.css";
+import styles from "./Login.module.css";
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(login, undefined);
 
   return (
-    <div className={styles.login_section}>
+    <div className={styles.login_column}>
       <h2>Welcome back</h2>
       <form action={action} className={styles.auth_form}>
 
@@ -25,7 +25,7 @@ export default function SignUpForm () {
           </span>
         )}
 
-        <button disabled={pending} type="submit" style={{ marginTop: "1rem" }}>
+        <button disabled={pending} type="submit" className={styles.login_button}>
           {pending ? "Logging in..." : "Let's go!"}
         </button>
       </form>

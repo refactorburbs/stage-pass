@@ -7,7 +7,7 @@ import CloudUploadIcon from "@/components/SVG/Icons/CloudUploadIcon";
 import { uploadFileToPinata } from "@/app/actions/pinata.actions";
 import Image from "next/image";
 
-import styles from "../Auth.module.css";
+import styles from "./Signup.module.css";
 
 export default function SignUpForm () {
   const [state, action, pending] = useActionState(signup, undefined);
@@ -108,7 +108,7 @@ export default function SignUpForm () {
                 name="avatar"
                 value={index}
                 defaultChecked={index === 0}
-                className={styles.avatar_input}
+                className={styles.radio_input}
               />
               <span
                 className={styles.avatar_circle}
@@ -121,7 +121,6 @@ export default function SignUpForm () {
           ))}
           {/* Custom Avatar Drag/Drop Bubble */}
           <div
-            className={styles.avatar_file_picker}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={handlePickFiles}
@@ -137,11 +136,11 @@ export default function SignUpForm () {
                 />
               </div>
             ) : (
-                <div className={styles.avatar_circle} style={{ border: "2px dashed #2130439c" }}>
+                <div className={`${styles.avatar_circle} ${styles.avatar_upload_circle}`}>
                   {uploading ? (
                     <div className={styles.uploading_spinner} />
                     ) : (
-                      <CloudUploadIcon color="#213043"/>
+                      <CloudUploadIcon color="var(--color-primary)"/>
                     )
                   }
                 </div>
@@ -170,7 +169,7 @@ export default function SignUpForm () {
         </span>
       )}
 
-      <button disabled={pending} type="submit" style={{ marginTop: "1rem" }}>
+      <button disabled={pending} type="submit" className={styles.signup_button}>
         {pending ? "Submitting..." : "Let's Start!"}
       </button>
     </form>

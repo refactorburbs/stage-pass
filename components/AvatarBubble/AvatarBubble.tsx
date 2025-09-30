@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import styles from "./AvatarBubble.module.css";
 
-type AvatarBubbleSize = "small" | "medium" | "large"
+type AvatarBubbleSize = "small" | "medium" | "large" | "x-large";
 
 interface AvatarBubbleProps {
   size: AvatarBubbleSize;
@@ -19,8 +19,10 @@ const generateCSS = (size: AvatarBubbleSize, user: GetUserDataResponse) => {
         return { width: "1.75rem", height: "1.75rem", fontSize: "10px" };
       case "medium":
         return { width: "2rem", height: "2rem" };
+      case "large":
+        return { width: "2.5rem", height: "2.5rem" };
       default:
-        return { width: "3rem", height: "3rem" }; // Default to large ?
+        return { width: "3rem", height: "3rem" }; // Default to x-large ?
     }
   })();
 

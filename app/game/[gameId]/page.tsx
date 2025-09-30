@@ -1,11 +1,11 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import AssetFeed from "@/components/Home/AssetFeed/AssetFeed";
 import FeedToggle from "@/components/Home/AssetFeed/FeedToggle/FeedToggle";
+import ToggleButton from "@/components/Buttons/ToggleButton/ToggleButton";
 import { getUser, getUserPermissions } from "@/lib/data/index";
 import { FeedType } from "@/lib/types/feed.types";
 
 import styles from "./GamePage.module.css";
-import ToggleButton from "@/components/Buttons/ToggleButton/ToggleButton";
 
 interface GamePageProps {
   params: {
@@ -36,8 +36,8 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
   return (
     <div className={styles.game_page_container}>
       <div className={styles.feed_toggle_container}>
-        <FeedToggle gameId={Number(gameId)} currentFeed={feedType}/>
-        {/* <ToggleButton options={toggleButtonOptions}/> */}
+        {/* <FeedToggle gameId={Number(gameId)} currentFeed={feedType}/> */}
+        <ToggleButton options={toggleButtonOptions}/>
       </div>
       {feedType === "game" && (
         <span className={styles.feed_note}>
