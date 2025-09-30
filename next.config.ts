@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: pinataGateway,
         pathname: "/**"
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "stagepass.mypinata.cloud",
+        pathname: "/**"
+      },
     ]
   }
 };

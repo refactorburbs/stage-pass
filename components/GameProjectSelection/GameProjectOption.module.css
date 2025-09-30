@@ -1,10 +1,87 @@
-.game_option_container {
-  padding: 1rem 2rem;
-  background-color: #d8d7d7;
+.game_option_card {
+  padding: 2rem;
+  background-color: white;
   color: black;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  border-radius: var(--card-border-radius);
+  border: 1px solid transparent;
+  transition: border 0.2s ease;
+  container-type: inline-size; /* Enable container queries */
+}
+
+.game_option_card:hover {
+  border-color: var(--color-secondary);
+}
+
+.banner_image_container {
   width: 100%;
-  border-radius: 1rem;
+  height: auto;
+}
+
+.banner_image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--card-border-radius);
+}
+
+.callouts {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.final_say_callout {
+  margin-right: calc(-2rem - 1px); /* minus the padding & border of the card */
+  padding: 0.25rem 1rem;
+  background-color: var(--color-approved);
+  color: white;
+}
+
+.game_info_container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-family: var(--font-lunasima);
+}
+
+.current_game {
+  font-size: 6cqw;
+}
+
+.current_team {
+  font-size: 5cqw;
+  color: var(--color-primary-faded);
+}
+
+.collaboration_description {
+  font-family: var(--font-mada);
+  font-size: 4cqw;
+}
+
+.collaboration_number {
+  font-family: var(--font-lunasima);
+  font-weight: 700;
+  font-size: 6cqw;
+}
+
+.fake_button {
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 4cqw;
+  border: 1px solid transparent;
+  border-radius: var(--card-border-radius);
+  padding: 0.75rem;
+  transition: background-color 0.25s ease;
+  text-align: center;
+  font-family: var(--font-lunasima);
+}
+
+.fake_button:hover {
+  background-color: #111822;
+  border-color: var(--color-secondary);
+  filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.25));
 }

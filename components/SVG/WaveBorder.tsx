@@ -12,6 +12,10 @@ export default function WaveBorder() {
         height="100%"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, transparent 50%, white 100%)",
+          borderBottom: "6px solid white"
+        }}
       >
         <path
           d="M 0,0

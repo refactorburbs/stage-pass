@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lunasima } from "next/font/google";
 import localFont from "next/font/local";
+import Image from "next/image";
 import BlueprintGrid from "@/components/Layout/BlueprintGrid/BlueprintGrid";
 
 import "./globals.css";
@@ -33,6 +34,14 @@ export default function RootLayout({
       <body className={`${lunasima.variable} ${mada.variable}`}>
         <BlueprintGrid>
           {children}
+          <div className="refactor-logo-footer">
+            <Image
+              src="/logo/refactor-black.webp"
+              alt="Refactor Games Logo"
+              width={1725}
+              height={353}
+            />
+          </div>
         </BlueprintGrid>
       </body>
     </html>

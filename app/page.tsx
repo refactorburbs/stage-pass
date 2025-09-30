@@ -21,14 +21,22 @@ export default async function GameProjectSelectionPage() {
     <div className={styles.page}>
       <Navbar user={user} />
 
-      <h1>StagePass (MVP)</h1>
-      <h2>{`Hi, ${user.firstName}!`}</h2>
-      <span>(Proper UI design is underway! Thank you for your patience)</span>
-      <span>Select Game Project:</span>
-      <div className="content-wrapper">
-        {teamData.games.map((game) => (
-          <GameProjectOption game={game} key={game.id}/>
-        ))}
+      <div className={`content-wrapper ${styles.game_selection_wrapper}`}>
+        <div className={styles.welcome_header}>
+          <span>{`Hi, ${user.firstName}! Select a`}</span>
+          <span>{`game project to work on.`}</span>
+        </div>
+        <div className={styles.game_selection_options}>
+          {teamData.games.map((game) => (
+            <GameProjectOption
+              game={game}
+              user={user}
+              teamName={teamData.name}
+              key={game.id}
+            />
+          ))}
+        </div>
+
       </div>
     </div>
   );

@@ -9,7 +9,7 @@
   background-color: white;
   color: var(--color-primary);
   padding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--card-border-radius);
   font-size: 0.875rem;
   white-space: nowrap;
   opacity: 0;
