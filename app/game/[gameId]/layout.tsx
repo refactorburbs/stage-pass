@@ -1,5 +1,5 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
-import Navbar from "@/components/Home/Navbar/Navbar";
+import Navbar from "@/components/Layout/Navbar/Navbar";
 import UploadButton from "@/components/Home/UploadButton/UploadButton";
 import { getGame, getUser, getUserPermissions } from "@/lib/data/index";
 import { notFound } from "next/navigation";

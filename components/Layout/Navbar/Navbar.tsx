@@ -1,10 +1,10 @@
 import { GetUserDataResponse } from '@/lib/types/dto.types';
-import AvatarDropdown from './AvatarDropdown/AvatarDropdown';
+import AvatarDropdownMenu from './AvatarDropdownMenu/AvatarDropdownMenu';
+import TooltipHover from '@/components/TooltipHover/TooltipHover';
 import Link from "next/link";
 import Image from "next/image";
 
 import styles from './Navbar.module.css';
-import TooltipHover from '@/components/TooltipHover/TooltipHover';
 
 interface NavbarProps {
   user: GetUserDataResponse;
@@ -19,7 +19,7 @@ interface NavbarProps {
 export default function Navbar({ user, gameInfo }: NavbarProps) {
   const gameInfoProvided = gameInfo && gameInfo.gameName && gameInfo.teamString && gameInfo.gameId;
   return (
-    <div className={`content-wrapper ${styles.navbar_container}`}>
+    <nav className={`content-wrapper ${styles.navbar_container}`}>
       <div className={styles.logo_wrapper}>
         <Link href="/">
           <Image
@@ -45,7 +45,7 @@ export default function Navbar({ user, gameInfo }: NavbarProps) {
         </div>
       ) : ( <span>StagePass (MVP)</span> )}
 
-      <AvatarDropdown user={user}/>
-    </div>
+      <AvatarDropdownMenu user={user}/>
+    </nav>
   );
 }

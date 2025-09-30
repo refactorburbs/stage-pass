@@ -1,5 +1,5 @@
 .game_option_card {
-  padding: 2rem;
+  padding: 1.5rem;
   background-color: white;
   color: black;
   display: flex;
@@ -13,6 +13,12 @@
 
 .game_option_card:hover {
   border-color: var(--color-secondary);
+}
+
+.game_option_card:hover .fake_button {
+  background-color: #111822;
+  border-color: var(--color-secondary);
+  filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.25));
 }
 
 .banner_image_container {
@@ -34,11 +40,16 @@
   justify-content: space-between;
 }
 
+.role_callout {
+  font-size: 5cqw;
+}
+
 .final_say_callout {
-  margin-right: calc(-2rem - 1px); /* minus the padding & border of the card */
+  margin-right: calc(-1.5rem - 1px); /* minus the padding & border of the card */
   padding: 0.25rem 1rem;
   background-color: var(--color-approved);
   color: white;
+  font-size: 5cqw;
 }
 
 .game_info_container {
@@ -78,10 +89,4 @@
   transition: background-color 0.25s ease;
   text-align: center;
   font-family: var(--font-lunasima);
-}
-
-.fake_button:hover {
-  background-color: #111822;
-  border-color: var(--color-secondary);
-  filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.25));
 }

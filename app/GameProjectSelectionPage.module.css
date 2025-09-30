@@ -6,7 +6,7 @@
   padding-bottom: 3rem;
 }
 
-.game_selection_wrapper {
+.game_selection_content {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -20,7 +20,7 @@
 
 .game_selection_options {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1rem;
   background-color: #EBEDF1;
   padding: 2rem;
@@ -31,11 +31,14 @@
   .welcome_header {
     font-size: 2rem;
   }
+  .game_selection_options {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
 
+@media screen and (max-width: 900px) {
   .game_selection_options {
     grid-template-columns: 1fr 1fr;
-    border: none;
-    padding: 0;
   }
 }
 
@@ -43,8 +46,14 @@
   .welcome_header {
     font-size: 1.5rem;
   }
-
   .game_selection_options {
     grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .game_selection_options {
+    border: none;
+    padding: 0;
   }
 }

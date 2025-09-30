@@ -7,13 +7,13 @@ import { GetUserDataResponse } from "@/lib/types/dto.types";
 import { logout } from "@/app/actions/auth.actions";
 import Link from "next/link";
 
-import styles from "./AvatarDropdown.module.css";
+import styles from "./AvatarDropdownMenu.module.css";
 
 interface AvatarDropdownProps {
   user: GetUserDataResponse;
 }
 
-export default function AvatarDropdown({ user }: AvatarDropdownProps) {
+export default function AvatarDropdownMenu({ user }: AvatarDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {

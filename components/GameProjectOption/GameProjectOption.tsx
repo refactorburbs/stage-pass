@@ -43,7 +43,9 @@ export default async function GameProjectOption({ game, user, teamName }: GamePr
       </div>
 
       <div className={styles.callouts}>
-        <span className="callout">{user.role.toUpperCase()}</span>
+        <span className={`callout ${styles.role_callout}`}>
+          {user.role.toUpperCase()}
+        </span>
         {hasFinalSay && <span className={styles.final_say_callout}>You have final say!</span>}
       </div>
 
