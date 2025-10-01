@@ -2,11 +2,13 @@
   --background: #EBEDF1;
   --foreground: #171717;
   --color-primary: #213043;
+  --color-primary-faded: rgba(33, 48, 67, 0.75);
   --color-secondary: #19ADEA;
   --color-approved: #4EA230;
+  --color-approved-faded: rgba(78, 162, 48, 0.1);
   --color-rejected: #A33139;
-  --color-primary-faded: rgba(33, 48, 67, 0.75);
-  --card-border-radius: 0.5rem;
+  --color-rejected-faded: rgba(163, 49, 57, 0.1);
+  --card-border-radius: 0.3rem;
   --xxx-large: 140px;
   --xx-large: 115px;
   --x-large: 48px;

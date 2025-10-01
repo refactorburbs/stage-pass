@@ -9,8 +9,9 @@ import VoterBubbles from "../VoterBubbles/VoterBubbles";
 import PendingCommentsFooter from "../PendingCommentsFooter/PendingCommentsFooter";
 import { redactAssetVote } from "@/app/actions/asset.actions";
 import { useParams, useRouter } from "next/navigation";
-import { timeAgo } from "@/lib/utils";
+import { timeAgo, isAssetLocked } from "@/lib/utils";
 import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
+import LockIcon from "@/components/SVG/Icons/LockIcon";
 
 import styles from "./ColumnListViewItem.module.css";
 
@@ -20,17 +21,31 @@ interface ColumnListViewProps {
 }
 
 // Assets that have a final vote on them are colored. Pending are white.
-const getItemColor = (status: AssetStatus, currentPhase: VotePhase) => {
+const getItemStyle = (currentPhase: VotePhase, status: AssetStatus) => {
   switch (status) {
     case AssetStatus.PHASE1_APPROVED:
-      if (currentPhase === VotePhase.PHASE2) return "white";
+      if (currentPhase === VotePhase.PHASE2) {
+        return {
+          backgroundColor: "#F1F3F4",
+          border: "2px solid white"
+        };
+      }
     case AssetStatus.PHASE2_APPROVED:
-      return "#a8d899ff";
+      return {
+        backgroundColor: "var(--color-approved-faded)",
+        border: "2px solid var(--color-approved)"
+      };
     case AssetStatus.PHASE1_REJECTED:
     case AssetStatus.PHASE2_REJECTED:
-      return "#FAA0A0";
+      return {
+        backgroundColor: "var(--color-rejected-faded)",
+        border: "2px solid var(--color-rejected)"
+      };
     default:
-      return "white";
+      return {
+        backgroundColor: "#F1F3F4",
+        border: "2px solid white"
+      };
   }
 }
 
@@ -46,11 +61,9 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
   const hasOtherUploader = "uploader" in item; // Voter or Game feed, not Artist feed
   const isArtistFeed = !hasOtherUploader;
 
-  const itemColor = getItemColor(item.status, item.currentPhase);
+  const itemStyle = getItemStyle(item.currentPhase, item.status);
   const submissionInfoText = `Submitted by ${hasOtherUploader ? item.uploader.firstName : "you"}`;
-
   const commentsForThisAsset = notifications?.filter((notification) => notification.asset_id === item.id) || [];
-  const reviewPhaseText = isArtistFeed && item.currentPhase === VotePhase.PHASE2 ? "Pending Final Review" : item.currentPhase === VotePhase.PHASE1 ? "Internal Review" : "";
 
   const handleRedactVote = (voteId: number) => {
     startTransition(async () => {
@@ -68,10 +81,39 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
     router.push(`/game/${gameId}/asset/${item.id}`);
   }
 
+  const renderAssetReviewPhaseHeader = () => {
+    const assetLocked = isAssetLocked(item.currentPhase, item.status);
+    if (assetLocked) {
+      const isApproved = item.status === AssetStatus.PHASE1_APPROVED || item.status === AssetStatus.PHASE2_APPROVED;
+      const headerColor = isApproved ? "var(--color-approved)" : "var(--color-rejected)";
+      return (
+        <div className={styles.locked_overlay} style={{ backgroundColor: headerColor }}>
+          <span>{isApproved ? "Approved" : "Rejected"}</span>
+          <div className={styles.lock_icon}>
+            <LockIcon />
+          </div>
+        </div>
+      );
+    }
+    // show no header for external review
+    let reviewPhaseText = "";
+    if (isArtistFeed && item.currentPhase === VotePhase.PHASE2) {
+      reviewPhaseText = "Pending Final Review";
+    } else if (item.currentPhase === VotePhase.PHASE1) {
+      reviewPhaseText = "Internal Review";
+    }
+    return (
+      <span className={styles.phase_info}>
+        {reviewPhaseText}
+      </span>
+    );
+  }
+
   const renderFooter = () => {
     // For the game feed, where one asset item has several voters
     if (hasVoters) {
       if (item.voters.length === 0) {
+        // This should never happen - a notification should be sent, but just in case:
         return <span>Voting Complete: Tie</span>
       }
       return (
@@ -107,7 +149,11 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
   }
 
   return (
-    <div onClick={onCardClick} className={styles.list_item_container} style={{ backgroundColor: itemColor }}>
+    <div
+      onClick={onCardClick}
+      className={styles.list_item_container}
+      style={itemStyle}
+    >
       <div className={styles.image_preview_container}>
         <Image
           src={imageSrc}
@@ -121,9 +167,7 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
       <div className={styles.list_item_info}>
         <div className={styles.header}>
           <span>{item.title}</span>
-          <span className={styles.phase_info}>
-            {reviewPhaseText}
-          </span>
+          {renderAssetReviewPhaseHeader()}
         </div>
         <div className={styles.submission_info}>
           {submissionInfoText} • {timeAgo(item.createdAt)}

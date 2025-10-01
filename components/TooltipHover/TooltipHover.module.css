@@ -1,31 +1,20 @@
 .tooltip_container {
-  position: relative;
   display: inline-flex;
   align-items: center;
 }
 
 .tooltip {
-  position: absolute;
   background-color: white;
   color: var(--color-primary);
   padding: 0.5rem 0.75rem;
   border-radius: var(--card-border-radius);
   font-size: 0.875rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 5;
+  flex-wrap: wrap;
+  z-index: 9999;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  top: calc(100% + 0.75rem);
-  left: 0;
+  pointer-events: none;
 }
 
-.tooltip_container:hover .tooltip {
-  opacity: 1;
-}
-
-/* Triangle pointer */
 .tooltip::before {
   content: "";
   position: absolute;
@@ -36,13 +25,4 @@
   left: 0;
   border-width: 0 0.6rem 0.6rem 0.6rem;
   border-color: transparent transparent white transparent;
-}
-
-@media screen and (max-width: 1200px) {
-  .tooltip {
-    white-space: pre-wrap;
-  }
-  .tooltip:before {
-    top: -4%;
-  }
 }
