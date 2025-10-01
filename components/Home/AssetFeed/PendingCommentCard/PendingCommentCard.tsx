@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
-import { PendingCommentData } from "@/lib/types/assets.types";
+import { PendingCommentData } from "@/lib/types/comments.types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -53,7 +53,7 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
           <Image
             src={imageSrc}
             alt="Asset Preview"
-            className={styles.preview_image}
+            className="object-fit"
             height={1080}
             width={1080}
             onError={() => setImageSrc(fallbackSrc)}

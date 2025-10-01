@@ -65,6 +65,15 @@ h2 {
   font-size: 1.75rem;
 }
 
+.title {
+  font-family: var(--font-lunasima);
+}
+
+.subtitle {
+  font-family: var(--font-lunasima);
+  color: var(--color-primary-faded);
+}
+
 .callout {
   font-family: var(--font-lunasima);
   font-weight: 700;
@@ -104,6 +113,12 @@ h2 {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: var(--color-secondary);
   border-radius: 3px;
+}
+
+.object-fit {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
 .upload-button {

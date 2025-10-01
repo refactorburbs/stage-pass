@@ -27,7 +27,7 @@ export default function Navbar({ user, gameInfo }: NavbarProps) {
             alt="StagePass Logo"
             width={432}
             height={540}
-            className={styles.logo_image}
+            className="object-fit"
           />
         </Link>
       </div>

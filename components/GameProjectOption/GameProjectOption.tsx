@@ -38,7 +38,7 @@ export default async function GameProjectOption({ game, user, teamName }: GamePr
           alt="Game Banner"
           width={1920}
           height={1080}
-          className={styles.banner_image}
+          className={`object-fit ${styles.banner_image}`}
         />
       </div>
 

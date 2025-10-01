@@ -22,12 +22,6 @@
   position: relative;
 }
 
-.preview_image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .list_item_info {
   display: flex;
   flex-direction: column;
@@ -41,7 +35,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 1rem;
+  font-size: 3cqw;
+  color: black;
 }
 
 .phase_info {
@@ -85,8 +80,7 @@
 }
 
 .submission_info {
-  font-size: 0.75rem;
-  color: #64748b;
+  font-size: 2.5cqw;
 }
 
 .item_footer {

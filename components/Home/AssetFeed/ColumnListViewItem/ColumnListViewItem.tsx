@@ -160,16 +160,16 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
           alt="Asset"
           height={1080}
           width={1080}
-          className={styles.preview_image}
+          className="object-fit"
           onError={() => setImageSrc(fallbackSrc)}
         />
       </div>
       <div className={styles.list_item_info}>
         <div className={styles.header}>
-          <span>{item.title}</span>
+          <span className="title">{item.title}</span>
           {renderAssetReviewPhaseHeader()}
         </div>
-        <div className={styles.submission_info}>
+        <div className={`subtitle ${styles.submission_info}`}>
           {submissionInfoText} • {timeAgo(item.createdAt)}
         </div>
 

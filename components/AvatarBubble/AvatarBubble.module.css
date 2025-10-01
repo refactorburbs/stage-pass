@@ -4,13 +4,6 @@
   border: 3px solid transparent;
 }
 
-.avatar_image {
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 @media screen and (max-width: 600px) {
   .avatar_bubble {
     max-width: 2rem;

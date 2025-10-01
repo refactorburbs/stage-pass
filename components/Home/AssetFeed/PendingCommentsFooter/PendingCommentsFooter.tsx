@@ -1,8 +1,9 @@
 "use client";
 
-import { PendingCommentData } from "@/lib/types/assets.types";
 import React, { useTransition } from "react";
 import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
+import { PendingCommentData } from "@/lib/types/comments.types";
+import CommentIcon from "@/components/SVG/Icons/CommentIcon";
 import { useRouter } from "next/navigation";
 
 import styles from "./PendingCommentsFooter.module.css";
@@ -29,12 +30,19 @@ export default function PendingCommentsFooter({ notifications }: PendingComments
     router.push(`/game/${gameId}/asset/${assetId}`);
   }
 
-  const commentCountString = `${notifications.length} New Comment${notifications.length === 1 ? "" : "s"}`;
+  // const commentCountString = `${notifications.length} New Comment${notifications.length === 1 ? "" : "s"}`;
   return (
     <div className={styles.pending_comment_footer}>
-      <span>{commentCountString}</span>
-      <button disabled={isPending} onClick={handleDismiss}>
-        View
+      {/* <span>{commentCountString}</span> */}
+      <button
+        disabled={isPending}
+        onClick={handleDismiss}
+        className={styles.comment_icon}
+      >
+        <div className={styles.comment_number_bubble}>
+          {notifications.length}
+        </div>
+        <CommentIcon />
       </button>
     </div>
   );

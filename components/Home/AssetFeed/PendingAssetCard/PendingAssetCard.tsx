@@ -28,7 +28,7 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
             alt="Asset"
             height={1080}
             width={1080}
-            className={styles.preview_image}
+            className={`object-fit ${styles.preview_image}`}
           />
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
             alt="Asset"
             height={1080}
             width={1080}
-            className={styles.preview_image}
+            className={`object-fit ${styles.preview_image}`}
           />
         </div>
         <div className={styles.uploader_info}>

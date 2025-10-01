@@ -45,6 +45,10 @@
   align-items: center;
 }
 
+.refactor_logo {
+  width: 40%;
+}
+
 .image_section {
   position: relative;
   background-color: var(--background);
@@ -72,17 +76,6 @@
   right: 1rem;
   width: 25%;
   height: auto;
-}
-
-.logo_image,
-.refactor_logo {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-.refactor_logo {
-  width: 40%;
 }
 
 .image_text_overlay {

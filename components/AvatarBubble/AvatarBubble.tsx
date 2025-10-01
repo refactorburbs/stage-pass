@@ -72,7 +72,7 @@ export default function AvatarBubble({ size, user }: AvatarBubbleProps) {
       <Image
         src={user.customAvatar!}
         alt="Custom Avatar"
-        className={styles.avatar_image}
+        className="object-fit"
         width={48} // anticipating largest size (3rem ~ 48px)
         height={48} // and Next can always handle scaling down
       />

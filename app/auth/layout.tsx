@@ -28,7 +28,7 @@ export default function AuthLayout({ children }: Readonly<{children: ReactNode }
                   alt="Refactor Logo"
                   width={1725}
                   height={353}
-                  className={styles.refactor_logo}
+                  className={`object-fit ${styles.refactor_logo}`}
                 />
               </div>
               <ToggleButton options={toggleButtonOptions}/>
@@ -44,7 +44,7 @@ export default function AuthLayout({ children }: Readonly<{children: ReactNode }
                   alt="StagePass Logo"
                   width={432}
                   height={866}
-                  className={styles.logo_image}
+                  className="object-fit"
                 />
               </div>
               <div className={styles.image_text_overlay}>

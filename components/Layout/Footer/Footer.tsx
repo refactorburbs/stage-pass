@@ -11,7 +11,7 @@ export default function Footer() {
           alt="Refactor Logo"
           width={1725}
           height={353}
-          className={styles.refactor_logo}
+          className="object-fit"
         />
       </div>
     </footer>

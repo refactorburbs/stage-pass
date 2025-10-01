@@ -130,7 +130,7 @@ export default function SignUpForm () {
                 <Image
                   src={customAvatarUrl}
                   alt="Custom Avatar"
-                  className={styles.avatar_image}
+                  className="object-fit"
                   width={48}
                   height={48}
                 />
