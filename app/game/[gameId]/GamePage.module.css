@@ -1,17 +1,59 @@
 .game_page_container {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   height: 80vh;
   flex-direction: column;
+  container-type: inline-size; /* Enable container queries */
 }
 
-.feed_toggle_container {
+.feed_toggle_section {
   width: 100%;
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
   align-items: center;
   justify-content: center;
 }
 
+/* because css modules are isolated, can't select child of
+a specific class name (because they often get appended with random uuids)
+but we can say: target the first div found after this class */
+.feed_toggle_section > div:first-of-type {
+  width: 20%;
+}
+
 .feed_note {
   align-self: center;
+  text-align: center;
+  font-size: 1cqw;
+}
+
+@media screen and (max-width: 1920px) {
+  .game_page_container {
+    gap: 1rem;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .feed_toggle_section > div:first-of-type {
+    width: 30%;
+  }
+  .feed_note {
+    font-size: 2cqw;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .game_page_container {
+    height: unset;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .feed_toggle_section > div:first-of-type {
+    width: 50%;
+  }
+  .feed_note {
+    font-size: 3cqw;
+  }
 }

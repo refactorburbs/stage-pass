@@ -1,10 +1,10 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import Navbar from "@/components/Layout/Navbar/Navbar";
-import UploadButton from "@/components/Home/UploadButton/UploadButton";
-import { getGame, getUser, getUserPermissions } from "@/lib/data/index";
+import { getGame, getUser } from "@/lib/data/index";
 import { notFound } from "next/navigation";
 
 import styles from "./layout.module.css";
+import Footer from "@/components/Layout/Footer/Footer";
 
 export default async function GamePageLayout({
   children,
@@ -25,7 +25,6 @@ export default async function GamePageLayout({
     return notFound();
   }
 
-  // const rules = await getUserPermissions(user, Number(gameId));
   const gameInfo = {
     gameName: gameData.name,
     numTeams: gameData.teams.length,
@@ -34,13 +33,10 @@ export default async function GamePageLayout({
   }
 
   return (
-    <div className={styles.game_layout_page}>
-      <Navbar
-        gameInfo={gameInfo}
-        user={user}
-      />
+    <div className={`${styles.game_page_layout} page-layout`}>
+      <Navbar gameInfo={gameInfo} user={user} />
       {children}
-      {/* {rules.canUpload && (<UploadButton/>)} */}
+      <Footer />
     </div>
   );
 }

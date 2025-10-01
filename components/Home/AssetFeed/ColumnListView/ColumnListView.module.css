@@ -1,18 +1,27 @@
 .column {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 100%;
   gap: 1rem;
-  padding: 1rem;
-  background-color: rgb(221, 221, 221);
-  overflow-y: scroll;
+  align-items: center;
+}
+
+.column_header {
+  font-family: var(--font-lunasima);
+  font-weight: 700;
+  font-size: 1.5rem;
 }
 
 .column_content {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  height: 100%;
+  width: 100%;
+  padding: 1rem;
+  background-color: #F3F4F5;
+  border-radius: var(--card-border-radius);
+  overflow-y: scroll;
+  filter: drop-shadow(-4px 4px 10px rgba(0,0,0, 0.1));
 }
 
 .no_items {
@@ -20,4 +29,10 @@
   color: black;
   margin-top: 1.5rem;
   font-style: italic;
+}
+
+@media screen and (max-width: 1920px) {
+  .column_header {
+    font-size: 1rem;
+  }
 }

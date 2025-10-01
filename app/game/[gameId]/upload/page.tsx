@@ -3,6 +3,7 @@ import UploadAssetForm from "./UploadAssetForm";
 import { notFound } from "next/navigation";
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import { UserRole } from "@/app/generated/prisma";
+import UploadButton from "@/components/Buttons/UploadButton/UploadButton";
 
 import styles from "./upload.module.css";
 
@@ -19,9 +20,14 @@ export default async function UploadPage({ params }: UploadPageProps) {
   if (!user || user.role === UserRole.VOTER) {
     return <NotAuthorized />
   }
-
   if (!gameData) {
     notFound();
+  }
+
+  const uploadButtonOptions = {
+    text: "Upload Asset",
+    id: "upload-asset-button",
+    formId: "uploadAssetForm"
   }
 
   return (
@@ -42,6 +48,7 @@ export default async function UploadPage({ params }: UploadPageProps) {
 
         <UploadAssetForm gameData={gameData}/>
       </div>
+      <UploadButton options={uploadButtonOptions}/>
     </div>
   );
 }

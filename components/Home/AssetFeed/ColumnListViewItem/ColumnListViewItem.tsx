@@ -16,7 +16,7 @@ import styles from "./ColumnListViewItem.module.css";
 
 interface ColumnListViewProps {
   item: AssetFeedItem;
-  notifications?: Array<PendingCommentData>
+  notifications?: Array<PendingCommentData>;
 }
 
 // Assets that have a final vote on them are colored. Pending are white.

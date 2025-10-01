@@ -1,7 +1,36 @@
 .feed_container {
-  display: flex;
-  flex: 1;
-  gap: 0.5rem;
-  padding: 1rem;
-  max-height: 70vh;
+  display: grid;
+  height: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 1rem;
+  grid-template-areas:
+    "col-rejected col-pending col-approved";
+}
+
+@media screen and (max-width: 1920px) {
+  .feed_container {
+    gap: 0.75rem;
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  .feed_container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+      "col-rejected col-pending"
+      "col-approved col-pending";
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .feed_container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 400px 400px 400px;
+    grid-template-areas:
+      "col-pending"
+      "col-approved"
+      "col-rejected";
+  }
 }

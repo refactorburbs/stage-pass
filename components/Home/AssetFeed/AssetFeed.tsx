@@ -46,17 +46,20 @@ export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }:
     return (
       <div className={styles.feed_container}>
         <ColumnListView
-          title="Rejected Assets"
+          title="Rejected"
           items={assetFeed.rejected}
+          style={{ gridArea: "col-rejected" }}
         />
         <ColumnListView
           title="Pending Review"
           items={assetFeed.pending}
           notifications={pendingComments}
+          style={{ gridArea: "col-pending" }}
         />
         <ColumnListView
-          title="Approved Assets"
+          title="Approved"
           items={assetFeed.approved}
+          style={{ gridArea: "col-approved" }}
         />
       </div>
     );
@@ -65,16 +68,18 @@ export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }:
   return (
     <div className={styles.feed_container}>
       <ColumnListView
-        title="Rejected Assets"
+        title="Rejected"
         items={assetFeed.rejected}
+        style={{ gridArea: "col-rejected" }}
       />
-      <div className={styles.pending_column}>
-        <AssetCardCarouselView title="Pending Assets" items={assetFeed.pending}/>
+      <div className={styles.pending_column} style={{ gridArea: "col-pending" }}>
+        <AssetCardCarouselView title="Pending" items={assetFeed.pending}/>
         <CommentCardCarouselView title="Pending Comments" items={pendingComments}/>
       </div>
       <ColumnListView
-        title="Approved Assets"
+        title="Approved"
         items={assetFeed.approved}
+        style={{ gridArea: "col-approved" }}
       />
     </div>
   );

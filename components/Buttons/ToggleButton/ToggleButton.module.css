@@ -7,7 +7,7 @@
 .toggle_option {
   flex: 1; /* Make each button take up equal sapce */
   text-align: center;
-  font-size: 4cqw; /* 4% of container width - scales with parent */
+  font-size: 5cqw; /* 5% of container width - scales with parent */
   padding: 0.75em 1em;
   border: 2px solid var(--color-primary);
   border-radius: var(--card-border-radius);

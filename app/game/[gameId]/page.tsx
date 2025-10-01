@@ -1,9 +1,11 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import AssetFeed from "@/components/Home/AssetFeed/AssetFeed";
-import FeedToggle from "@/components/Home/AssetFeed/FeedToggle/FeedToggle";
+import BlueprintGrid from "@/components/Layout/BlueprintGrid/BlueprintGrid";
+import UploadButton from "@/components/Buttons/UploadButton/UploadButton";
 import ToggleButton from "@/components/Buttons/ToggleButton/ToggleButton";
 import { getUser, getUserPermissions } from "@/lib/data/index";
 import { FeedType } from "@/lib/types/feed.types";
+import { UserRole } from "@/app/generated/prisma";
 
 import styles from "./GamePage.module.css";
 
@@ -20,36 +22,50 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
   const { gameId } = await params;
   const { feed } = await searchParams;
   const feedType = feed || "user";
+  const toggleButtonOptions = [
+    { label: "Your Feed", href: `/game/${gameId}?feed=user`, isActive: feedType === "user" },
+    { label: "Game Feed", href: `/game/${gameId}?feed=game`, isActive: feedType === "game" },
+  ];
+  const uploadButtonOptions = {
+    text: "Upload Asset",
+    href: `/game/${gameId}/upload`
+  };
 
   const user = await getUser();
-
   if (!user) {
     return <NotAuthorized />
   }
-
   const rules = await getUserPermissions(user, Number(gameId));
-  const toggleButtonOptions = [
-    { label: "Your Feed", href: `/game/${gameId}`, isActive: feedType === "user" },
-    { label: "Game Feed", href: `/game/${gameId}?feed=game`, isActive: feedType === "game" },
-  ];
+
+  const getFeedNote = () => {
+    if (feedType === "game") {
+      return "Voting phase has ended for assets in color. Assets in white are trending.";
+    }
+    if (user.role === UserRole.ARTIST) {
+      return "Your assets under review. Assets in color have reached a final decision."
+    }
+    return "Your assets to review. Asset votes can be changed until the voting phase ends (when all votes are in).";
+  }
 
   return (
-    <div className={styles.game_page_container}>
-      <div className={styles.feed_toggle_container}>
-        {/* <FeedToggle gameId={Number(gameId)} currentFeed={feedType}/> */}
-        <ToggleButton options={toggleButtonOptions}/>
+    <BlueprintGrid>
+      <div className={`content-wrapper ${styles.game_page_container}`}>
+        <div className={styles.feed_toggle_section}>
+          <ToggleButton options={toggleButtonOptions}/>
+          <span className={styles.feed_note}>
+            {getFeedNote()}
+          </span>
+        </div>
+        <AssetFeed
+          user={user}
+          gameId={Number(gameId)}
+          hasFinalSay={rules.hasFinalSay}
+          feedType={feedType}
+        />
       </div>
-      {feedType === "game" && (
-        <span className={styles.feed_note}>
-          Voting phase has ended for assets in color. Assets in white are trending.
-        </span>
-      )}
-      <AssetFeed
-        user={user}
-        gameId={Number(gameId)}
-        hasFinalSay={rules.hasFinalSay}
-        feedType={feedType}
-      />
-    </div>
+      {rules.canUpload &&
+        <UploadButton options={uploadButtonOptions}/>
+      }
+    </BlueprintGrid>
   );
 }

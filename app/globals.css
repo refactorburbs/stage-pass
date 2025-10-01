@@ -6,7 +6,7 @@
   --color-approved: #4EA230;
   --color-rejected: #A33139;
   --color-primary-faded: rgba(33, 48, 67, 0.75);
-  --card-border-radius: 0.3rem;
+  --card-border-radius: 0.5rem;
   --xxx-large: 140px;
   --xx-large: 115px;
   --x-large: 48px;
@@ -140,11 +140,16 @@ button:hover,
   cursor: not-allowed;
 }
 
+@media screen and (max-width: 1500px) {
+  .content-wrapper {
+    padding: 0 5%;
+  }
+}
+
 @media screen and (max-width: 600px) {
   h1 {
     font-size: 2.25rem;
   }
-
   h2 {
     font-size: 1.5rem;
   }
