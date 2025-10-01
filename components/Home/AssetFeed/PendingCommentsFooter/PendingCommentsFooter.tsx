@@ -30,10 +30,8 @@ export default function PendingCommentsFooter({ notifications }: PendingComments
     router.push(`/game/${gameId}/asset/${assetId}`);
   }
 
-  // const commentCountString = `${notifications.length} New Comment${notifications.length === 1 ? "" : "s"}`;
   return (
     <div className={styles.pending_comment_footer}>
-      {/* <span>{commentCountString}</span> */}
       <button
         disabled={isPending}
         onClick={handleDismiss}

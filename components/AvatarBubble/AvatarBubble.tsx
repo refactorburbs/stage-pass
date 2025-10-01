@@ -56,7 +56,7 @@ export default function AvatarBubble({ size, user }: AvatarBubbleProps) {
   if (isColorOnly) {
     return (
       <span
-        className={styles.avatar_bubble}
+        className={`${styles.avatar_bubble} ${styles[size]}`}
         style={css}
       >
         {user.initials}
@@ -66,7 +66,7 @@ export default function AvatarBubble({ size, user }: AvatarBubbleProps) {
 
   return (
     <div
-      className={styles.avatar_bubble}
+      className={`${styles.avatar_bubble} ${styles[size]}`}
       style={css}
     >
       <Image

@@ -10,11 +10,42 @@
   position: relative;
   background-color: transparent;
   border: none;
-  width: 15cqw;
+  width: 6cqw;
+  aspect-ratio: 1;
+  padding: 0;
+}
+
+.comment_icon:hover {
+  background-color: transparent;
+  border: none;
+  filter: unset;
+}
+
+.comment_icon:hover .comment_number_bubble {
+  background-color: var(--color-primary);
 }
 
 .comment_icon svg {
   height: 100%;
   width: 100%;
   object-fit: cover;
+}
+
+.comment_number_bubble {
+  position: absolute;
+  z-index: 2;
+  top: -1.5cqw;
+  right: -1.5cqw;
+  background-color: var(--color-secondary);
+  color: white;
+  font-size: 2.5cqw;
+  font-weight: bold;
+  min-width: 4cqw;
+  height: 4cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px white; /* border/outline */
+  pointer-events: none; /* So it doesn't block button clicks */
 }
