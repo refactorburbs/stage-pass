@@ -1,5 +1,5 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
-import AssetFeed from "@/components/Home/AssetFeed/AssetFeed";
+import AssetFeed from "@/components/Feed/AssetFeed/AssetFeed";
 import BlueprintGrid from "@/components/Layout/BlueprintGrid/BlueprintGrid";
 import UploadButton from "@/components/Buttons/UploadButton/UploadButton";
 import ToggleButton from "@/components/Buttons/ToggleButton/ToggleButton";

@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useOptimistic, useState } from "react";
-import { AssetFeedItem, AssetItemForVoterFeed, PendingCommentData } from "@/lib/types/assets.types";
+import { AssetFeedItem, AssetItemForVoterFeed } from "@/lib/types/assets.types";
+import { PendingCommentData } from "@/lib/types/comments.types";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
-import PendingAssetCard from "../PendingAssetCard/PendingAssetCard";
-import PendingCommentCard from "../PendingCommentCard/PendingCommentCard";
+import PendingAssetCard from "@/components/Cards/PendingAssetCard/PendingAssetCard";
+import PendingCommentCard from "@/components/Cards/PendingCommentCard/PendingCommentCard";
 
 import styles from "./CardCarousel.module.css";
 

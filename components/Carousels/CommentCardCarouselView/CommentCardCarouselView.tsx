@@ -1,5 +1,5 @@
-import { PendingCommentData } from "@/lib/types/assets.types";
-import CardCarousel from "../CardCarousel/CardCarousel";
+import { PendingCommentData } from "@/lib/types/comments.types";
+import CardCarousel from "@/components/Carousels/CardCarousel/CardCarousel";
 
 import styles from "./CommentCardCarouselView.module.css";
 

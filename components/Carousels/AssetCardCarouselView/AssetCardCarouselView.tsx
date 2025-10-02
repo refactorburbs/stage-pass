@@ -1,5 +1,5 @@
 import { AssetFeedItem } from "@/lib/types/assets.types";
-import CardCarousel from "../CardCarousel/CardCarousel";
+import CardCarousel from "@/components/Carousels/CardCarousel/CardCarousel";
 
 import styles from "./AssetCardCarouselView.module.css";
 

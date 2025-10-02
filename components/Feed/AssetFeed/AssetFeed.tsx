@@ -1,9 +1,14 @@
+import {
+  getAssetFeedForArtist,
+  getAssetFeedForGame,
+  getAssetFeedForVoter,
+  getUserPendingComments
+} from "@/lib/data";
 import { UserRole } from "@/app/generated/prisma";
-import { getAssetFeedForArtist, getAssetFeedForGame, getAssetFeedForVoter, getUserPendingComments } from "@/lib/data";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
-import ColumnListView from "./ColumnListView/ColumnListView";
-import AssetCardCarouselView from "./AssetCardCarouselView/AssetCardCarouselView";
-import CommentCardCarouselView from "./CommentCardCarouselView/CommentCardCarouselView";
+import ColumnListView from "../ColumnListView/ColumnListView";
+import AssetCardCarouselView from "@/components/Carousels/AssetCardCarouselView/AssetCardCarouselView";
+import CommentCardCarouselView from "@/components/Carousels/CommentCardCarouselView/CommentCardCarouselView";
 import { FeedType } from "@/lib/types/feed.types";
 import { notFound } from "next/navigation";
 

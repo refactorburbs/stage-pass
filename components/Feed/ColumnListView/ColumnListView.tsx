@@ -1,6 +1,6 @@
 import { AssetFeedItem } from "@/lib/types/assets.types";
 import { PendingCommentData } from "@/lib/types/comments.types";
-import ColumnListViewItem from "../ColumnListViewItem/ColumnListViewItem";
+import ColumnListViewItem from "@/components/Cards/ColumnListViewItem/ColumnListViewItem";
 
 import styles from "./ColumnListView.module.css";
 

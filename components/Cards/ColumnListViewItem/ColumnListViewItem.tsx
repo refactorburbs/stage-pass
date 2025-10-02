@@ -6,7 +6,8 @@ import { AssetFeedItem } from "@/lib/types/assets.types";
 import { PendingCommentData } from "@/lib/types/comments.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
 import VoterBubbles from "@/components/Avatar/VoterBubbles/VoterBubbles";
-import PendingCommentsNotification from "../PendingCommentsNotification/PendingCommentsNotification";
+import CaretIcon from "@/components/SVG/Icons/CaretIcon";
+import PendingCommentsNotification from "@/components/Feed/PendingCommentsNotification/PendingCommentsNotification";
 import { redactAssetVote } from "@/app/actions/asset.actions";
 import { useParams, useRouter } from "next/navigation";
 import { timeAgo, isAssetLocked } from "@/lib/utils";
@@ -14,7 +15,6 @@ import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 import LockIcon from "@/components/SVG/Icons/LockIcon";
 
 import styles from "./ColumnListViewItem.module.css";
-import CaretIcon from "@/components/SVG/Icons/CaretIcon";
 
 interface ColumnListViewItemProps {
   item: AssetFeedItem;
