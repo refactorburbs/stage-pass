@@ -7,7 +7,7 @@ import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import VoterBubbles from "@/components/Avatar/VoterBubbles/VoterBubbles";
 import VoteButtons from "@/components/Cards/PendingAssetCard/VoteButtons";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
-import ImageGrid from "@/components/ImageGrid/ImageGrid";
+import ImageGrid from "@/components/Layout/ImageGrid/ImageGrid";
 import { VotePhase } from "@/app/generated/prisma";
 import AssetComment from "@/components/AssetComment/AssetComment";
 import { isAssetLocked, timeAgo } from "@/lib/utils";

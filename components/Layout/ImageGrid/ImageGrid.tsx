@@ -14,11 +14,11 @@ interface ImageData {
   loaded: boolean;
 }
 
-interface BentoImageGridProps {
+interface ImageGridProps {
   imageUrls: string[];
 }
 
-export default function ImageGrid({ imageUrls }: BentoImageGridProps) {
+export default function ImageGrid({ imageUrls }: ImageGridProps) {
   const [images, setImages] = useState<ImageData[]>([]);
 
   useEffect(function resetStateOnCarouselArrowChange() {
