@@ -1,5 +1,5 @@
 import { AssetItemForVoterFeed } from "@/lib/types/assets.types";
-import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";

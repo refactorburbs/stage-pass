@@ -5,7 +5,7 @@ import { uploadAssetRevisionImage } from "@/app/actions/asset.actions";
 import { uploadFileToPinataClient } from "@/lib/pinata-client";
 import { GetGameAssetCategoriesResponse } from "@/lib/types/dto.types";
 import { useActionState, useEffect, useRef, useState } from "react";
-import CloudUploadIcon from "@/components/Icons/CloudUploadIcon";
+import CloudUploadIcon from "@/components/SVG/Icons/CloudUploadIcon";
 
 import styles from "./UploadRevision.module.css";
 

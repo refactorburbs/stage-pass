@@ -5,7 +5,7 @@ import ColumnListViewItem from "../ColumnListViewItem/ColumnListViewItem";
 import styles from "./ColumnListView.module.css";
 
 interface ColumnListViewProps {
-  title: string;
+  title: "Rejected" | "Approved" | "Pending" | "Pending Review";
   items: Array<AssetFeedItem>;
   style: { gridArea: string };
   notifications?: Array<PendingCommentData>
@@ -24,6 +24,7 @@ export default function ColumnListView({ title, items, style, notifications }: C
               key={item.id}
               item={item}
               notifications={notifications}
+              columnTitle={title}
             />
           ))
         ) : (

@@ -1,5 +1,5 @@
 import TooltipHover from "@/components/TooltipHover/TooltipHover";
-import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
 
 import styles from "./VoterBubbles.module.css";

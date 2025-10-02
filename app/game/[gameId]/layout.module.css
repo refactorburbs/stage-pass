@@ -1,3 +1,9 @@
 .game_page_layout {
-  gap: 1rem;
+  gap: 2rem;
+}
+
+@media screen and (max-width: 1980px) {
+  .game_page_layout {
+    gap: 1rem;
+  }
 }

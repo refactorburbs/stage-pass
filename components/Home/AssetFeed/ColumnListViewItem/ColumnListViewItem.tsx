@@ -5,8 +5,8 @@ import { useState, useTransition } from "react";
 import { AssetFeedItem } from "@/lib/types/assets.types";
 import { PendingCommentData } from "@/lib/types/comments.types";
 import { AssetStatus, VotePhase } from "@/app/generated/prisma";
-import VoterBubbles from "../VoterBubbles/VoterBubbles";
-import PendingCommentsFooter from "../PendingCommentsFooter/PendingCommentsFooter";
+import VoterBubbles from "@/components/Avatar/VoterBubbles/VoterBubbles";
+import PendingCommentsNotification from "../PendingCommentsNotification/PendingCommentsNotification";
 import { redactAssetVote } from "@/app/actions/asset.actions";
 import { useParams, useRouter } from "next/navigation";
 import { timeAgo, isAssetLocked } from "@/lib/utils";
@@ -14,10 +14,12 @@ import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 import LockIcon from "@/components/SVG/Icons/LockIcon";
 
 import styles from "./ColumnListViewItem.module.css";
+import CaretIcon from "@/components/SVG/Icons/CaretIcon";
 
-interface ColumnListViewProps {
+interface ColumnListViewItemProps {
   item: AssetFeedItem;
   notifications?: Array<PendingCommentData>;
+  columnTitle: "Rejected" | "Approved" | "Pending" | "Pending Review";
 }
 
 // Assets that have a final vote on them are colored. Pending are white.
@@ -49,7 +51,7 @@ const getItemStyle = (currentPhase: VotePhase, status: AssetStatus) => {
   }
 }
 
-export default function ColumnListViewItem({ item, notifications }: ColumnListViewProps) {
+export default function ColumnListViewItem({ item, notifications, columnTitle }: ColumnListViewItemProps) {
   const { gameId } = useParams();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -124,6 +126,7 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
       // If there are no voters on the item, check if we uploaded or
       // if we are voting (someone else uploaded)
     } else if (hasOtherUploader) {
+      const isInApprovedColumn = columnTitle === "Approved";
       return (
         <div className={styles.vote_status}>
           <div className={styles.submission_info}>
@@ -137,15 +140,18 @@ export default function ColumnListViewItem({ item, notifications }: ColumnListVi
               handleRedactVote(item.vote_id as number);
             }}
             disabled={isPending}
+            className={styles.move_to_pending_button}
           >
+            {isInApprovedColumn && <CaretIcon direction="left" sizePx={5}/>}
             Move to Pending
+            {!isInApprovedColumn && <CaretIcon direction="right" sizePx={5}/>}
           </button>
         </div>
       );
     }
     // Default case is artists: show a footer of how many pending comments
     // are on the asset they uploaded.
-    return <PendingCommentsFooter notifications={commentsForThisAsset}/>
+    return <PendingCommentsNotification notifications={commentsForThisAsset}/>
   }
 
   return (

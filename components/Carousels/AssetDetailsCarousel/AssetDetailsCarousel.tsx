@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AssetHistoryArray } from "@/lib/types/assets.types";
 import { UserAssetComment } from "@/lib/types/comments.types";
-import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
-import VoterBubbles from "@/components/Home/AssetFeed/VoterBubbles/VoterBubbles";
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
+import VoterBubbles from "@/components/Avatar/VoterBubbles/VoterBubbles";
 import VoteButtons from "@/components/Home/AssetFeed/PendingAssetCard/VoteButtons";
 import CarouselArrow from "@/components/Home/AssetFeed/CarouselArrow/CarouselArrow";
 import ImageGrid from "@/components/ImageGrid/ImageGrid";

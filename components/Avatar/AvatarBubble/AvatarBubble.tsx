@@ -4,32 +4,18 @@ import Image from "next/image";
 
 import styles from "./AvatarBubble.module.css";
 
-type AvatarBubbleSize = "small" | "medium" | "large" | "x-large";
+type AvatarBubbleSize = "small" | "medium" | "large" | "x_large";
 
 interface AvatarBubbleProps {
   size: AvatarBubbleSize;
   user: GetUserDataResponse;
 }
 
-const generateCSS = (size: AvatarBubbleSize, user: GetUserDataResponse) => {
+const generateCSS = (user: GetUserDataResponse) => {
   const isColorOnly = !user.customAvatar;
-  const sizeStyles = (() => {
-    switch (size) {
-      case "small":
-        return { width: "1.75rem", height: "1.75rem", fontSize: "10px" };
-      case "medium":
-        return { width: "2rem", height: "2rem" };
-      case "large":
-        return { width: "2.5rem", height: "2.5rem" };
-      default:
-        return { width: "3rem", height: "3rem" }; // Default to x-large ?
-    }
-  })();
-
   if (isColorOnly) {
     const bubbleColor = AVATAR_BUBBLE_COLORS[user.avatar!];
     return {
-      ...sizeStyles,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -40,7 +26,6 @@ const generateCSS = (size: AvatarBubbleSize, user: GetUserDataResponse) => {
 
   // For image based avatar bubbles
   return {
-    ...sizeStyles,
     display: "inline-block",
     backgroundSize: "cover",
     backgroundPosition: "center",
@@ -51,7 +36,7 @@ const generateCSS = (size: AvatarBubbleSize, user: GetUserDataResponse) => {
 
 export default function AvatarBubble({ size, user }: AvatarBubbleProps) {
   const isColorOnly = !user.customAvatar;
-  const css = generateCSS(size, user);
+  const css = generateCSS(user);
 
   if (isColorOnly) {
     return (

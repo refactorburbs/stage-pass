@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import CaretIcon from "@/components/SVG/Icons/CaretIcon";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
 import { logout } from "@/app/actions/auth.actions";

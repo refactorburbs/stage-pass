@@ -6,13 +6,13 @@ import { PendingCommentData } from "@/lib/types/comments.types";
 import CommentIcon from "@/components/SVG/Icons/CommentIcon";
 import { useRouter } from "next/navigation";
 
-import styles from "./PendingCommentsFooter.module.css";
+import styles from "./PendingCommentsNotification.module.css";
 
-interface PendingCommentsFooterProps {
+interface PendingCommentsNotificationProps {
   notifications: Array<PendingCommentData>
 }
 
-export default function PendingCommentsFooter({ notifications }: PendingCommentsFooterProps) {
+export default function PendingCommentsNotification({ notifications }: PendingCommentsNotificationProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   if (notifications.length === 0) return <></>;

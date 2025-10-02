@@ -145,11 +145,14 @@ button:hover,
 
 .disabled {
   cursor: not-allowed;
-  background-color: rgb(228, 164, 164);
+  background-color: #111822;
+  border-color: var(--color-rejected);
+  color: var(--color-rejected);
 }
 
 .error-msg {
   color: indianred;
+  font-family: var(--font-mada);
 }
 
 .locked-input {

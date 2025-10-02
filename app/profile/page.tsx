@@ -1,6 +1,6 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import { getDetailedUserData } from "@/lib/data";
-import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import UpdateProfileForm from "./UpdateProfileForm";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
 import Link from "next/link";

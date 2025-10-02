@@ -1,5 +1,5 @@
-import { UserAssetComment } from "@/lib/types/assets.types";
-import AvatarBubble from "../AvatarBubble/AvatarBubble";
+import { UserAssetComment } from "@/lib/types/comments.types";
+import AvatarBubble from "../Avatar/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
 
 import styles from "./AssetComment.module.css";

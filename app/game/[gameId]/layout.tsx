@@ -1,10 +1,10 @@
 import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import Navbar from "@/components/Layout/Navbar/Navbar";
+import Footer from "@/components/Layout/Footer/Footer";
 import { getGame, getUser } from "@/lib/data/index";
 import { notFound } from "next/navigation";
 
 import styles from "./layout.module.css";
-import Footer from "@/components/Layout/Footer/Footer";
 
 export default async function GamePageLayout({
   children,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import AvatarBubble from "@/components/AvatarBubble/AvatarBubble";
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
 import { PendingCommentData } from "@/lib/types/comments.types";
 import Image from "next/image";
