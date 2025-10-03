@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useState } from "react";
+import { useEffect, useOptimistic, useState } from "react";
 import { AssetFeedItem, AssetItemForVoterFeed } from "@/lib/types/assets.types";
 import { PendingCommentData } from "@/lib/types/comments.types";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
@@ -14,6 +14,7 @@ interface CardCarouselProps {
   items: Array<AssetFeedItem | PendingCommentData>
   type: "asset" | "comment";
 }
+
 export default function CardCarousel({ items, type }: CardCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   // Track voted asset IDs optimistically (filter out ones already voted on)
@@ -21,7 +22,7 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
   // optimisticState = set of voteIds, setOptimisticState = add vote to set
   const [votedAssetIds, addVotedAsset] = useOptimistic(
     new Set<number>(), // Initial state
-    // currState,  newState        new set to trigger React state update
+    // currState,  newState/action     new set to trigger React state update
     (currentVoted, assetId: number) => new Set(currentVoted).add(assetId)
   );
 
@@ -29,38 +30,25 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
   const availableItems = items.filter(item => !votedAssetIds.has(item.id));
   const itemCount = availableItems.length;
 
-  // Navigate to next slide
-  const nextSlide = () => {
+  // Sync currentIndex when availableItems changes (due to voting)
+  useEffect(() => {
+    if (currentIndex >= itemCount && itemCount > 0) {
+      setCurrentIndex(itemCount - 1);
+    }
+  }, [itemCount, currentIndex]);
+
+  const nextCard = () => {
     setCurrentIndex(prev => prev < itemCount - 1 ? prev + 1 : prev);
   };
 
-  // Navigate to previous slide
-  const prevSlide = () => {
+  const prevCard = () => {
     setCurrentIndex(prev => prev > 0 ? prev - 1 : prev);
   };
 
   // Optimistic vote - update UI immediately while async server action happens in VoteButtons to cast vote
   const handleOptimisticVote = (assetId: number) => {
-    // The current index and current asset need to be updated together (otherwise we'll get a race condition)
-    // before updating the optimistic state, check what the new index should be and if we have reference to the current item.
-    const currentItem = availableItems[currentIndex];
-    if (!currentItem) return;
-
-    // Update the index first if we're voting on the currently displayed item
-    if (currentItem.id === assetId) {
-      // If this is the last item, stay put (will show "no items" b/c itemCount === 0)
-      // Otherwise shift the current index to the next item immediately
-      if (currentIndex >= itemCount - 1) {
-        setCurrentIndex(Math.max(0, currentIndex - 1));
-      }
-    } else {
-      // We're voting on a different item and need to adjust the index if the voted item is b4 current pos.
-      const votedItemIndex = availableItems.findIndex(item => item.id === assetId);
-      if (votedItemIndex !== -1 && votedItemIndex < currentIndex) {
-        setCurrentIndex(prev => Math.max(0, prev - 1));
-      }
-    }
-    // Lastly, update the optimistic state (which will trigger a re-render with the filtered list)
+    // Update the optimistic state (which will trigger a re-render with the filtered list)
+    // and the useEffect will handle the index adjustment
     addVotedAsset(assetId);
   }
 
@@ -82,12 +70,15 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
   const isLastSlide = currentIndex === itemCount - 1;
   const currentItem = availableItems[currentIndex];
 
+  // In case a race condition still occurs (which it shouldn't... return nothing rather than crash)
+  if (!currentItem) return null;
+
   return (
     <div className={styles.carousel_and_pagination_container}>
       <div className={styles.main_carousel}>
         <CarouselArrow
           direction="left"
-          onClick={prevSlide}
+          onClick={prevCard}
           isActive={!isFirstSlide}
         />
         {type === "asset" ?
@@ -104,7 +95,7 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
         }
         <CarouselArrow
           direction="right"
-          onClick={nextSlide}
+          onClick={nextCard}
           isActive={!isLastSlide}
         />
       </div>
