@@ -1,10 +1,9 @@
+import VoteButtons from "@/components/Buttons/VoteButtons/VoteButtons";
 import { AssetItemForVoterFeed } from "@/lib/types/assets.types";
-import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
+import { useParams } from "next/navigation";
+import { timeAgo } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import VoteButtons from "./VoteButtons";
-import { timeAgo } from "@/lib/utils";
 
 import styles from "./PendingAssetCard.module.css";
 
@@ -40,6 +39,7 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
       className={styles.asset_card_container}
     >
       <div className={styles.image_preview_container}>
+        {/* @TODO Replace with an image grid to see all of them? */}
         <Image
           src={asset.imageUrls[0]}
           alt="Asset"
@@ -48,23 +48,22 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
           className={`object-fit ${styles.preview_image}`}
         />
       </div>
-      <span>Uploader Info</span>
-      <span>Vote Buttons</span>
-      {/* <div className={styles.uploader_info}>
-        <AvatarBubble size="medium" user={asset.uploader}/>
-        <div className={styles.asset_header}>
-          <span>{asset.title}</span>
-          <span style={{ fontSize: "12px" }}>
-            Uploaded {timeAgo(asset.createdAt)}
-          </span>
+      <div className={styles.asset_header}>
+        <span className={styles.asset_title}>
+          {asset.title}
+        </span>
+        <div className={`subtitle ${styles.uploader_info}`}>
+          Uploaded by {asset.uploader.firstName} - {asset.uploader.teamName}
+          <span>•</span>
+          <span className={styles.time_ago}>{timeAgo(asset.createdAt!)}</span>
         </div>
-      </div> */}
-      {/* <VoteButtons
+      </div>
+      <VoteButtons
         assetId={asset.id}
         currentPhase={asset.currentPhase}
         gameId={Number(gameId)}
         onVote={onVote}
-      /> */}
+      />
     </Link>
   );
 }

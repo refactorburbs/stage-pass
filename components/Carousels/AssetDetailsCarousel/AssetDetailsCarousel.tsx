@@ -5,7 +5,7 @@ import { AssetHistoryArray } from "@/lib/types/assets.types";
 import { UserAssetComment } from "@/lib/types/comments.types";
 import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import VoterBubbles from "@/components/Avatar/VoterBubbles/VoterBubbles";
-import VoteButtons from "@/components/Cards/PendingAssetCard/VoteButtons";
+import VoteButtons from "@/components/Buttons/VoteButtons/VoteButtons";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import ImageGrid from "@/components/Layout/ImageGrid/ImageGrid";
 import { VotePhase } from "@/app/generated/prisma";

@@ -1,72 +1,63 @@
-.asset_card_container2 {
-  position: relative;
-  padding: 0.75rem;
-  background-color: rgb(199, 199, 199);
-  border-radius: 1rem;
-  cursor: pointer;
-}
-.asset_card_container3 {
-  padding: 1rem;
-  height: 100%;
-  display: grid;
-  /* border: 2px solid red; */
-  /* background-color: rgb(199, 199, 199); */
-  border-radius: 1rem;
-  cursor: pointer;
-  color: black;
-}
 .asset_card_container {
   padding: 1rem;
-  height: 100%;
+  height: auto;
   width: 100%;
   display: grid;
+  gap: 1.25rem;
   cursor: pointer;
   grid-template-rows: 1fr auto auto;
   color: black;
+  container-type: inline-size; /* Enable container queries */
 }
 
-.image_preview_container2 {
-  aspect-ratio: 1;
-  width: 325px;
-  height: 375px;
-  overflow: hidden;
-  position: relative;
-}
 .image_preview_container {
-  height: 225px;
+  /* height: 350px; */
+  height: 100%;
   width: 100%;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-}
-
-/* .preview_image {
-  border-radius: 0.5rem;
-} */
-
-.uploader_info {
-  padding: 0.25rem;
-  background-color: rgba(255, 255, 255, 0.3);
-  display: flex;
-  position: absolute;
-  gap: 0.25rem;
-  top: 0.75rem; /*matching the padding of the card */
-  left: 0.75rem;
 }
 
 .asset_header {
   display: flex;
   flex-direction: column;
-  font-size: 14px;
 }
 
-.vote_buttons {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 0.75rem;
-  background-color: gray;
+.asset_title {
+  font-size: 5cqw;
+  font-family: var(--font-mada);
+}
+
+.uploader_info {
   display: flex;
+  gap: 0.25rem;
+  font-size: 2.75cqw;
   align-items: center;
-  justify-content: space-between;
-  /* border-radius: 0 0 1rem 1rem; */
+}
+
+.time_ago {
+  color: var(--color-primary);
+  font-size: 2cqw;
+}
+
+@media screen and (max-width: 1920px) {
+  .asset_card_container {
+    height: 100%;
+    gap: 0.75rem;
+  }
+  .image_preview_container {
+    height: 225px;
+  }
+  .asset_title {
+    font-size: 4cqw;
+  }
+  .uploader_info {
+    font-size: 2.25cqw;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .asset_card_container {
+    padding: 0.25rem;
+  }
 }

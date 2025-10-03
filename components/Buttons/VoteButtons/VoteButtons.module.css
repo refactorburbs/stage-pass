@@ -1,0 +1,39 @@
+.vote_buttons {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  container-type: inline-size; /* Enable container queries */
+}
+
+.reject_button,
+.approve_button {
+  padding: 0.5rem 1.75rem;
+  width: 48%;
+  font-size: 4cqw;
+  font-weight: bold;
+  border: 2px solid transparent;
+}
+
+.reject_button:hover,
+.approve_button:hover {
+  filter: unset;
+}
+
+.reject_button {
+  background-color: var(--color-rejected);
+}
+
+.reject_button:hover {
+  background-color: #812b30;
+  border-color: var(--color-rejected);
+}
+
+.approve_button {
+  background-color: var(--color-approved);
+}
+
+.approve_button:hover {
+  background-color: #45832e;
+  border-color: var(--color-approved);
+}

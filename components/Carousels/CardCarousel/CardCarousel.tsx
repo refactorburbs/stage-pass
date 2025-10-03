@@ -41,12 +41,27 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
 
   // Optimistic vote - update UI immediately while async server action happens in VoteButtons to cast vote
   const handleOptimisticVote = (assetId: number) => {
-    addVotedAsset(assetId);
-    // If this is the last item, stay put (will show "no items" b/c itemCount === 0)
-    // Otherwise shift the current index to the next item immediately
-    if (currentIndex >= itemCount - 1) {
-      setCurrentIndex(Math.max(0, currentIndex - 1));
+    // The current index and current asset need to be updated together (otherwise we'll get a race condition)
+    // before updating the optimistic state, check what the new index should be and if we have reference to the current item.
+    const currentItem = availableItems[currentIndex];
+    if (!currentItem) return;
+
+    // Update the index first if we're voting on the currently displayed item
+    if (currentItem.id === assetId) {
+      // If this is the last item, stay put (will show "no items" b/c itemCount === 0)
+      // Otherwise shift the current index to the next item immediately
+      if (currentIndex >= itemCount - 1) {
+        setCurrentIndex(Math.max(0, currentIndex - 1));
+      }
+    } else {
+      // We're voting on a different item and need to adjust the index if the voted item is b4 current pos.
+      const votedItemIndex = availableItems.findIndex(item => item.id === assetId);
+      if (votedItemIndex !== -1 && votedItemIndex < currentIndex) {
+        setCurrentIndex(prev => Math.max(0, prev - 1));
+      }
     }
+    // Lastly, update the optimistic state (which will trigger a re-render with the filtered list)
+    addVotedAsset(assetId);
   }
 
   if (itemCount === 0) {

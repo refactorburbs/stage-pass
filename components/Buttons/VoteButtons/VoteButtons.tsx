@@ -5,7 +5,7 @@ import { VotePhase, VoteType } from "@/app/generated/prisma";
 import { castAssetVote } from "@/app/actions/asset.actions";
 import { redirect } from "next/navigation";
 
-import styles from "./PendingAssetCard.module.css";
+import styles from "./VoteButtons.module.css";
 
 interface VoteButtonProps {
   assetId: number;
@@ -23,6 +23,7 @@ export default function VoteButtons({ assetId, currentPhase, gameId, onVote }: V
         onVote(assetId); // Immediately "removes" from carousel with useOptimistic state
         await castAssetVote(assetId, gameId, voteType, currentPhase);
       } else {
+        // vote was cast from the asset details page - route back to home feed
         await castAssetVote(assetId, gameId, voteType, currentPhase);
         redirect(`/game/${gameId}`);
       }
@@ -37,8 +38,9 @@ export default function VoteButtons({ assetId, currentPhase, gameId, onVote }: V
           e.preventDefault();
           handleVote(VoteType.REJECT);
         }}
+        className={styles.reject_button}
         >
-          No
+          Reject
         </button>
         <button
           onClick={(e) => {
@@ -46,8 +48,9 @@ export default function VoteButtons({ assetId, currentPhase, gameId, onVote }: V
             e.preventDefault();
             handleVote(VoteType.APPROVE);
           }}
+        className={styles.approve_button}
         >
-          Yes
+          Approve
         </button>
     </div>
   );
