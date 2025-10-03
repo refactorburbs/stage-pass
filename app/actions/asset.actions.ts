@@ -6,7 +6,7 @@ import { AssetStatus, SubscriptionType, UserRole, VotePhase, VoteType } from "..
 import { USER_VOTE_WEIGHT, VOTE_DECISION_THRESHOLD } from "@/lib/constants/placeholder.constants";
 import { cleanupPendingCommentsAndSubs, subscribeUserToAsset } from "./comment.actions";
 import { getAllEligibleVoters, getUser } from "@/lib/data";
-import { verifySession } from "@/lib/sessions";
+import { verifySession } from "@/lib/sessions/sessions.server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";

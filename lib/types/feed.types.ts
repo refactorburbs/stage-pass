@@ -1,1 +1,4 @@
-export type FeedType = "user" | "game";
+export enum FeedType {
+  USER = "user",
+  GAME = "game"
+}

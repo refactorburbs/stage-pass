@@ -1,37 +1,22 @@
-.button {
+.carousel_arrow_button {
   border: none;
   background: none;
+  padding: 0;
 }
 
-.carousel_arrow {
-  cursor: pointer;
-  background-color: rgb(177, 177, 177);
-  padding: 1.5rem 0.25rem;
-  border-radius: 0.5rem;
+.carousel_arrow_button:hover {
+  background: none;
+  filter: unset;
 }
 
-.carousel_arrow:hover {
-  background-color: rgb(163, 163, 163);
+.carousel_arrow_button:hover svg path {
+  fill: var(--color-primary);
 }
 
-.left_arrow {
-  box-shadow: inset -10px 10px 10px rgba(0, 0, 0, 0.2);
+.carousel_arrow_button.active {
+  visibility: visible;
 }
 
-.right_arrow {
-  box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.2);
-}
-
-.carousel_arrow img {
-  width: 30px;
-  height: auto;
-}
-
-.arrow_inactive {
-  padding: 1.5rem 0.25rem;
-}
-
-.arrow_inactive_box {
-  width: 50px;
-  height: 50px;
+.carousel_arrow_button.inactive {
+  visibility: hidden;
 }

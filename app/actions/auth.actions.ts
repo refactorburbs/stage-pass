@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { AuthFormState } from "@/lib/types/forms.types";
-import { createSession, deleteSession } from "@/lib/sessions";
+import { createSession, deleteSession } from "@/lib/sessions/sessions.server";
 import { createFullName, createInitials } from "@/lib/utils";
 
 // Validation schemas ----------------------------------------------------------------

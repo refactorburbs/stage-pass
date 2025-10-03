@@ -26,7 +26,7 @@ export default async function GameProjectSelectionPage() {
         <div className={`content-wrapper page-content ${styles.game_selection_content}`}>
           <div className={styles.welcome_header}>
             <span>{`Hi, ${user.firstName}! Select a`}</span>
-            <span>{`game project to work on.`}</span>
+            <span>{"game project to work on."}</span>
           </div>
           <div className={styles.game_selection_options}>
             {teamData.games.map((game) => (

@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useOptimistic, useState } from "react";
+import { useOptimistic, useState } from "react";
 import { AssetFeedItem, AssetItemForVoterFeed } from "@/lib/types/assets.types";
 import { PendingCommentData } from "@/lib/types/comments.types";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import PendingAssetCard from "@/components/Cards/PendingAssetCard/PendingAssetCard";
 import PendingCommentCard from "@/components/Cards/PendingCommentCard/PendingCommentCard";
+import PaginationDots from "@/components/SVG/PaginationDots/PaginationDots";
 
 import styles from "./CardCarousel.module.css";
 
@@ -16,10 +17,11 @@ interface CardCarouselProps {
 export default function CardCarousel({ items, type }: CardCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   // Track voted asset IDs optimistically (filter out ones already voted on)
-  //    optimisticState setOptimisticState
+  // (used in child component under a useTransition so rollbacks happen if it fails)
+  // optimisticState = set of voteIds, setOptimisticState = add vote to set
   const [votedAssetIds, addVotedAsset] = useOptimistic(
-    new Set<number>(),
-    // currState,  newState
+    new Set<number>(), // Initial state
+    // currState,  newState        new set to trigger React state update
     (currentVoted, assetId: number) => new Set(currentVoted).add(assetId)
   );
 
@@ -28,36 +30,42 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
   const itemCount = availableItems.length;
 
   // Navigate to next slide
-  const nextSlide = useCallback(() => {
-    const nextIndex = currentIndex < itemCount - 1 ? currentIndex + 1 : currentIndex;
-    setCurrentIndex(nextIndex);
-  }, [currentIndex, itemCount]);
+  const nextSlide = () => {
+    setCurrentIndex(prev => prev < itemCount - 1 ? prev + 1 : prev);
+  };
 
   // Navigate to previous slide
-  const prevSlide = useCallback(() => {
-    const prevIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
-    setCurrentIndex(prevIndex);
-  }, [currentIndex]);
+  const prevSlide = () => {
+    setCurrentIndex(prev => prev > 0 ? prev - 1 : prev);
+  };
 
-  // Optimistic vote - update UI immediately while async server action happens to cast vote
+  // Optimistic vote - update UI immediately while async server action happens in VoteButtons to cast vote
   const handleOptimisticVote = (assetId: number) => {
     addVotedAsset(assetId);
-    // If this is the last item, stay put (will show "no items")
+    // If this is the last item, stay put (will show "no items" b/c itemCount === 0)
     // Otherwise shift the current index to the next item immediately
-    if (currentIndex >= itemCount - 1 && itemCount > 1) {
+    if (currentIndex >= itemCount - 1) {
       setCurrentIndex(Math.max(0, currentIndex - 1));
     }
+  }
+
+  if (itemCount === 0) {
+    return (
+      <div className={styles.carousel_and_pagination_container}>
+        <div className={styles.main_carousel}>
+          <div className={styles.no_items}>
+            No items in this category
+          </div>
+        </div>
+        <PaginationDots activeIndex={currentIndex} dotQuantity={itemCount}/>
+      </div>
+    );
   }
 
   // Check if we're at the first or last slide for arrow states
   const isFirstSlide = currentIndex === 0;
   const isLastSlide = currentIndex === itemCount - 1;
   const currentItem = availableItems[currentIndex];
-
-  // If no available items, parent component handles this
-  if (itemCount === 0) {
-    return null; // Parent shows "No items in this category"
-  }
 
   return (
     <div className={styles.carousel_and_pagination_container}>
@@ -85,8 +93,7 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
           isActive={!isLastSlide}
         />
       </div>
-      <span>{currentIndex + 1}/{items.length}</span>
+      <PaginationDots activeIndex={currentIndex} dotQuantity={itemCount}/>
     </div>
   );
-
 }

@@ -1,0 +1,12 @@
+.pagination_dot_container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+}

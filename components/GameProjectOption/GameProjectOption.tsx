@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getGame, getUserPermissions } from "@/lib/data/index";
-import { notFound } from "next/navigation";
 import { GetUserDataResponse } from "@/lib/types/dto.types";
 import Image from "next/image";
 
@@ -18,7 +17,7 @@ interface GameProjectOptionProps {
 export default async function GameProjectOption({ game, user, teamName }: GameProjectOptionProps) {
   const gameData = await getGame(game.id);
   if (!gameData) {
-    notFound();
+    return null;
   }
 
   const rules = await getUserPermissions(user, game.id);
@@ -26,6 +25,7 @@ export default async function GameProjectOption({ game, user, teamName }: GamePr
 
   const teamNameString = gameData.teams.reduce((accumulator, current, index) => {
     if (index === 0) return current;
+    if (gameData.teams.length === 2) return `${accumulator} and ${current}`;
     if (index === gameData.teams.length - 1) return `${accumulator}, and ${current}`;
     return `${accumulator}, ${current}`;
   }, "");
@@ -46,7 +46,11 @@ export default async function GameProjectOption({ game, user, teamName }: GamePr
         <span className={`callout ${styles.role_callout}`}>
           {user.role.toUpperCase()}
         </span>
-        {hasFinalSay && <span className={styles.final_say_callout}>You have final say!</span>}
+        {hasFinalSay &&
+          <span className={styles.final_say_callout}>
+            You have final say!
+          </span>
+        }
       </div>
 
       <div className={styles.game_info_container}>

@@ -1,8 +1,7 @@
 // The main home page is the user's dashboard, which will be protected by authentication middleware.
-// Middleware runs on the edge, so we need to use edge-compatible libraries in here (this is why we use Jose)
-import { cookies } from "next/headers";
+// Middleware runs on the edge, so we need to use edge-compatible libraries and utils in here
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt, updateSession } from "./lib/sessions";
+import { decrypt, updateSessionEdge } from "./lib/sessions/sessions.edge";
 
 // If the user is not authenticated, they will be redirected to the login page.
 // Route exact matches (use startsWith for dynamic routes like /game/:id)
@@ -20,8 +19,7 @@ export default async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path) || path.startsWith("/game/");
   const isAuthPage = authPages.includes(path);
 
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get("session")?.value;
+  const cookie = req.cookies.get("session")?.value;
   const session = await decrypt(cookie);
 
   // Redirect to "/" if the user is already signed in and tries to access auth pages
@@ -47,12 +45,13 @@ export default async function middleware(req: NextRequest) {
   // If user is authenticated and accessing protected route, refresh session
   if (isProtectedRoute && session?.userId) {
     try {
-      await updateSession();
+      const response = await updateSessionEdge(req);
+      return response;
     } catch (error) {
       console.log("Session refresh failed, redirecting... ", error);
       const response = NextResponse.redirect(new URL("/auth/login", req.nextUrl))
       response.cookies.delete("session");
-      return response
+      return response;
     }
   }
 

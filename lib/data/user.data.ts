@@ -1,5 +1,7 @@
+"use server";
+
 import prisma from "@/lib/prisma";
-import { verifySession } from "../sessions";
+import { verifySession } from "../sessions/sessions.server";
 import { UserRole, VotePhase } from "@/app/generated/prisma";
 import { cache } from "react";
 import {

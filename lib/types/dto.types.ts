@@ -70,3 +70,8 @@ export interface GetAssetFeedForGameResponse {
   approved: Array<AssetItemForGameFeed>;
   pending: Array<AssetItemForGameFeed>
 }
+
+export type GetAssetFeedDataResponse =
+  | GetAssetFeedForArtistResponse
+  | GetAssetFeedForVoterResponse
+  | GetAssetFeedForGameResponse;

@@ -21,10 +21,10 @@ interface GamePageProps {
 export default async function GamePage({ params, searchParams }: GamePageProps) {
   const { gameId } = await params;
   const { feed } = await searchParams;
-  const feedType = feed || "user";
+  const feedType = feed || FeedType.USER;
   const toggleButtonOptions = [
-    { label: "Your Feed", href: `/game/${gameId}?feed=user`, isActive: feedType === "user" },
-    { label: "Game Feed", href: `/game/${gameId}?feed=game`, isActive: feedType === "game" },
+    { label: "Your Feed", href: `/game/${gameId}?feed=user`, isActive: feedType === FeedType.USER },
+    { label: "Game Feed", href: `/game/${gameId}?feed=game`, isActive: feedType === FeedType.GAME },
   ];
   const uploadButtonOptions = {
     text: "Upload Asset",
@@ -38,7 +38,7 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
   const rules = await getUserPermissions(user, Number(gameId));
 
   const getFeedNote = () => {
-    if (feedType === "game") {
+    if (feedType === FeedType.GAME) {
       return "Voting phase has ended for assets in color. Assets in white are trending.";
     }
     if (user.role === UserRole.ARTIST) {

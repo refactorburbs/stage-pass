@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
-import { verifySession } from "@/lib/sessions";
+import { verifySession } from "@/lib/sessions/sessions.server";
 import { uploadFileToPinata } from "./pinata.actions";
 import { UpdateUserProfileFormState } from "@/lib/types/forms.types";
 

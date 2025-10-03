@@ -8,6 +8,13 @@
     "col-rejected col-pending col-approved";
 }
 
+.voter_pending_column {
+  display: grid;
+  height: 100%;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2fr 1fr;
+}
+
 @media screen and (max-width: 1920px) {
   .feed_container {
     gap: 0.75rem;
