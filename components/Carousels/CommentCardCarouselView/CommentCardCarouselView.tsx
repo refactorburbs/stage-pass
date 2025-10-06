@@ -14,13 +14,7 @@ export default function CommentCardCarouselView({ title, items }: AssetCardListV
       <div className={styles.column_header}>
         {title} ({items.length})
       </div>
-      {items.length > 0 ? (
-        <CardCarousel items={items} type="comment" />
-      ) : (
-        <div className={styles.no_items}>
-          No items in this category
-        </div>
-      )}
+      <CardCarousel items={items} type="comment" />
     </div>
   );
 }

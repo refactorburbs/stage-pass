@@ -75,7 +75,7 @@ export default function CardCarousel({ items, type }: CardCarouselProps) {
 
   return (
     <div className={styles.carousel_and_pagination_container}>
-      <div className={styles.main_carousel}>
+      <div className="card-carousel">
         <CarouselArrow
           direction="left"
           onClick={prevCard}

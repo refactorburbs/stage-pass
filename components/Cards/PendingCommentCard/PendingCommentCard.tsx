@@ -2,16 +2,24 @@
 
 import { useState, useTransition } from "react";
 import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
-import { timeAgo } from "@/lib/utils";
+import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 import { PendingCommentData } from "@/lib/types/comments.types";
-import Image from "next/image";
+import TrashIcon from "@/components/SVG/Icons/TrashIcon";
 import { useRouter } from "next/navigation";
+import { timeAgo } from "@/lib/utils";
+import Image from "next/image";
 
 import styles from "./PendingCommentCard.module.css";
-import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 
 interface PendingCommentCardProps {
   comment: PendingCommentData;
+}
+
+const truncateComment = (comment: string) => {
+  if (comment.length >= 150) {
+    return `${comment.slice(0, 149)}...`;
+  }
+  return comment;
 }
 
 export default function PendingCommentCard({ comment }: PendingCommentCardProps) {
@@ -19,6 +27,7 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
   const fallbackSrc = "/no-image-available.webp";
   const [imageSrc, setImageSrc] = useState(comment.assetImage || fallbackSrc);
   const router = useRouter();
+
   const handleCardClick = () => {
     startTransition(async () => {
       await dismissCommentsForAsset(comment.subscriber_id, comment.asset_id);
@@ -35,35 +44,54 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
     window.location.reload(); // Hard reload - not the best option but meh
   }
 
+  const commentContentText = "This is my comment and what I think about the asset overall. Maybe one more revision. If we work together then yay! Maybe we should truncate if the text gets too long, yeah?"
+
   return (
     <div className={styles.comment_card} onClick={handleCardClick}>
       <div className={styles.comment_content}>
 
         <div className={styles.text_content}>
-          <div className={styles.user_info}>
-            <AvatarBubble size="medium" user={comment.commenter} />
-            <span>{timeAgo(comment.createdAt)}</span>
+          <div className={styles.text_content_header}>
+
+            <div className={styles.user_info_container}>
+              <AvatarBubble size="medium" user={comment.commenter} />
+              <div className={styles.user_info_content}>
+                <div >
+                  <span className={styles.user_name}>{comment.commenter.fullName}</span>
+                  <span>{` ● ${timeAgo(comment.createdAt)}`}</span>
+                </div>
+
+                <span>{comment.commenter.teamName}</span>
+              </div>
+            </div>
+
+            <div className={styles.image_preview_container}>
+              <Image
+                src={imageSrc}
+                alt="Asset Preview"
+                className="object-fit"
+                height={1080}
+                width={1080}
+                onError={() => setImageSrc(fallbackSrc)}
+              />
+            </div>
           </div>
-          <span className={styles.comment}>
-            {comment.content}
+          <span className={`child-carousel-content ${styles.comment}`}>
+            {/* {truncateComment(commentContentText)} */}
+            {truncateComment(comment.content)}
           </span>
         </div>
 
-        <div className={styles.image_preview_container}>
-          <Image
-            src={imageSrc}
-            alt="Asset Preview"
-            className="object-fit"
-            height={1080}
-            width={1080}
-            onError={() => setImageSrc(fallbackSrc)}
-          />
-        </div>
+
       </div>
       <button
         disabled={isPending}
         onClick={handleDismissClick}
+        className={styles.dismiss_button}
       >
+        <div className={styles.trash_icon}>
+          <TrashIcon />
+        </div>
         Dismiss
       </button>
     </div>

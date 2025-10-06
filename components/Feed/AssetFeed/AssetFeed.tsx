@@ -60,9 +60,7 @@ export default async function AssetFeed({ user, gameId, hasFinalSay, feedType }:
       />
       <div className={styles.voter_pending_column} style={{ gridArea: "col-pending" }}>
         <AssetCardCarouselView title="Pending" items={assetFeed.pending}/>
-        <div>Comment Cards</div>
-        {/* <AssetCardCarouselView title="Pending" items={assetFeed.pending}/>
-        <CommentCardCarouselView title="Pending Comments" items={pendingComments}/> */}
+        <CommentCardCarouselView title="New Comments" items={pendingComments}/>
       </div>
       <ColumnListView
         title="Approved"

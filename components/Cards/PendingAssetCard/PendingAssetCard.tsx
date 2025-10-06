@@ -16,23 +16,6 @@ interface PendingAssetCardProps {
 // Then on the asset details page, can render the vote buttons there conditionally on search params received
 export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardProps) {
   const { gameId } = useParams();
-  // Safety check - sometimes the asset is removed quicker than the useState can update the index
-  // That throws an error, so this is a fallback image
-  // if (!asset || !asset.id) {
-  //   return (
-  //     <div className={styles.asset_card_container}>
-  //       <div className={styles.image_preview_container}>
-  //         <Image
-  //           src="/processing-vote.webp"
-  //           alt="Asset"
-  //           height={1080}
-  //           width={1080}
-  //           className={`object-fit ${styles.preview_image}`}
-  //         />
-  //       </div>
-  //     </div>
-  //   );
-  // }
   return (
     <Link
       href={`/game/${gameId}/asset/${asset.id}?isPendingVote=true`}
@@ -45,7 +28,7 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
           alt="Asset"
           height={1080}
           width={1080}
-          className={`object-fit ${styles.preview_image}`}
+          className={`object-fit child-carousel-content ${styles.preview_image}`}
         />
       </div>
       <div className={styles.asset_header}>

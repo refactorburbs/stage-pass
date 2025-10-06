@@ -65,6 +65,24 @@ h2 {
   font-size: 1.75rem;
 }
 
+.card-carousel {
+  background-color: #F3F4F5;
+  border-radius: var(--card-border-radius);
+  filter: drop-shadow(-4px 4px 10px rgba(0,0,0, 0.1));
+  height: 100%;
+  width: 100%;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.card-carousel:has(.child-carousel-content:hover) {
+  border: 1px solid var(--color-secondary);
+}
+
 .title {
   font-family: var(--font-lunasima);
 }

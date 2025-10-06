@@ -1,15 +1,18 @@
 .column {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 1rem;
-  padding: 1rem;
-  min-width: 550px;
+  display: grid;
+  gap: 0.5rem;
+  /* place-items: center; */
+  grid-template-rows: auto 1fr;
 }
 
-.no_items {
-  text-align: center;
-  color: black;
-  margin-top: 1.5rem;
-  font-style: italic;
+.column_header {
+  font-family: var(--font-lunasima);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+@media screen and (max-width: 1920px) {
+  .column_header {
+    font-size: 0.75rem;
+  }
 }

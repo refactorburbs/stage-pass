@@ -13,11 +13,15 @@
   height: 100%;
   grid-template-columns: 1fr;
   grid-template-rows: 2fr 1fr;
+  gap: 2.25rem;
 }
 
 @media screen and (max-width: 1920px) {
   .feed_container {
     gap: 0.75rem;
+  }
+  .voter_pending_column {
+    gap: 1.25rem;
   }
 }
 
@@ -34,10 +38,11 @@
 @media screen and (max-width: 1000px) {
   .feed_container {
     grid-template-columns: 1fr;
-    grid-template-rows: 400px 400px 400px;
+    grid-template-rows: 600px 400px 400px;
     grid-template-areas:
       "col-pending"
       "col-approved"
       "col-rejected";
+    gap: 2rem;
   }
 }
