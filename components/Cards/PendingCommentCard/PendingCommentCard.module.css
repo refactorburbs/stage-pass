@@ -85,3 +85,9 @@
     gap: 0.5rem;
   }
 }
+
+@media screen and (max-width: 800px) {
+  .comment_card {
+    padding: 0 0.25rem;
+  }
+}

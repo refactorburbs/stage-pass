@@ -44,8 +44,6 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
     window.location.reload(); // Hard reload - not the best option but meh
   }
 
-  const commentContentText = "This is my comment and what I think about the asset overall. Maybe one more revision. If we work together then yay! Maybe we should truncate if the text gets too long, yeah?"
-
   return (
     <div className={styles.comment_card} onClick={handleCardClick}>
       <div className={styles.comment_content}>
@@ -77,7 +75,6 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
             </div>
           </div>
           <span className={`child-carousel-content ${styles.comment}`}>
-            {/* {truncateComment(commentContentText)} */}
             {truncateComment(comment.content)}
           </span>
         </div>

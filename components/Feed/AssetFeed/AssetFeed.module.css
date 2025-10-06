@@ -38,11 +38,17 @@
 @media screen and (max-width: 1000px) {
   .feed_container {
     grid-template-columns: 1fr;
-    grid-template-rows: 600px 400px 400px;
+    grid-template-rows: 800px 400px 400px;
     grid-template-areas:
       "col-pending"
       "col-approved"
       "col-rejected";
     gap: 2rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .feed_container {
+    grid-template-rows: 600px 400px 400px;
   }
 }
