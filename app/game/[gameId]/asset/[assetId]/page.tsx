@@ -3,7 +3,8 @@ import NotAuthorized from "@/components/ErrorPages/NotAuthorized";
 import CommentForm from "@/components/Forms/CommentForm/CommentForm";
 import { VotePhase } from "@/app/generated/prisma";
 import AssetDetailsCarousel from "@/components/Carousels/AssetDetailsCarousel/AssetDetailsCarousel";
-import { buildAssetHistoryArray } from "@/lib/utils/asset.utils";
+import { buildAssetHistoryArray, canAssetBeRevised } from "@/lib/utils/asset.utils";
+import UploadButton from "@/components/Buttons/UploadButton/UploadButton";
 
 import styles from "./AssetPage.module.css";
 
@@ -29,15 +30,27 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
   const assetDetails = await getAssetDetails(Number(assetId));
   const { originalAsset, revisions, ...currentAsset } = assetDetails;
   const assetsInOrderOfRevision = buildAssetHistoryArray(currentAsset, revisions, originalAsset);
+  const assetCommentHistoryArray = await Promise.all(
+    assetsInOrderOfRevision.map((asset) => (
+      getCommentsForAsset(asset.id, targetPhase)
+    ))
+  );
+
+  const latestAsset = assetsInOrderOfRevision[0];
+  const assetCanBeRevised = canAssetBeRevised(latestAsset.currentPhase, latestAsset.status);
+  const uploadButtonOptions = {
+    text: "Add Revision",
+    href: `/game/${gameId}/asset/${assetId}/upload`
+  }
 
   return (
     <div className={styles.asset_page}>
       <AssetDetailsCarousel
         assetHistoryArray={assetsInOrderOfRevision}
+        assetCommentHistoryArray={assetCommentHistoryArray}
         isPendingVote={isPendingVote}
         gameId={Number(gameId)}
         targetPhase={targetPhase}
-        getAssetComments={getCommentsForAsset}
       />
       <CommentForm
         gameId={Number(gameId)}
@@ -45,6 +58,9 @@ export default async function AssetPage ({ params, searchParams }: AssetPageProp
         userId={user.id}
         phase={targetPhase}
       />
+      {(rules.canUpload && assetCanBeRevised) &&
+        <UploadButton options={uploadButtonOptions}/>
+      }
     </div>
   );
 }

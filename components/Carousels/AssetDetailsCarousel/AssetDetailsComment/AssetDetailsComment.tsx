@@ -1,14 +1,14 @@
+import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import { UserAssetComment } from "@/lib/types/comments.types";
-import AvatarBubble from "../Avatar/AvatarBubble/AvatarBubble";
 import { timeAgo } from "@/lib/utils";
 
-import styles from "./AssetComment.module.css";
+import styles from "./AssetDetailsComment.module.css";
 
-interface AssetCommentProps {
+interface AssetDetailsCommentProps {
   comment: UserAssetComment;
 }
 
-export default function AssetComment({ comment }: AssetCommentProps) {
+export default function AssetDetailsComment({ comment }: AssetDetailsCommentProps) {
   const commenterInfo = `${comment.user.fullName} - ${comment.user.teamName} ● ${timeAgo(comment.createdAt)}`;
   return (
     <div className={styles.comment_container}>

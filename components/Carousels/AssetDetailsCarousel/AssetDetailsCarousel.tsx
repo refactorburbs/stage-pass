@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AssetHistoryArray } from "@/lib/types/assets.types";
 import { UserAssetComment } from "@/lib/types/comments.types";
 import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
@@ -9,50 +9,40 @@ import VoteButtons from "@/components/Buttons/VoteButtons/VoteButtons";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import ImageGrid from "@/components/Layout/ImageGrid/ImageGrid";
 import { VotePhase } from "@/app/generated/prisma";
-import AssetComment from "@/components/AssetComment/AssetComment";
 import { isAssetLocked, timeAgo } from "@/lib/utils";
+import AssetDetailsCommentList from "./AssetDetailsCommentList/AssetDetailsCommentList";
 
 import styles from "./AssetDetailsCarousel.module.css";
 
 interface AssetDetailsCarouselProps {
   assetHistoryArray: AssetHistoryArray;
+  assetCommentHistoryArray: Array<UserAssetComment[]>;
   isPendingVote: boolean | undefined;
   gameId: number;
   targetPhase: VotePhase;
-  getAssetComments: (assetId: number, phase: VotePhase) => Promise<UserAssetComment[]>;
 }
 
 export default function AssetDetailsCarousel({
   assetHistoryArray,
+  assetCommentHistoryArray,
   isPendingVote,
   gameId,
   targetPhase,
-  getAssetComments
 }: AssetDetailsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [comments, setComments] = useState<Array<UserAssetComment>>([]);
   const contactFormRef = useRef<HTMLFormElement | null>(null);
-  const uploadButtonRef = useRef<HTMLLinkElement | null>(null);
 
   const itemCount = assetHistoryArray.length;
-  // Check if we're at the first or last slide for arrow states
   const isFirstSlide = currentIndex === 0;
   const isLastSlide = currentIndex === itemCount - 1;
   const currentAsset = assetHistoryArray[currentIndex];
   const latestAsset = assetHistoryArray[0]; // contains category and title info that stays the same for all revisions.
-  const uploaderInfoString = `${currentAsset.uploader.fullName} - ${currentAsset.uploader.teamName}`;
   const assetIsLocked = isAssetLocked(latestAsset.currentPhase, latestAsset.status);
+  const uploaderInfoString = `${currentAsset.uploader.fullName} - ${currentAsset.uploader.teamName}`;
 
   useEffect(() => {
-    const refreshAssetComments = async () => {
-      const updatedComments = await getAssetComments(assetHistoryArray[currentIndex].id, targetPhase);
-      setComments(updatedComments);
-    }
-    refreshAssetComments();
-
     // Can only comment on the latest revision (the most current asset in review)
     contactFormRef.current = document.getElementById("asset-details-comment-form") as HTMLFormElement;
-    uploadButtonRef.current = document.getElementsByClassName("upload-button")[0] as HTMLLinkElement;
 
     if (!contactFormRef.current) return;
     if (currentIndex !== 0 || assetIsLocked) {
@@ -60,26 +50,15 @@ export default function AssetDetailsCarousel({
     } else {
       contactFormRef.current.style.visibility = "visible";
     }
+  }, [assetIsLocked, currentIndex]);
 
-    if (!uploadButtonRef.current) return;
-    if (assetIsLocked) {
-      uploadButtonRef.current.style.visibility = "hidden";
-    } else {
-      uploadButtonRef.current.style.visibility = "visible";
-    }
-  }, [assetHistoryArray, assetIsLocked, currentIndex, getAssetComments, targetPhase]);
+  const nextSlide = () => {
+    setCurrentIndex(prev => prev < itemCount - 1 ? prev + 1 : prev);
+  };
 
-  // Navigate to next slide
-  const nextSlide = useCallback(async () => {
-    const nextIndex = currentIndex < itemCount - 1 ? currentIndex + 1 : currentIndex;
-    setCurrentIndex(nextIndex);
-  }, [currentIndex, itemCount]);
-
-  // Navigate to previous slide
-  const prevSlide = useCallback(async () => {
-    const prevIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
-    setCurrentIndex(prevIndex);
-  }, [currentIndex]);
+  const prevSlide = () => {
+    setCurrentIndex(prev => prev > 0 ? prev - 1 : prev);
+  };
 
   return (
     <div className={styles.asset_content}>
@@ -129,10 +108,10 @@ export default function AssetDetailsCarousel({
           isActive={!isLastSlide}
         />
       </div>
-      <div className={styles.asset_comments}>
-        <h3>Comments</h3>
-        {comments.map((comment) => <AssetComment comment={comment} key={comment.id}/>)}
-      </div>
+      <AssetDetailsCommentList
+        assetCommentHistoryArray={assetCommentHistoryArray}
+        currentIndex={currentIndex}
+      />
     </div>
   )
 }

@@ -78,24 +78,4 @@ export default function UploadButton({ options }: UploadButtonProps) {
       </button>
     );
   }
-
-  if (isOnAssetPage) {
-    return (
-      <Link
-        href={`/game/${gameId}/asset/${assetId}/upload`}
-        className="upload-button"
-      >
-        Add Revision
-      </Link>
-    );
-  }
-
-  return (
-    <Link
-      href={`/game/${gameId}/upload`}
-      className="upload-button"
-    >
-      Upload Asset
-    </Link>
-  );
 }

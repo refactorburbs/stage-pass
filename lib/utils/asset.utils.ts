@@ -48,6 +48,19 @@ export function isAssetLocked(currentPhase: VotePhase, status: AssetStatus): boo
 }
 
 /**
+ * Used for upload asset revisions permissions, depending on the asset's current status and
+ * phase. Rejected assets can be revised to preserve the revision audit trail, but assets with
+ * locked approval should no longer be revised.
+*/
+export function canAssetBeRevised(currentPhase: VotePhase, status: AssetStatus): boolean {
+  const isLocked = isAssetLocked(currentPhase, status);
+  if (!isLocked) return true;
+  const revisableStatuses: Array<AssetStatus> = [AssetStatus.PENDING, AssetStatus.PHASE1_REJECTED, AssetStatus.PHASE2_REJECTED];
+  if (revisableStatuses.includes(status)) return true;
+  return false;
+}
+
+/**
  * Used with a .sort() to sort a list of assets so that unlocked (pending final votes)
  * assets appear first, followed by locked (finalized) assets.
  *

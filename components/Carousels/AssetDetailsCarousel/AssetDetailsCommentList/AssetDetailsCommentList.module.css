@@ -1,0 +1,6 @@
+.asset_comments {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0 5rem 0;
+}
