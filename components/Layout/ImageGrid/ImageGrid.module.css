@@ -1,3 +1,13 @@
+.grid_template_setup {
+  background-color: gray;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "img-1 img-1 img-2 img-2"
+    "img-3 img-3 img-4 img-4";
+}
+
 .image_container {
   position: relative;
   overflow: hidden;

@@ -31,6 +31,9 @@
 .image_grid_container {
   overflow: hidden;
   position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
 }
 
 .vote_info_container {
@@ -43,10 +46,3 @@
   display: flex;
   align-items: center;
 }
-
-/* .asset_comments {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: 2rem 0 5rem 0;
-} */

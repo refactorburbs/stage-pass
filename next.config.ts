@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         hostname: "stagepass.mypinata.cloud",
         pathname: "/**"
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**"
+      },
     ]
   }
 };
