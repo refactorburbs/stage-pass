@@ -1,9 +1,15 @@
-.asset_content {
+.asset_images_and_comments {
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  width: 60%;
+}
+
+.asset_header {
+  display: flex;
+  flex-direction: column;
   gap: 0.25rem;
-  max-width: 60%;
 }
 
 .uploader_info {
@@ -20,12 +26,14 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  justify-content: space-between;
 }
 
 .carousel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
 }
 
 .image_grid_container {
@@ -34,15 +42,4 @@
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
-}
-
-.vote_info_container {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.vote_info_content {
-  display: flex;
-  align-items: center;
 }

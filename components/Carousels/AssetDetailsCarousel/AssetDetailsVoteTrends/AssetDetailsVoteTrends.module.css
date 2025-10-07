@@ -1,0 +1,11 @@
+.vote_info_container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.vote_info_content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

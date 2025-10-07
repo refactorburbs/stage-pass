@@ -35,9 +35,9 @@ export async function sendDiscordVoteResultNotification(
     }
   } else {
     if (phase === VotePhase.PHASE1) {
-      description = "This asset was rejected during internal review. Please create a new and improved submission."
+      description = "This asset was rejected during internal review. Please revise this asset or create a new and improved submission."
     } else {
-      description = "This asset was rejected by Game/IP Owners. Please create a new Full Asset submission for internal review."
+      description = "This asset was rejected by Game/IP Owners. Please revise this asset or create a new Full Asset submission for internal review."
     }
   }
 

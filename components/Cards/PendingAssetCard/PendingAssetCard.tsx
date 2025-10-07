@@ -1,8 +1,8 @@
+import AssetHeader from "@/components/Layout/Headers/AssetHeader/AssetHeader";
 import VoteButtons from "@/components/Buttons/VoteButtons/VoteButtons";
 import { AssetItemForVoterFeed } from "@/lib/types/assets.types";
+import ImageGrid from "@/components/Layout/ImageGrid/ImageGrid";
 import { useParams } from "next/navigation";
-import { timeAgo } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 
 import styles from "./PendingAssetCard.module.css";
@@ -22,25 +22,13 @@ export default function PendingAssetCard ({ asset, onVote }: PendingAssetCardPro
       className={styles.asset_card_container}
     >
       <div className={styles.image_preview_container}>
-        {/* @TODO Replace with an image grid to see all of them? */}
-        <Image
-          src={asset.imageUrls[0]}
-          alt="Asset"
-          height={1080}
-          width={1080}
-          className={`object-fit child-carousel-content ${styles.preview_image}`}
-        />
+        <ImageGrid imageUrls={asset.imageUrls} allowsEnlarge={false}/>
       </div>
-      <div className={styles.asset_header}>
-        <span className={styles.asset_title}>
-          {asset.title}
-        </span>
-        <div className={`subtitle ${styles.uploader_info}`}>
-          Uploaded by {asset.uploader.firstName} - {asset.uploader.teamName}
-          <span>•</span>
-          <span className={styles.time_ago}>{timeAgo(asset.createdAt!)}</span>
-        </div>
-      </div>
+      <AssetHeader
+        title={asset.title}
+        subtitle={`Uploaded by ${asset.uploader.firstName}`}
+        timestamp={asset.createdAt!}
+      />
       <VoteButtons
         assetId={asset.id}
         currentPhase={asset.currentPhase}

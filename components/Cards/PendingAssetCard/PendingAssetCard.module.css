@@ -11,11 +11,11 @@
 }
 
 .image_preview_container {
-  /* height: 350px; */
   height: 100%;
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  pointer-events: none; /* stop the individual image enlarge clicks - go to asset details pg */
 }
 
 .asset_header {

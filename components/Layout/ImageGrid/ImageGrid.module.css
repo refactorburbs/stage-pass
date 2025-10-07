@@ -1,59 +1,24 @@
 .grid_template_setup {
-  background-color: gray;
+  width: 100%;
+  aspect-ratio: 16/9;
+  gap: 0.25rem;
+  background-color: #e0e2e6;
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
   grid-template-rows: 1fr 1fr;
-  grid-template-areas:
-    "img-1 img-1 img-2 img-2"
-    "img-3 img-3 img-4 img-4";
 }
 
 .image_container {
   position: relative;
   overflow: hidden;
-  border-radius: 4px;
-  background-color: #f3f4f6;
-  min-height: 120px;
+  border-radius: var(--card-border-radius);
   cursor: pointer;
 }
 
 .image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
   transition: transform 0.3s ease;
 }
 
 .image:hover {
   transform: scale(1.02);
-}
-
-.grid_row {
-  display: flex;
-  gap: 4px;
-}
-
-.single_layout {
-  max-width: 100%;
-}
-
-.two_layout {
-  display: flex;
-  gap: 4px;
-  width: 100%;
-}
-
-.three_layout {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-}
-
-/* Four image layout - 2x2 grid */
-.four_layout {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
 }

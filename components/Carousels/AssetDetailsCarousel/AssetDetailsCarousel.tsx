@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { AssetHistoryArray } from "@/lib/types/assets.types";
 import { UserAssetComment } from "@/lib/types/comments.types";
 import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
-import VoterBubbles from "@/components/Avatar/VoterBubbles/VoterBubbles";
 import VoteButtons from "@/components/Buttons/VoteButtons/VoteButtons";
 import CarouselArrow from "../CarouselArrow/CarouselArrow";
 import ImageGrid from "@/components/Layout/ImageGrid/ImageGrid";
 import { VotePhase } from "@/app/generated/prisma";
 import { isAssetLocked, timeAgo } from "@/lib/utils";
+import AssetDetailsVoteTrends from "./AssetDetailsVoteTrends/AssetDetailsVoteTrends";
 import AssetDetailsCommentList from "./AssetDetailsCommentList/AssetDetailsCommentList";
 
 import styles from "./AssetDetailsCarousel.module.css";
@@ -61,12 +61,14 @@ export default function AssetDetailsCarousel({
   };
 
   return (
-    <div className={styles.asset_content}>
-      <h2>{latestAsset.title}</h2>
-      <div className={styles.uploader_info}>
-        <AvatarBubble user={currentAsset.uploader} size="medium"/>
-        <div className={styles.submission_info}>
-          {uploaderInfoString} • {timeAgo(currentAsset.createdAt)}
+    <div className={styles.asset_images_and_comments}>
+      <div className={styles.asset_header}>
+        <h2>{latestAsset.title}</h2>
+        <div className={styles.uploader_info}>
+          <AvatarBubble user={currentAsset.uploader} size="medium"/>
+          <div className={styles.submission_info}>
+            {uploaderInfoString} • {timeAgo(currentAsset.createdAt)}
+          </div>
         </div>
       </div>
       <div className={styles.carousel_container}>
@@ -77,7 +79,7 @@ export default function AssetDetailsCarousel({
         />
         <div className={styles.carousel}>
           <div className={styles.image_grid_container}>
-            <ImageGrid imageUrls={currentAsset.imageUrls} key={currentAsset.id}/>
+            <ImageGrid imageUrls={currentAsset.imageUrls} key={currentAsset.id} allowsEnlarge={true}/>
             {isPendingVote && currentIndex === 0 && (
               <VoteButtons
                 assetId={latestAsset.id}
@@ -86,21 +88,6 @@ export default function AssetDetailsCarousel({
               />
             )}
           </div>
-          {currentIndex === 0 && (
-            <div className={styles.vote_info_container}>
-              <div className={styles.vote_info_content}>
-                <span>{`Approved (${latestAsset.votes.approvePercentage}%): `}</span>
-                <VoterBubbles voters={latestAsset.votes.approved} />
-              </div>
-              <div className={styles.vote_info_content}>
-                <span>{`Rejected (${latestAsset.votes.rejectPercentage}%): `}</span>
-                <VoterBubbles voters={latestAsset.votes.rejected} />
-              </div>
-              <div className={styles.vote_info_content}>
-                <span>{`Pending Votes: ${latestAsset.votes.pendingCount} `}</span>
-              </div>
-            </div>
-          )}
         </div>
         <CarouselArrow
           direction="right"
@@ -108,6 +95,10 @@ export default function AssetDetailsCarousel({
           isActive={!isLastSlide}
         />
       </div>
+      {/* Only show the vote trends on the latest asset (not revisions) */}
+      {currentIndex === 0 && (
+        <AssetDetailsVoteTrends assetVotes={latestAsset.votes}/>
+      )}
       <AssetDetailsCommentList
         assetCommentHistoryArray={assetCommentHistoryArray}
         currentIndex={currentIndex}

@@ -12,6 +12,7 @@ import { redactAssetVote } from "@/app/actions/asset.actions";
 import { useParams, useRouter } from "next/navigation";
 import { timeAgo, isAssetLocked } from "@/lib/utils";
 import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
+import AssetHeader from "@/components/Layout/Headers/AssetHeader/AssetHeader";
 import LockIcon from "@/components/SVG/Icons/LockIcon";
 
 import styles from "./ColumnListViewItem.module.css";
@@ -171,14 +172,12 @@ export default function ColumnListViewItem({ item, notifications, columnTitle }:
         />
       </div>
       <div className={styles.list_item_info}>
-        <div className={styles.header}>
-          <span className="title">{item.title}</span>
-          {renderAssetReviewPhaseHeader()}
-        </div>
-        <div className={`subtitle ${styles.submission_info}`}>
-          {submissionInfoText} • {timeAgo(item.createdAt)}
-        </div>
-
+        <AssetHeader
+          title={item.title}
+          phaseInfoElement={renderAssetReviewPhaseHeader()}
+          subtitle={submissionInfoText}
+          timestamp={item.createdAt}
+        />
         <div className={styles.item_footer}>
           {renderFooter()}
         </div>

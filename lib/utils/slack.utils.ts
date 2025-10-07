@@ -30,9 +30,9 @@ export async function sendSlackVoteResultNotification(
     }
   } else {
     if (phase === VotePhase.PHASE1) {
-      description = "This asset was rejected during internal review. \n>Please create a new and improved submission."
+      description = "This asset was rejected during internal review. \n>Please revise this asset or create a new and improved submission."
     } else {
-      description = "This asset was rejected by Game/IP Owners. \n>Please create a new Full Asset submission for internal review."
+      description = "This asset was rejected by Game/IP Owners. \n>Please revise this asset or create a new Full Asset submission for internal review."
     }
   }
 

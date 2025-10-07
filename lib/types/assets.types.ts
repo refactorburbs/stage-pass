@@ -42,6 +42,14 @@ export type AssetVoteCalculation = {
   rejectCount: number;
 }
 
+export type AssetVoteTrendData = {
+  rejectPercentage: number;
+  approvePercentage: number;
+  pendingCount: number;
+  approved: Array<GetUserDataResponse>;
+  rejected: Array<GetUserDataResponse>;
+}
+
 export interface AssetDetails {
   id: number;
   title: string;
@@ -53,13 +61,7 @@ export interface AssetDetails {
   revisionNumber: number;
   revisionDescription: string;
   uploader: GetUserDataResponse;
-  votes: {
-    rejectPercentage: number;
-    approvePercentage: number;
-    pendingCount: number;
-    approved: Array<GetUserDataResponse>;
-    rejected: Array<GetUserDataResponse>;
-  }
+  votes: AssetVoteTrendData;
 }
 
 // For the UploadAssetRevisionForm - locked data from original asset.
