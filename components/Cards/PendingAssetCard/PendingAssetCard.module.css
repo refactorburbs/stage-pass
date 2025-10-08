@@ -18,28 +18,6 @@
   pointer-events: none; /* stop the individual image enlarge clicks - go to asset details pg */
 }
 
-.asset_header {
-  display: flex;
-  flex-direction: column;
-}
-
-.asset_title {
-  font-size: 5cqw;
-  font-family: var(--font-mada);
-}
-
-.uploader_info {
-  display: flex;
-  gap: 0.25rem;
-  font-size: 2.75cqw;
-  align-items: center;
-}
-
-.time_ago {
-  color: var(--color-primary);
-  font-size: 2cqw;
-}
-
 @media screen and (max-width: 1920px) {
   .asset_card_container {
     height: 100%;
@@ -50,9 +28,6 @@
   }
   .asset_title {
     font-size: 4cqw;
-  }
-  .uploader_info {
-    font-size: 2.25cqw;
   }
 }
 

@@ -30,7 +30,7 @@ export default async function UserProfilePage() {
     <div className={styles.profile_page}>
       <div className="content-wrapper">
         <div className={styles.profile_avatar}>
-          <AvatarBubble size="x-large" user={filteredUser} />
+          <AvatarBubble size="x_large" user={filteredUser} />
           <h2 className={styles.page_title}>
             {`${user.firstName}'s Profile:`}
           </h2>

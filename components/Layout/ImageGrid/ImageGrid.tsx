@@ -101,17 +101,27 @@ export default function ImageGrid({ imageUrls, allowsEnlarge }: ImageGridProps) 
   // Without this useEffect, scrolling on the Voter feed does not update imageUrls
   useEffect(function resetImagesOnCarouselArrowChange() {
     // @TODO remove slice. slicing right now for testing
-    setImages(
-      imageUrls.slice(0, 4).map((url, index) => ({
+    setImages(prev => {
+      // Was running into an issue with the skeleton loading animation getting stuck
+      // Next/Image generates a <img> with lazy loading and caching, and the browser will keep the cached decoded images in memory
+      // but React will re-create the component. Since the <img> is new but the browser already has the data, onLoad won't fire again
+      // after a soft refresh (revalidate path or navigating to the same route we're already on), so the check for allImagesLoaded will
+      // be false after a soft refresh and the skeleton animation hangs until you do a full refresh. To circumvent that, we can
+      // either try using onLoadingComplete instead of onLoad (because it always fires), or we can prevent the image state from fully
+      // resetting on validation by returning the same state if the imageUrls didn't actually change.
+      if (prev.length && prev.every((img, i) => img.url === imageUrls[i])) {
+        return prev; // don’t reset if URLs are same
+      }
+      return imageUrls.slice(0, 4).map((url, index) => ({
         url,
         width: 0,
         height: 0,
         aspectRatio: 1,
         originalIndex: index,
         loaded: false,
-        isLandscape: false
-      }))
-    );
+        isLandscape: false,
+      }));
+    });
   }, [imageUrls]);
 
   const handleImageLoad = (index: number, event: React.SyntheticEvent<HTMLImageElement, Event>) => {

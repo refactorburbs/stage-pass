@@ -9,13 +9,6 @@
   --color-rejected: #A33139;
   --color-rejected-faded: rgba(163, 49, 57, 0.1);
   --card-border-radius: 0.3rem;
-  --xxx-large: 140px;
-  --xx-large: 115px;
-  --x-large: 48px;
-  --large: 40px;
-  --medium: 32px;
-  --small: 24px;
-  --x-small: 22px;
 }
 
 html,
@@ -65,6 +58,8 @@ h2 {
   font-size: 1.75rem;
 }
 
+/* global class to avoid module segregation for the carousel
+and nested pending comment child */
 .card-carousel {
   background-color: #F3F4F5;
   border-radius: var(--card-border-radius);
@@ -81,15 +76,6 @@ h2 {
 
 .card-carousel:has(.child-carousel-content:hover) {
   border: 1px solid var(--color-secondary);
-}
-
-.title {
-  font-family: var(--font-lunasima);
-}
-
-.subtitle {
-  font-family: var(--font-lunasima);
-  color: var(--color-primary-faded);
 }
 
 .callout {
@@ -172,6 +158,8 @@ button:hover,
   color: indianred;
   font-family: var(--font-mada);
 }
+
+/* @TODO move locked-input into a module class, no need for global */
 
 .locked-input {
   background-color: rgb(214, 214, 214);

@@ -116,7 +116,9 @@ export default function ColumnListViewItem({ item, notifications, columnTitle }:
     // For the game feed, where one asset item has several voters
     if (hasVoters) {
       if (item.voters.length === 0) {
-        // This should never happen - a notification should be sent, but just in case:
+        // This should never happen - if it's a tie, and all votes are in,
+        // there would be 0 voters for an asset in the pending column. A notification should be sent
+        // from the castAssetVote fn but currently just a discord one @TODO. so if no notifcation, fallback:
         return <span>Voting Complete: Tie</span>
       }
       return (

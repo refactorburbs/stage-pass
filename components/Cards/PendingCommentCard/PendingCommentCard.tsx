@@ -49,12 +49,10 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
 
         <div className={styles.text_content}>
           <div className={styles.text_content_header}>
-
             <CommentHeader
               commenter={comment.commenter}
               timestamp={comment.createdAt}
             />
-
             <div className={styles.image_preview_container}>
               <Image
                 src={imageSrc}
