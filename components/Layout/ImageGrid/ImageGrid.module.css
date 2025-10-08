@@ -22,3 +22,27 @@
 .image:hover {
   transform: scale(1.02);
 }
+
+/* Note, to make this take up full width we need to
+adjust the grid-template-rows to not be 1fr 1fr but either 50% 50%
+or do more rows at the correct 16:9 percentage divisions and adjust all
+the square/landscape accordingly... */
+.skeleton_overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.6) 50%,
+      rgba(255,255,255,0) 100%
+    ),
+    #e0e2e6;
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  animation: shine 1.2s linear infinite;
+}
+
+@keyframes shine {
+  0% { background-position: 150% 0; }
+  100% { background-position: -150% 0; }
+}

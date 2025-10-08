@@ -98,6 +98,7 @@ function getGridTemplate(images: ImageData[]): string {
 export default function ImageGrid({ imageUrls, allowsEnlarge }: ImageGridProps) {
   const [images, setImages] = useState<ImageData[]>([]);
 
+  // Without this useEffect, scrolling on the Voter feed does not update imageUrls
   useEffect(function resetImagesOnCarouselArrowChange() {
     // @TODO remove slice. slicing right now for testing
     setImages(
@@ -149,8 +150,8 @@ export default function ImageGrid({ imageUrls, allowsEnlarge }: ImageGridProps) 
 
   const gridTemplateAreas = allImagesLoaded
     ? getGridTemplate(sortedImages)
-    : `"img-1 img-1 img-1 img-1"
-      "img-1 img-1 img-1 img-1"`;
+    : `"img-1 img-1 img-3 img-3"
+       "img-2 img-2 img-3 img-3"`;
 
   return (
     <div
@@ -180,6 +181,7 @@ export default function ImageGrid({ imageUrls, allowsEnlarge }: ImageGridProps) 
               className={`object-fit ${styles.image}`}
               onLoad={(e) => handleImageLoad(image.originalIndex, e)}
             />
+            {!image.loaded && <div className={styles.skeleton_overlay} />}
           </WrapperComponent>
         );
       })}

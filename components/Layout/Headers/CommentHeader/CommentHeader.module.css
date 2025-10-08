@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  width: 100%;
+  gap: 0.15rem;
+  color: black;
+  container-type: inline-size; /* Enable container queries */
+}
+
+.title_container {
+  display: flex;
+  flex-direction: column;
+  font-size: 3cqw;
+}
+
+.title {
+  font-size: 3.75cqw;
+  font-family: var(--font-lunasima);
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.subtitle,
+.timestamp {
+  font-size: 3.25cqw;
+  font-family: var(--font-lunasima);
+  color: var(--color-primary-faded);
+}

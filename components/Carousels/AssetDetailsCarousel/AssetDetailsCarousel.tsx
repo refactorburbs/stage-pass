@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { AssetHistoryArray } from "@/lib/types/assets.types";
 import { UserAssetComment } from "@/lib/types/comments.types";
 import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
@@ -40,7 +40,7 @@ export default function AssetDetailsCarousel({
   const assetIsLocked = isAssetLocked(latestAsset.currentPhase, latestAsset.status);
   const uploaderInfoString = `${currentAsset.uploader.fullName} - ${currentAsset.uploader.teamName}`;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Can only comment on the latest revision (the most current asset in review)
     contactFormRef.current = document.getElementById("asset-details-comment-form") as HTMLFormElement;
 

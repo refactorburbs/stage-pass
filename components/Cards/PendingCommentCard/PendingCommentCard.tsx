@@ -1,15 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import AvatarBubble from "@/components/Avatar/AvatarBubble/AvatarBubble";
 import { dismissCommentsForAsset } from "@/app/actions/comment.actions";
 import { PendingCommentData } from "@/lib/types/comments.types";
 import TrashIcon from "@/components/SVG/Icons/TrashIcon";
 import { useRouter } from "next/navigation";
-import { timeAgo } from "@/lib/utils";
 import Image from "next/image";
 
 import styles from "./PendingCommentCard.module.css";
+import CommentHeader from "@/components/Layout/Headers/CommentHeader/CommentHeader";
 
 interface PendingCommentCardProps {
   comment: PendingCommentData;
@@ -51,17 +50,10 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
         <div className={styles.text_content}>
           <div className={styles.text_content_header}>
 
-            <div className={styles.user_info_container}>
-              <AvatarBubble size="medium" user={comment.commenter} />
-              <div className={styles.user_info_content}>
-                <div >
-                  <span className={styles.user_name}>{comment.commenter.fullName}</span>
-                  <span>{` ● ${timeAgo(comment.createdAt)}`}</span>
-                </div>
-
-                <span>{comment.commenter.teamName}</span>
-              </div>
-            </div>
+            <CommentHeader
+              commenter={comment.commenter}
+              timestamp={comment.createdAt}
+            />
 
             <div className={styles.image_preview_container}>
               <Image
@@ -78,7 +70,6 @@ export default function PendingCommentCard({ comment }: PendingCommentCardProps)
             {truncateComment(comment.content)}
           </span>
         </div>
-
 
       </div>
       <button

@@ -4,7 +4,7 @@ import { ALLOWED_UPLOAD_FILE_TYPES } from "@/lib/constants/placeholder.constants
 import { uploadAssetImage } from "@/app/actions/asset.actions";
 import { uploadFileToPinataClient } from "@/lib/pinata-client";
 import { GetGameAssetCategoriesResponse } from "@/lib/types/dto.types";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useLayoutEffect, useRef, useState } from "react";
 import CloudUploadIcon from "@/components/SVG/Icons/CloudUploadIcon";
 
 import styles from "./upload.module.css";
@@ -22,7 +22,7 @@ export default function UploadAssetForm({ gameData }: UploadAssetFormProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const uploadButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(function getElementAfterMount() {
+  useLayoutEffect(function getElementAfterMount() {
     uploadButtonRef.current = document.getElementById("upload-asset-button") as HTMLButtonElement;
   }, [])
 

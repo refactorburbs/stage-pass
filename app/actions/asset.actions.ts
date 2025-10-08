@@ -267,7 +267,13 @@ export async function castAssetVote(
   // Voting is a user interaction, subscribe them to comments on it:
   await subscribeUserToAsset(voter.id, assetId, SubscriptionType.VOTED);
 
-  revalidatePath(`/game/${gameId}`);
+  try {
+    revalidatePath(`/game/${gameId}`);
+  } catch (error) {
+    // User likely navigated away before the action completed
+    // This is fine - the data is saved, revalidation just isn't needed
+    console.log("Revalidation skipped (user navigated away)", error);
+  }
 }
 
 export async function redactAssetVote(voteId: number, gameId: number): Promise<void> {
@@ -279,5 +285,10 @@ export async function redactAssetVote(voteId: number, gameId: number): Promise<v
       id: voteId
     }
   });
-  revalidatePath(`/game/${gameId}`);
+
+  try {
+    revalidatePath(`/game/${gameId}`);
+  } catch (error) {
+    console.log("Revalidation skipped (user navigated away)", error);
+  }
 }
